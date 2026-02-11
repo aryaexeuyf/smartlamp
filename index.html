@@ -1,78 +1,149 @@
+<!-- index.html for GitHub Pages -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Smart Lamp Outdoor</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#0f172a;
-  color:white;
-  text-align:center;
-}
-button{
-  padding:15px 40px;
-  margin:10px;
-  border:none;
-  border-radius:30px;
-  font-size:18px;
-  cursor:pointer;
-  transition:0.3s;
-}
-.on{background:#16a34a;}
-.off{background:#dc2626;}
-.card{
-  margin-top:100px;
-}
-.watermark{
-  position:fixed;
-  bottom:10px;
-  width:100%;
-  font-size:12px;
-  opacity:0.6;
-}
-</style>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Control PJU Lamp Outdoor</title>
+    <style>
+        /* Modern glassmorphism */
+        body { background: linear-gradient(135deg, #f5f7fa, #c3cfe2); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { background: rgba(255, 255, 255, 0.25); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); backdrop-filter: blur(4px); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.18); padding: 20px; max-width: 600px; width: 100%; }
+        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; animation: fadeOut 1s 4s forwards; }
+        @keyframes fadeOut { to { opacity: 0; display: none; } }
+        /* More styles for tables, modals, animations */
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
 </head>
 <body>
+    <div id="loading">
+        <h1>Logo Smart Lamp Outdoor</h1>
+        <p>Project by AryaTeam</p>
+    </div>
+    <div class="container" style="display: none;" id="main">
+        <h1>Smart Control PJU Lamp Outdoor</h1>
+        <div id="device-status"></div>
+        <div id="wifi-signal"></div>
+        <!-- Login for Admin -->
+        <input type="password" id="pin" placeholder="Admin PIN">
+        <button onclick="loginAdmin()">Login</button>
+        <!-- User: ON/OFF -->
+        <button onclick="setLamp(true)">ON</button>
+        <button onclick="setLamp(false)">OFF</button>
+        <!-- Admin sections: hidden until login -->
+        <div id="admin-sections" style="display:none;">
+            <!-- Jadwal: table, add/edit/delete -->
+            <div id="jadwal"></div>
+            <!-- Buzzer: dropdown, save -->
+            <!-- Setting: presets -->
+            <button onclick="disconnectWiFi()">Putus WiFi</button>
+        </div>
+    </div>
 
-<div class="card">
-<h2>Smart Lamp Outdoor</h2>
-<p id="status">Checking connection...</p>
-<button class="on" onclick="setLamp(true)">ON</button>
-<button class="off" onclick="setLamp(false)">OFF</button>
-</div>
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "your-api-key",
+            authDomain: "your-project.firebaseapp.com",
+            databaseURL: "https://your-project.firebaseio.com",
+            projectId: "your-project",
+            // etc.
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-<div class="watermark">Project by AryaProject</div>
+        // Show main after loading
+        setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('main').style.display = 'block';
+        }, 4000);
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        // Device Status
+        let lastHeartbeat = 0;
+        db.ref('/device/status/heartbeat').on('value', snap => {
+            lastHeartbeat = snap.val();
+        });
+        setInterval(() => {
+            if (Date.now() / 1000 - lastHeartbeat > 15) {
+                document.getElementById('device-status').innerText = 'Your device not connected to internet';
+            } else {
+                document.getElementById('device-status').innerText = 'Your device connected to internet';
+            }
+        }, 1000);
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCfRXQKtfSQemzyESufRa-8MGNd_Pi2EeE",
-  authDomain: "lampu-pju-njati.firebaseapp.com",
-  databaseURL: "https://lampu-pju-njati-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "lampu-pju-njati"
-};
+        // WiFi Signal
+        db.ref('/device/rssi').on('value', snap => {
+            const rssi = snap.val();
+            // Convert to bars: e.g., if rssi > -60: 4 bars, etc.
+            let bars = /* calculate */;
+            document.getElementById('wifi-signal').innerHTML = /* icon bars */;
+        });
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+        // Admin Login
+        async function loginAdmin() {
+            const pin = document.getElementById('pin').value;
+            // Validate via Firebase rules or function, but since rule, assume set data with pin and check success
+            try {
+                await db.ref('/admin/pin').set(pin);
+                // If success (rule allows only if pin correct), set localStorage
+                localStorage.setItem('admin', true);
+                document.getElementById('admin-sections').style.display = 'block';
+            } catch (e) {
+                alert('Invalid PIN');
+            }
+        }
+        if (localStorage.getItem('admin')) {
+            document.getElementById('admin-sections').style.display = 'block';
+        }
 
-function setLamp(state){
-  set(ref(db,'/PJU/state'), state);
-}
+        // Set Lamp
+        function setLamp(state) {
+            db.ref('/lamp/state').set(state);
+        }
 
-onValue(ref(db,'/PJU/state'), (snapshot)=>{
-  if(snapshot.exists()){
-    document.getElementById("status").innerText =
-      snapshot.val() ? "Lamp ON (Online)" : "Lamp OFF (Online)";
-  }
-});
-</script>
+        // Jadwal: listen to path, render table
+        db.ref('/jadwal').on('value', snap => {
+            const data = snap.val();
+            // Render dynamic table, add/edit/delete buttons with db updates
+        });
 
+        // Similar for buzzer, setting
+
+        // Disconnect WiFi
+        function disconnectWiFi() {
+            db.ref('/device/disconnect').set(true);
+        }
+
+        // Deteksi Terang Gelap
+        let lastUpdate = 0;
+        async function detectBrightness() {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.play();
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            setInterval(() => {
+                if (Date.now() - lastUpdate < 3000) return;  // Debounce
+                ctx.drawImage(video, 0, 0, 320, 240);
+                const data = ctx.getImageData(0, 0, 320, 240).data;
+                let brightness = 0;
+                for (let i = 0; i < data.length; i += 4) {
+                    brightness += (data[i] + data[i+1] + data[i+2]) / 3;
+                }
+                brightness /= (data.length / 4);
+                const threshold = 100;  // Configurable
+                db.ref('/lamp/state').set(brightness < threshold);
+                lastUpdate = Date.now();
+            }, 1000);
+        }
+        detectBrightness();
+
+        // Modular JS: can split into functions
+    </script>
 </body>
 </html>
