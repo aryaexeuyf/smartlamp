@@ -3,201 +3,388 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Smart PJU - AryaProject</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-database-compat.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <title>Smart Control PJU Outdoor</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap');
-        body { font-family: 'Inter', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        .digital-font { font-family: 'Orbitron', sans-serif; }
-        .loader { border-top-color: #38bdf8; animation: spinner 1.5s linear infinite; }
-        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .status-online { color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.5); }
-        .status-offline { color: #f87171; text-shadow: 0 0 10px rgba(248, 113, 113, 0.5); }
+        /* --- MODERN CSS --- */
+        :root {
+            --primary: #00e5ff;
+            --dark: #0f172a;
+            --surface: #1e293b;
+            --text: #f8fafc;
+            --danger: #ef4444;
+            --success: #22c55e;
+        }
+        body {
+            margin: 0;
+            background-color: var(--dark);
+            color: var(--text);
+            font-family: 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Loading Screen */
+        #loading {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease;
+        }
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+            animation: pulse 2s infinite;
+        }
+        .sub-logo { margin-top: 10px; letter-spacing: 2px; opacity: 0.8; }
+
+        @keyframes pulse { 0% { opacity: 0.8; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.8; transform: scale(1); } }
+
+        /* App Container */
+        #app { display: none; max-width: 600px; margin: 0 auto; padding: 20px; }
+        
+        /* Header */
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; border-bottom: 1px solid #334155; padding-bottom: 15px;
+        }
+        .status-badge {
+            padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .online { background: rgba(34, 197, 94, 0.2); color: var(--success); }
+        .offline { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        /* Main Switch */
+        .control-panel {
+            text-align: center; padding: 40px 20px;
+            background: var(--surface); border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        .power-btn {
+            width: 150px; height: 150px; border-radius: 50%;
+            border: none; background: #334155; color: white;
+            font-size: 2rem; font-weight: bold; cursor: pointer;
+            box-shadow: 0 0 0 10px #1e293b;
+            transition: all 0.3s ease; outline: none;
+        }
+        .power-btn.active {
+            background: var(--primary);
+            color: var(--dark);
+            box-shadow: 0 0 30px var(--primary), 0 0 0 10px rgba(0, 229, 255, 0.2);
+        }
+        .power-btn:active { transform: scale(0.95); }
+
+        /* Admin Section */
+        #admin-section {
+            background: var(--surface); padding: 20px; border-radius: 15px;
+            display: none; margin-top: 20px;
+        }
+        .cam-indicator {
+            padding: 10px; background: #334155; border-radius: 8px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .cam-status { font-weight: bold; }
+        .bright { color: var(--primary); }
+        .dark { color: #fbbf24; } /* Kuning */
+        
+        button.secondary {
+            background: transparent; border: 1px solid #475569; color: #94a3b8;
+            padding: 8px 16px; border-radius: 8px; cursor: pointer; width: 100%;
+            margin-top: 5px; transition: 0.2s;
+        }
+        button.secondary:hover { border-color: var(--text); color: var(--text); }
+
+        /* Login Modal */
+        #login-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); display: none;
+            justify-content: center; align-items: center; z-index: 100;
+        }
+        .login-box {
+            background: var(--surface); padding: 30px; border-radius: 15px;
+            width: 300px; text-align: center;
+        }
+        input {
+            width: 100%; padding: 10px; margin: 10px 0;
+            background: #0f172a; border: 1px solid #334155; color: white;
+            border-radius: 5px;
+        }
+        .primary-btn { background: var(--primary); border: none; padding: 10px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer;}
+
+        /* Watermark */
+        .watermark {
+            text-align: center; font-size: 0.7rem; color: #64748b; margin-top: 30px;
+        }
+
+        /* Hidden elements */
+        .hidden { display: none !important; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center p-4">
+<body>
 
     <!-- Loading Screen -->
-    <div id="loading" class="fixed inset-0 z-50 bg-[#020617] flex flex-col items-center justify-center transition-all duration-1000">
-        <div class="w-24 h-24 border-8 border-slate-800 border-t-sky-500 rounded-full animate-spin mb-6"></div>
-        <h1 class="text-2xl font-bold tracking-widest animate__animated animate__pulse animate__infinite">SMART LAMP OUTDOOR</h1>
-        <p class="text-sky-400 mt-2">Project by AryaTeam</p>
+    <div id="loading">
+        <div class="logo">SMART LAMP</div>
+        <div class="sub-logo">Project by AryaTeam</div>
     </div>
 
-    <!-- Header -->
-    <header class="w-full max-w-lg mt-8 mb-6 text-center animate__animated animate__fadeInDown">
-        <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400">PJU CONTROL CENTER</h2>
-        <div id="connStatus" class="mt-2 text-sm status-offline font-medium italic">Checking connection...</div>
-    </header>
-
-    <!-- Clock Section -->
-    <div class="w-full max-w-lg glass rounded-3xl p-6 mb-6 text-center shadow-2xl animate__animated animate__fadeIn">
-        <div id="time" class="digital-font text-5xl text-sky-400 mb-2">00:00:00</div>
-        <div id="date" class="text-slate-400 text-sm tracking-widest uppercase">SENIN, 01 JANUARI 2024</div>
+    <!-- Login Modal -->
+    <div id="login-modal">
+        <div class="login-box">
+            <h3>Admin Access</h3>
+            <p>Enter PIN</p>
+            <input type="password" id="pinInput" placeholder="•••••••">
+            <button class="primary-btn" onclick="checkLogin()">LOGIN</button>
+            <button class="secondary" onclick="closeLogin()">Cancel</button>
+        </div>
     </div>
 
-    <!-- Main Control -->
-    <main class="w-full max-w-lg space-y-4">
-        <div class="glass rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden">
-            <div id="lampIndicator" class="w-24 h-24 rounded-full bg-slate-800 flex items-center justify-center mb-6 transition-all duration-500 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+    <!-- Main App -->
+    <div id="app">
+        <header>
+            <div>
+                <h2 style="margin:0;">Smart PJU</h2>
+                <small id="wifi-status" class="status-badge offline">
+                    <span id="wifi-icon">📡</span> Connecting...
+                </small>
             </div>
-            <button id="toggleBtn" onclick="toggleLamp()" class="bg-gradient-to-br from-sky-500 to-blue-700 hover:from-sky-400 hover:to-blue-600 text-white px-12 py-4 rounded-full font-bold shadow-lg transform active:scale-95 transition-all text-lg">
-                TURN ON
-            </button>
-            <div class="mt-4 text-xs text-slate-500 italic">Tap to change lamp status</div>
-        </div>
+            <button class="secondary" style="width:auto;" onclick="openLogin()">Admin</button>
+        </header>
 
-        <!-- Admin Section -->
-        <div id="adminPanel" class="hidden animate__animated animate__fadeInUp">
-            <div class="glass rounded-3xl p-6 space-y-4">
-                <h3 class="font-bold border-b border-white/10 pb-2 flex justify-between">
-                    <span>ADMIN SETTINGS</span>
-                    <button onclick="logoutAdmin()" class="text-xs text-red-400">Logout</button>
-                </h3>
-                <div class="grid grid-cols-2 gap-4">
-                    <button class="bg-slate-800 p-4 rounded-2xl text-xs">📅 JADWAL PJU</button>
-                    <button class="bg-slate-800 p-4 rounded-2xl text-xs">🎵 BUZZER TONE</button>
-                    <button class="bg-slate-800 p-4 rounded-2xl text-xs">✨ EFEK FLICKER</button>
-                    <button class="bg-slate-800 p-4 rounded-2xl text-xs" onclick="resetSystem()">⚠️ RESET LAMP</button>
-                </div>
-                <!-- Light Detection Mockup -->
-                <div class="bg-black/20 p-4 rounded-2xl mt-4">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-xs">Cam Light Detection</span>
-                        <span id="lightVal" class="text-xs font-bold text-emerald-400">TERANG</span>
-                    </div>
-                    <div class="h-2 w-full bg-slate-700 rounded-full overflow-hidden">
-                        <div id="lightBar" class="h-full bg-emerald-500 w-full transition-all"></div>
-                    </div>
-                </div>
+        <main>
+            <!-- User Control -->
+            <div class="control-panel">
+                <div class="power-btn" id="powerBtn" onclick="toggleLamp()">OFF</div>
+                <p style="margin-top:15px; opacity:0.7;">Status Lampu</p>
             </div>
-        </div>
 
-        <div id="loginSection" class="text-center py-4">
-            <button onclick="requestAdmin()" class="text-slate-500 text-sm hover:text-sky-400 transition">Admin Login</button>
-        </div>
-    </main>
+            <!-- Admin Section -->
+            <div id="admin-section">
+                <h3>Admin Dashboard</h3>
+                
+                <!-- Camera Feature -->
+                <div class="cam-indicator">
+                    <span>Light Sensor</span>
+                    <span id="cam-status" class="cam-status">Detecting...</span>
+                </div>
+                <button class="secondary" onclick="startCamera()">Enable Auto-Light (Camera)</button>
+                <p style="font-size:0.7rem; color:#aaa;">*Kamera tidak ditampilkan demi privasi. Analisis dilakukan lokal.</p>
 
-    <footer class="mt-auto py-8 text-slate-600 text-xs">
-        Project by <span class="text-slate-400">AryaProject</span> &copy; 2024
-    </footer>
+                <hr style="border-color:#334155; margin: 20px 0;">
+
+                <!-- Other Admin Controls -->
+                <h4>Device Settings</h4>
+                <button class="secondary" onclick="restartDevice()">Restart Device (Disconnect WiFi)</button>
+                <button class="secondary" onclick="logout()">Logout Admin</button>
+            </div>
+        </main>
+
+        <div class="watermark">Project by AryaProject</div>
+    </div>
+
+    <!-- Firebase SDK (Compat for easier usage) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // FIREBASE CONFIGURATION
+        // --- KONFIGURASI FIREBASE ---
         const firebaseConfig = {
             apiKey: "AIzaSyCfRXQKtfSQemzyESufRa-8MGNd_Pi2EeE",
+            authDomain: "lampu-pju-njati.firebaseapp.com",
             databaseURL: "https://lampu-pju-njati-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "lampu-pju-njati"
+            projectId: "lampu-pju-njati",
+            storageBucket: "lampu-pju-njati.firebasestorage.app",
+            messagingSenderId: "1095543830018",
+            appId: "1:1095543830018:web:f6506f68944145869c591b"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let lampStatus = false;
-        const ADMIN_PIN = "RCLED123";
+        // --- STATE ---
+        let lampState = false;
+        let isAdmin = false;
+        const ADMIN_PIN_HASH = "1984123"; // Hash sederhana atau hardcoded check untuk RCLED123
 
-        // DOM Elements
-        const loading = document.getElementById('loading');
-        const connStatus = document.getElementById('connStatus');
-        const timeEl = document.getElementById('time');
-        const dateEl = document.getElementById('date');
-        const lampInd = document.getElementById('lampIndicator');
-        const toggleBtn = document.getElementById('toggleBtn');
+        // --- INIT ---
+        window.onload = function() {
+            // Loading Screen 4 detik
+            setTimeout(() => {
+                document.getElementById('loading').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('app').style.display = 'block';
+                    initFirebase();
+                }, 1000);
+            }, 4000);
 
-        // Loading Timeout
-        setTimeout(() => {
-            loading.style.opacity = '0';
-            setTimeout(() => loading.style.display = 'none', 1000);
-        }, 4000);
-
-        // Realtime Clock
-        function updateTime() {
-            const now = new Date();
-            timeEl.innerText = now.toTimeString().split(' ')[0];
-            dateEl.innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-        }
-        setInterval(updateTime, 1000);
-        updateTime();
-
-        // Firebase Sync
-        const lampRef = db.ref('status/lampu');
-        lampRef.on('value', (snapshot) => {
-            lampStatus = snapshot.val();
-            updateUI();
-            connStatus.innerText = "Your device connected to internet";
-            connStatus.className = "mt-2 text-sm status-online font-medium italic";
-        }, (err) => {
-            connStatus.innerText = "Your device not connected to internet";
-            connStatus.className = "mt-2 text-sm status-offline font-medium italic";
-        });
-
-        function updateUI() {
-            if (lampStatus) {
-                lampInd.classList.remove('bg-slate-800');
-                lampInd.classList.add('bg-yellow-400', 'shadow-[0_0_40px_rgba(250,204,21,0.6)]');
-                toggleBtn.innerText = "TURN OFF";
-                toggleBtn.classList.replace('from-sky-500', 'from-red-500');
-            } else {
-                lampInd.classList.add('bg-slate-800');
-                lampInd.classList.remove('bg-yellow-400', 'shadow-[0_0_40px_rgba(250,204,21,0.6)]');
-                toggleBtn.innerText = "TURN ON";
-                toggleBtn.classList.replace('from-red-500', 'from-sky-500');
+            // Cek Local Storage Admin
+            if(localStorage.getItem('pjuAdmin') === 'true') {
+                isAdmin = true;
+                document.getElementById('admin-section').style.display = 'block';
             }
+        };
+
+        // --- FIREBASE LOGIC ---
+        function initFirebase() {
+            const ref = db.ref('/PJU/lampState');
+            
+            // Mendengarkan perubahan dari ESP
+            ref.on('value', (snapshot) => {
+                const val = snapshot.val();
+                if (val !== null) {
+                    lampState = val;
+                    updateUI();
+                    updateConnectionStatus(true);
+                } else {
+                    updateConnectionStatus(false);
+                }
+            }, (error) => {
+                console.error("Firebase Error:", error);
+                updateConnectionStatus(false);
+            });
         }
 
         function toggleLamp() {
-            db.ref('status/lampu').set(!lampStatus);
+            lampState = !lampState;
+            sendToFirebase();
         }
 
-        // Admin Logic
-        function requestAdmin() {
-            const pin = prompt("Enter Admin PIN:");
-            if (pin === ADMIN_PIN) {
-                localStorage.setItem('pju_admin', 'true');
-                showAdminPanel();
+        function sendToFirebase() {
+            db.ref('/PJU/lampState').set(lampState);
+            updateUI();
+        }
+
+        function updateUI() {
+            const btn = document.getElementById('powerBtn');
+            if(lampState) {
+                btn.innerText = "ON";
+                btn.classList.add('active');
             } else {
-                alert("Wrong PIN!");
+                btn.innerText = "OFF";
+                btn.classList.remove('active');
             }
         }
 
-        function showAdminPanel() {
-            document.getElementById('adminPanel').classList.remove('hidden');
-            document.getElementById('loginSection').classList.add('hidden');
+        function updateConnectionStatus(connected) {
+            const badge = document.getElementById('wifi-status');
+            if(connected) {
+                badge.className = 'status-badge online';
+                badge.innerHTML = '<span id="wifi-icon">📶</span> Device Online';
+            } else {
+                badge.className = 'status-badge offline';
+                badge.innerHTML = '<span id="wifi-icon">⚠️</span> Device Offline';
+            }
         }
 
-        function logoutAdmin() {
-            localStorage.removeItem('pju_admin');
-            location.reload();
+        // --- ADMIN LOGIC ---
+        function openLogin() {
+            if(isAdmin) return; // Sudah login
+            document.getElementById('login-modal').style.display = 'flex';
+        }
+        function closeLogin() {
+            document.getElementById('login-modal').style.display = 'none';
+        }
+        function checkLogin() {
+            const pin = document.getElementById('pinInput').value;
+            // PIN: RCLED123 (Sembunyikan logika di sini)
+            if(pin === "RCLED123") {
+                isAdmin = true;
+                localStorage.setItem('pjuAdmin', 'true');
+                document.getElementById('admin-section').style.display = 'block';
+                closeLogin();
+            } else {
+                alert("PIN Salah!");
+            }
+        }
+        function logout() {
+            isAdmin = false;
+            localStorage.removeItem('pjuAdmin');
+            document.getElementById('admin-section').style.display = 'none';
         }
 
-        // Auto Check Admin on Load
-        if(localStorage.getItem('pju_admin')) showAdminPanel();
+        function restartDevice() {
+            if(confirm("Restart perangkat ESP? Koneksi akan terputus.")) {
+                // Memicu flag restart di Firebase
+                db.ref('/PJU/command').set("restart");
+                alert("Perintah restart dikirim.");
+            }
+        }
 
-        // Camera Light Detection (Simplified Logic)
-        async function startLightDetection() {
+        // --- KAMERA & LIGHT SENSOR ---
+        let video, canvas, ctx;
+        let isCamRunning = false;
+
+        async function startCamera() {
+            if(isCamRunning) return;
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                // Note: Logic deteksi pixel di sini biasanya menggunakan canvas
-                // Karena batasan preview, kita tampilkan indikator simulasi berdasarkan sensor device jika ada
-                console.log("Camera access granted for light detection");
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                
+                // Buat elemen video tersembunyi
+                video = document.createElement('video');
+                video.srcObject = stream;
+                video.play();
+                
+                canvas = document.createElement('canvas');
+                ctx = canvas.getContext('2d');
+                
+                isCamRunning = true;
+                detectBrightness();
+                alert("Kamera aktif. Mendeteksi cahaya...");
             } catch (err) {
-                console.log("Camera permission denied");
+                console.error(err);
+                alert("Gagal akses kamera. Pastikan izinkan akses kamera.");
             }
         }
-        startLightDetection();
 
-        function resetSystem() {
-            if(confirm("Hapus semua data EEPROM dan restart ESP?")) {
-                db.ref('commands/reset').set(true);
-                alert("Reset command sent.");
+        function detectBrightness() {
+            if(!isCamRunning) return;
+
+            // Gambar frame ke canvas
+            canvas.width = 100; // Kecilkan resolusi agar performa tinggi
+            canvas.height = 75;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Ambil data piksel
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            let r, g, b, avg;
+            let colorSum = 0;
+
+            // Loop piksel
+            for(let x = 0, len = data.length; x < len; x+=4) {
+                r = data[x];
+                g = data[x+1];
+                b = data[x+2];
+                avg = Math.floor((r+g+b)/3);
+                colorSum += avg;
             }
+
+            const brightness = Math.floor(colorSum / (canvas.width * canvas.height));
+            const statusEl = document.getElementById('cam-status');
+
+            // Logika Threshold (misal < 100 gelap)
+            if(brightness < 100) {
+                statusEl.innerText = "Gelap (Auto ON)";
+                statusEl.className = "cam-status dark";
+                // Kirim perintah ON hanya jika berbeda (optional debouncing)
+                db.ref('/PJU/lampState').set(true); 
+            } else {
+                statusEl.innerText = "Terang (Auto OFF)";
+                statusEl.className = "cam-status bright";
+                db.ref('/PJU/lampState').set(false);
+            }
+
+            // Ulangi deteksi setiap 1 detik
+            setTimeout(detectBrightness, 1000);
         }
+
     </script>
 </body>
 </html>
