@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Control PJU Lamp Outdoor</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #ff0055;
+            --bg: #0a0a12;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- LOADING SCREEN --- */
+        #loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+        .loader-ring {
+            width: 80px; height: 80px;
+            border: 4px solid transparent;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- MAIN UI --- */
+        .container {
+            padding: 20px;
+            max-width: 480px;
+            margin: 0 auto;
+            opacity: 0;
+            animation: fadeIn 1s 4s forwards; /* Wait for loader */
+        }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+        .subtitle { font-size: 0.8rem; opacity: 0.7; }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        /* --- CONNECTION STATUS --- */
+        .status-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .status-indicator {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: #555;
+            box-shadow: 0 0 5px #555;
+            transition: all 0.3s;
+        }
+        .status-indicator.online { background: #0f0; box-shadow: 0 0 10px #0f0; }
+        .status-indicator.offline { background: #f00; box-shadow: 0 0 10px #f00; }
+
+        /* --- BIG SWITCH --- */
+        .switch-container {
+            text-align: center;
+            padding: 40px 0;
+        }
+        .power-btn {
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            background: #222;
+            border: none;
+            color: #555;
+            font-size: 3rem;
+            cursor: pointer;
+            box-shadow: inset 5px 5px 10px #111, inset -5px -5px 10px #333;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .power-btn.active {
+            color: var(--primary);
+            box-shadow: 0 0 30px var(--primary), inset 5px 5px 10px #111;
+            text-shadow: 0 0 20px var(--primary);
+        }
+        .power-btn:active { transform: scale(0.95); }
+
+        /* --- CAMERA SENSOR --- */
+        #cam-status { font-size: 0.9rem; font-weight: bold; margin-top: 10px; }
+        .sensor-active { color: var(--secondary); animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+        video, canvas { display: none; } /* Hidden processing */
+
+        /* --- ADMIN PANEL --- */
+        .admin-panel { display: none; }
+        .pin-input {
+            width: 100%;
+            padding: 10px;
+            background: #111;
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 5px;
+            text-align: center;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .menu-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .menu-btn:hover { background: var(--primary); color: #000; }
+
+        footer { text-align: center; font-size: 0.7rem; opacity: 0.5; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="loader-ring"></div>
+        <h2 style="margin-top:20px; font-family:'Orbitron'; color:#fff;">SMART LAMP</h2>
+        <p style="font-size:0.8rem; color:#888;">Project by AryaTeam</p>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Smart Control PJU</h1>
+            <div class="subtitle">Internet Control Module</div>
+        </header>
+
+        <!-- Status Card -->
+        <div class="card">
+            <div class="status-box">
+                <span>Device Status:</span>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <i class="fas fa-wifi"></i>
+                    <span id="conn-text">Checking...</span>
+                    <div id="status-dot" class="status-indicator"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Control -->
+        <div class="card switch-container">
+            <button id="powerBtn" class="power-btn" onclick="togglePower()">
+                <i class="fas fa-power-off"></i>
+            </button>
+            <h3 id="lamp-label" style="margin-top:20px;">LAMP OFF</h3>
+        </div>
+
+        <!-- Auto Sensor -->
+        <div class="card">
+            <h3><i class="fas fa-eye"></i> Auto Light Sensor</h3>
+            <p style="font-size:0.8rem; color:#aaa; margin-bottom:10px;">Menggunakan kamera HP untuk mendeteksi cahaya sekitar.</p>
+            <button onclick="startCamera()" class="menu-btn" style="width:100%; background:var(--secondary);">START SENSOR MODE</button>
+            <div id="cam-status">Sensor Inactive</div>
+        </div>
+
+        <!-- Admin Access -->
+        <div class="card">
+            <h3 onclick="toggleAdminUI()" style="cursor:pointer;"><i class="fas fa-user-shield"></i> Admin Access</h3>
+            <div id="admin-login" style="margin-top:15px; display:none;">
+                <input type="password" id="pinInput" class="pin-input" placeholder="ENTER PIN" maxlength="8">
+                <button onclick="checkPin()" class="menu-btn" style="width:100%">UNLOCK</button>
+            </div>
+            
+            <div id="admin-dashboard" class="admin-panel">
+                <p style="color:#0f0; margin-bottom:10px;">ACCESS GRANTED</p>
+                <div class="menu-grid">
+                    <button class="menu-btn"><i class="fas fa-calendar-alt"></i> Jadwal</button>
+                    <button class="menu-btn"><i class="fas fa-music"></i> Buzzer Tone</button>
+                    <button class="menu-btn"><i class="fas fa-cog"></i> Settings</button>
+                    <button class="menu-btn" onclick="resetESP()" style="background:#f00;"><i class="fas fa-skull"></i> Reset ESP</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>Project by AryaProject &copy; 2024</footer>
+    </div>
+
+    <!-- Hidden Video Elements for Sensor -->
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+
+<script>
+    // --- FIREBASE CONFIG ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyCfRXQKtfSQemzyESufRa-8MGNd_Pi2EeE",
+        authDomain: "lampu-pju-njati.firebaseapp.com",
+        databaseURL: "https://lampu-pju-njati-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "lampu-pju-njati",
+        storageBucket: "lampu-pju-njati.firebasestorage.app",
+        messagingSenderId: "1095543830018",
+        appId: "1:1095543830018:web:f6506f68944145869c591b"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // --- VARIABLES ---
+    let isLampOn = false;
+    let isConnected = false;
+
+    // --- LOADING LOGIC ---
+    setTimeout(() => {
+        document.getElementById('loader').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('loader').style.display = 'none';
+        }, 1000);
+    }, 4000);
+
+    // --- REALTIME LISTENER ---
+    const statusRef = db.ref('PJU/status');
+    const commandRef = db.ref('PJU/command');
+    const connectionRef = db.ref('.info/connected');
+
+    // Monitor Firebase Connection
+    connectionRef.on('value', (snap) => {
+        if (snap.val() === true) {
+            document.getElementById('conn-text').innerText = "Connected";
+            document.getElementById('status-dot').className = "status-indicator online";
+        } else {
+            document.getElementById('conn-text').innerText = "Disconnected";
+            document.getElementById('status-dot').className = "status-indicator offline";
+        }
+    });
+
+    // Monitor Lamp Status from ESP
+    statusRef.on('value', (snapshot) => {
+        const val = snapshot.val();
+        isLampOn = val; // Sync local state
+        updateUI(val);
+    });
+
+    function updateUI(status) {
+        const btn = document.getElementById('powerBtn');
+        const label = document.getElementById('lamp-label');
+        if(status) {
+            btn.classList.add('active');
+            label.innerText = "LAMP ON";
+            label.style.color = "#00f2ff";
+        } else {
+            btn.classList.remove('active');
+            label.innerText = "LAMP OFF";
+            label.style.color = "#555";
+        }
+    }
+
+    function togglePower() {
+        // Send opposite command to Firebase
+        commandRef.set(!isLampOn);
+        // Play local click sound if needed
+        if(navigator.vibrate) navigator.vibrate(50);
+    }
+
+    // --- ADMIN LOGIC ---
+    function toggleAdminUI() {
+        const loginDiv = document.getElementById('admin-login');
+        const dashDiv = document.getElementById('admin-dashboard');
+        
+        // If already logged in
+        if (localStorage.getItem('adminAuth') === 'true') {
+            loginDiv.style.display = 'none';
+            dashDiv.style.display = 'block';
+        } else {
+            loginDiv.style.display = (loginDiv.style.display === 'none') ? 'block' : 'none';
+        }
+    }
+
+    function checkPin() {
+        const pin = document.getElementById('pinInput').value;
+        if(pin === "RCLED123") {
+            localStorage.setItem('adminAuth', 'true');
+            document.getElementById('admin-login').style.display = 'none';
+            document.getElementById('admin-dashboard').style.display = 'block';
+            alert("Welcome Admin AryaTeam!");
+        } else {
+            alert("Access Denied!");
+            document.getElementById('pinInput').value = "";
+        }
+    }
+
+    function resetESP() {
+        if(confirm("Dangerous! This will restart ESP remotely.")) {
+            // Logic to send reset command via Firebase
+            db.ref('PJU/reset').set(true);
+        }
+    }
+
+    // --- CAMERA SENSOR LOGIC ---
+    let videoStream = null;
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const statusText = document.getElementById('cam-status');
+
+    async function startCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+            video.srcObject = stream;
+            videoStream = stream;
+            statusText.innerText = "Sensor Active: Monitoring Light...";
+            statusText.classList.add('sensor-active');
+            
+            setInterval(processFrame, 2000); // Check every 2 seconds
+        } catch (err) {
+            alert("Camera permission denied!");
+        }
+    }
+
+    function processFrame() {
+        if (!videoStream) return;
+        
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        let brightness = 0;
+
+        // Calculate average brightness
+        for (let i = 0; i < data.length; i += 4) {
+            brightness += (data[i] + data[i + 1] + data[i + 2]) / 3;
+        }
+        brightness = brightness / (data.length / 4);
+
+        // Threshold (0-255). Below 50 is dark.
+        if (brightness < 50) {
+            statusText.innerText = `Condition: DARK (${Math.floor(brightness)}) -> Sending ON`;
+            if(!isLampOn) commandRef.set(true);
+        } else {
+            statusText.innerText = `Condition: BRIGHT (${Math.floor(brightness)}) -> Sending OFF`;
+            if(isLampOn) commandRef.set(false);
+        }
+    }
+</script>
+</body>
+</html>
+```
+
+### Panduan Instalasi & Keamanan:
+
+1.  **Firebase Database Rules:**
+    Agar aman namun bisa diakses tanpa login email/pass yang rumit di ESP8266, atur "Rules" di Firebase Console menjadi:
+    ```json
+    {
+      "rules": {
+        ".read": true,
+        ".write": true
+      }
+    }
