@@ -1,196 +1,778 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>SmartLamp PJU - AryaProject</title>
-    <!-- Firebase SDK (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartLamp PJU - Control Panel</title>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
-        body{
-            background:radial-gradient(circle at 20% 30%, #0b1622, #030812);
-            min-height:100vh;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            padding:20px;
-            color:#fff
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .dashboard{
-            max-width:1200px;
-            width:100%;
-            background:rgba(10,20,30,0.65);
-            backdrop-filter:blur(20px);
-            -webkit-backdrop-filter:blur(20px);
-            border:1px solid rgba(0,255,200,0.15);
-            border-radius:48px;
-            padding:30px;
-            box-shadow:0 20px 40px rgba(0,0,0,0.6),0 0 0 1px rgba(0,230,200,0.1) inset;
-            transition:all 0.2s
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            min-height: 100vh;
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            padding: 20px;
+            color: #fff;
         }
-        h1,h2{font-weight:500;letter-spacing:-0.02em}
-        h1{font-size:2rem;background:linear-gradient(135deg,#a0ffec,#00c8b0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
-        .sub{color:#8aa5b5;margin-bottom:30px;border-bottom:1px solid #1f3a48;padding-bottom:15px}
-        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-bottom:30px}
-        .card{
-            background:rgba(18,35,48,0.6);
-            border-radius:28px;
-            padding:24px;
-            border:1px solid rgba(64,224,208,0.2);
-            backdrop-filter:blur(12px);
-            transition:0.2s
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
-        .card:hover{border-color:#00c8b0;box-shadow:0 8px 20px rgba(0,200,176,0.2)}
-        .status-led{
-            display:inline-block;
-            width:14px;
-            height:14px;
-            border-radius:14px;
-            margin-right:8px;
-            box-shadow:0 0 10px currentColor
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
-        .online{background:#0f0;color:#0f0}
-        .offline{background:#f00;color:#f00}
-        .rssi-bars{display:flex;align-items:center;gap:4px;margin-top:10px}
-        .bar{width:8px;height:16px;background:#3a5a6a;border-radius:4px;transition:0.2s}
-        .bar.active{background:#00e6b8;box-shadow:0 0 10px #00e6b8}
-        .btn{
-            background:linear-gradient(145deg,#00b8a0,#008c7a);
-            border:none;
-            padding:12px 28px;
-            border-radius:40px;
-            font-weight:600;
-            color:#04181f;
-            font-size:1rem;
-            cursor:pointer;
-            transition:0.15s;
-            box-shadow:0 6px 0 #005f52
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease;
         }
-        .btn:active{transform:translateY(6px);box-shadow:0 2px 0 #005f52}
-        .btn.off{background:linear-gradient(145deg,#5a6a7a,#3a4a5a);box-shadow:0 6px 0 #1e2a32}
-        .countdown-box{background:#04181f;border-radius:20px;padding:16px;text-align:center;margin-top:20px}
-        .countdown-time{font-size:2.5rem;font-weight:700;color:#00ffd0;line-height:1}
-        /* admin hidden panel */
-        #adminPanel{display:none;margin-top:40px}
-        .admin-visible{display:block!important}
-        .schedule-table{width:100%;border-collapse:collapse;margin-top:20px;background:#0a1a24;border-radius:16px;overflow:hidden}
-        .schedule-table th{background:#00a694;color:#021016;padding:12px;font-weight:600}
-        .schedule-table td{padding:12px;border-bottom:1px solid #1e3a44}
-        .watermark{position:fixed;bottom:16px;right:24px;color:rgba(0,230,200,0.25);font-size:14px;font-weight:300;letter-spacing:2px}
-        input,select{background:#1e3a44;border:1px solid #3a7a84;border-radius:40px;padding:10px 18px;color:#fff;margin:6px 0;width:100%}
-        label{color:#b0e6e0;font-size:0.9rem}
-        .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:1000}
-        .modal-content{background:#0b1e28;border-radius:32px;padding:30px;max-width:500px;width:90%}
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            font-size: 3em;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #fff, #a5f3fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-card h3 {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .led {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .led.online {
+            background: #10b981;
+            box-shadow: 0 0 20px #10b981;
+        }
+
+        .led.offline {
+            background: #ef4444;
+            box-shadow: 0 0 20px #ef4444;
+            animation: blink 1s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .wifi-indicator {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 30px;
+        }
+
+        .wifi-bar {
+            width: 6px;
+            background: #10b981;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .wifi-bar:nth-child(1) { height: 30%; }
+        .wifi-bar:nth-child(2) { height: 50%; }
+        .wifi-bar:nth-child(3) { height: 70%; }
+        .wifi-bar:nth-child(4) { height: 100%; }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 18px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-on {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-off {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-admin {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+        }
+
+        .countdown {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .countdown-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .countdown-item h4 {
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        .countdown-time {
+            font-size: 2em;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .admin-panel.active {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: bold;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.9em;
+            border-radius: 8px;
+            margin: 0 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1em;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+        }
+
+        .toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle.active {
+            background: #10b981;
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .toggle.active::after {
+            left: 33px;
+        }
+
+        .pin-input {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pin-input.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .pin-box {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .pin-box h2 {
+            margin-bottom: 20px;
+        }
+
+        .pin-box input {
+            width: 250px;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.2em;
+            text-align: center;
+            letter-spacing: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .countdown {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                min-width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="dashboard">
+    <div class="container">
         <!-- Header -->
-        <h1>⚡ SmartLamp PJU</h1>
-        <div class="sub">by AryaProject · Kontrol & Jadwal Real-time</div>
+        <div class="header">
+            <h1>💡 SmartLamp PJU</h1>
+            <div class="subtitle">Outdoor Professional Control System</div>
+        </div>
 
         <!-- Status Grid -->
-        <div class="grid">
-            <div class="card">
-                <div style="display:flex;justify-content:space-between;align-items:center">
-                    <span style="font-size:1.2rem">ESP-01</span>
-                    <span id="onlineIndicator"><span class="status-led offline"></span> Offline</span>
+        <div class="status-grid">
+            <div class="status-card">
+                <h3>ESP Status</h3>
+                <div class="status-indicator">
+                    <div class="led offline" id="espLed"></div>
+                    <span id="espStatus">Connecting...</span>
                 </div>
-                <div style="margin-top:20px">
-                    <div style="display:flex;justify-content:space-between">
-                        <span>WiFi Signal</span>
-                        <span id="rssiValue">-- dBm</span>
+            </div>
+
+            <div class="status-card">
+                <h3>WiFi Signal</h3>
+                <div class="status-indicator">
+                    <div class="wifi-indicator" id="wifiIndicator">
+                        <div class="wifi-bar"></div>
+                        <div class="wifi-bar"></div>
+                        <div class="wifi-bar"></div>
+                        <div class="wifi-bar"></div>
                     </div>
-                    <div class="rssi-bars" id="rssiBars">
-                        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                    </div>
+                    <span id="wifiStrength">--</span>
                 </div>
             </div>
-            <div class="card">
-                <div style="font-size:1.2rem;margin-bottom:16px">Kontrol Manual</div>
-                <div style="display:flex;gap:16px;flex-wrap:wrap">
-                    <button id="btnOn" class="btn">NYALAKAN</button>
-                    <button id="btnOff" class="btn off">MATIKAN</button>
-                </div>
-                <div style="margin-top:20px;color:#aadddd">Status Relay: <span id="relayStatus">OFF</span></div>
-            </div>
-            <div class="card">
-                <div style="font-size:1.2rem">Jadwal Berikutnya</div>
-                <div class="countdown-box">
-                    <div style="color:#b0ece0">ON dalam</div>
-                    <div class="countdown-time" id="countdownOn">--:--:--</div>
-                    <div style="margin-top:12px;color:#b0ece0">OFF dalam</div>
-                    <div class="countdown-time" id="countdownOff">--:--:--</div>
+
+            <div class="status-card">
+                <h3>Lamp Status</h3>
+                <div class="status-indicator">
+                    <div class="led offline" id="lampLed"></div>
+                    <span id="lampStatus">OFF</span>
                 </div>
             </div>
         </div>
 
-        <!-- Login Admin (Hidden) -->
-        <div id="loginAdmin" style="text-align:right">
-            <span style="color:#4a7a84;cursor:pointer" onclick="promptAdmin()">🔒 Admin</span>
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <h2>💡 Manual Control</h2>
+            <div class="button-group">
+                <button class="btn btn-on" onclick="controlLamp(true)">🔆 TURN ON</button>
+                <button class="btn btn-off" onclick="controlLamp(false)">🌙 TURN OFF</button>
+                <button class="btn btn-admin" onclick="showPinInput()">⚙️ ADMIN</button>
+            </div>
+
+            <div class="countdown">
+                <div class="countdown-item">
+                    <h4>⏰ Next ON</h4>
+                    <div class="countdown-time" id="nextON">--:--:--</div>
+                </div>
+                <div class="countdown-item">
+                    <h4>⏰ Next OFF</h4>
+                    <div class="countdown-time" id="nextOFF">--:--:--</div>
+                </div>
+            </div>
         </div>
 
-        <!-- Admin Panel (Hidden by default) -->
-        <div id="adminPanel">
-            <h2 style="color:#00e6b8;margin-bottom:20px">📋 Panel Admin · Jadwal PJU</h2>
-            <div style="display:flex;gap:16px;margin-bottom:24px">
-                <button class="btn" onclick="openScheduleModal('ON')">+ Tambah Jadwal ON</button>
-                <button class="btn off" onclick="openScheduleModal('OFF')">+ Tambah Jadwal OFF</button>
-                <button class="btn off" style="background:#3a5a6a" onclick="saveAllToFirebase()">💾 Simpan ke Firebase</button>
+        <!-- Admin Panel -->
+        <div class="admin-panel" id="adminPanel">
+            <h2>🔐 Admin Panel</h2>
+            
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('schedules')">📅 Schedules</button>
+                <button class="tab" onclick="switchTab('buzzer')">🔊 Buzzer</button>
+                <button class="tab" onclick="switchTab('settings')">⚙️ Settings</button>
             </div>
-            <!-- Tabel Jadwal -->
-            <div style="overflow-x:auto">
-                <table class="schedule-table" id="scheduleTable">
-                    <thead><tr><th>Mode</th><th>Hari</th><th>Tgl</th><th>Bulan</th><th>Tahun</th><th>Jam:Menit</th><th>Status</th><th>Aksi</th></tr></thead>
-                    <tbody id="scheduleBody"></tbody>
-                </table>
+
+            <!-- Tab: Schedules -->
+            <div class="tab-content active" id="tab-schedules">
+                <div class="button-group">
+                    <button class="btn btn-on" onclick="addSchedule(true)">➕ Add ON Schedule</button>
+                    <button class="btn btn-off" onclick="addSchedule(false)">➕ Add OFF Schedule</button>
+                </div>
+
+                <div style="overflow-x: auto; margin-top: 20px;">
+                    <table id="scheduleTable">
+                        <thead>
+                            <tr>
+                                <th>Mode</th>
+                                <th>Days</th>
+                                <th>Date</th>
+                                <th>Month</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center;">No schedules yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab: Buzzer -->
+            <div class="tab-content" id="tab-buzzer">
+                <div class="form-group">
+                    <label>Buzzer Mode</label>
+                    <select id="buzzerMode" onchange="saveBuzzerMode()">
+                        <option value="0">OFF - No Sound</option>
+                        <option value="1">Button Tone Only</option>
+                        <option value="2">Alarm ON (30s before)</option>
+                        <option value="3">Alarm OFF (30s before)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Buzzer Presets</label>
+                    <select id="buzzerPreset" onchange="testBuzzer()">
+                        <option value="1">Tone 1 - Short Beep</option>
+                        <option value="2">Tone 2 - Double Beep</option>
+                        <option value="3">Tone 3 - Triple Beep</option>
+                        <option value="4">Tone 4 - Rising</option>
+                        <option value="5">Tone 5 - Falling</option>
+                        <option value="6">Tone 6 - Siren</option>
+                        <option value="7">Tone 7 - Melody</option>
+                        <option value="8">Tone 8 - Alert</option>
+                        <option value="9">Tone 9 - Chime</option>
+                        <option value="10">Tone 10 - Bell</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-admin" onclick="testBuzzer()">🔊 Test Buzzer</button>
+            </div>
+
+            <!-- Tab: Settings -->
+            <div class="tab-content" id="tab-settings">
+                <div class="form-group">
+                    <label style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Auto Save (EEPROM + Firebase)</span>
+                        <div class="toggle" id="autoSaveToggle" onclick="toggleAutoSave()"></div>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>Idle Tone (Every 3-10 min)</label>
+                    <select id="idleTone">
+                        <option value="0">Disabled</option>
+                        <option value="1">Random Every 3 min</option>
+                        <option value="2">Random Every 5 min</option>
+                        <option value="3">Random Every 7 min</option>
+                        <option value="4">Random Every 10 min</option>
+                        <option value="5">Sequential Preset</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>LED Animation</label>
+                    <select id="ledAnimation">
+                        <option value="0">OFF - Default</option>
+                        <option value="1">Breathing Effect</option>
+                        <option value="2">Pulse Wave</option>
+                        <option value="3">Rainbow Cycle</option>
+                        <option value="4">Strobe Flash</option>
+                        <option value="5">Smooth Fade</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-admin" onclick="saveSettings()">💾 Save Settings</button>
+                <button class="btn btn-off" style="margin-top: 10px;" onclick="restartESP()">🔄 Restart ESP</button>
+                <button class="btn btn-off" style="margin-top: 10px;" onclick="logout()">🚪 Logout</button>
             </div>
         </div>
-
-        <div class="watermark">by : AryaProject profesional programer</div>
     </div>
 
-    <!-- Modal Form Jadwal -->
-    <div id="scheduleModal" class="modal">
+    <!-- Watermark -->
+    <div class="watermark">
+        by: <strong>AryaProject</strong><br>
+        Professional Programmer
+    </div>
+
+    <!-- PIN Input Modal -->
+    <div class="pin-input" id="pinInput">
+        <div class="pin-box">
+            <h2>🔐 Enter Admin PIN</h2>
+            <input type="password" id="pinField" placeholder="Enter PIN" maxlength="10" onkeypress="checkPinEnter(event)">
+            <div style="margin-top: 20px;">
+                <button class="btn btn-admin" onclick="checkPin()">✓ Login</button>
+                <button class="btn btn-off" style="margin-top: 10px;" onclick="closePinInput()">✕ Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div class="modal" id="scheduleModal">
         <div class="modal-content">
-            <h3 id="modalTitle" style="color:#00e6b8;margin-bottom:20px">Tambah Jadwal</h3>
-            <form id="scheduleForm">
-                <input type="hidden" id="editKey" value="">
+            <h2 id="modalTitle">Add Schedule</h2>
+            
+            <div class="form-group">
                 <label>Mode</label>
-                <select id="mode" disabled>
-                    <option value="ON">ON</option>
-                    <option value="OFF">OFF</option>
+                <select id="schedMode">
+                    <option value="true">ON - Turn Light ON</option>
+                    <option value="false">OFF - Turn Light OFF</option>
                 </select>
-                <label>Hari (pilih multiple)</label>
-                <select id="days" multiple style="height:100px">
-                    <option value="0">Senin</option><option value="1">Selasa</option><option value="2">Rabu</option>
-                    <option value="3">Kamis</option><option value="4">Jumat</option><option value="5">Sabtu</option><option value="6">Minggu</option>
-                </select>
-                <label>Tanggal (1-31, 0 = setiap)</label>
-                <input type="number" id="date" min="0" max="31" value="0">
-                <label>Bulan (1-12, 0 = setiap)</label>
-                <input type="number" id="month" min="0" max="12" value="0">
-                <label>Tahun (contoh 2025, 0 = setiap)</label>
-                <input type="number" id="year" min="0" value="0">
-                <label>Jam (0-23)</label>
-                <input type="number" id="hour" min="0" max="23" required>
-                <label>Menit (0-59)</label>
-                <input type="number" id="minute" min="0" max="59" required>
-                <label style="display:flex;align-items:center;margin-top:12px">
-                    <input type="checkbox" id="enabled" checked style="width:20px;margin-right:10px"> Enabled
-                </label>
-                <div style="display:flex;gap:12px;margin-top:30px">
-                    <button type="button" class="btn" onclick="saveSchedule()">Simpan</button>
-                    <button type="button" class="btn off" onclick="closeModal()">Batal</button>
+            </div>
+
+            <div class="form-group">
+                <label>Days (Multiple Selection)</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="day1" value="1">
+                        <label for="day1">Mon</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="day2" value="2">
+                        <label for="day2">Tue</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="day3" value="4">
+                        <label for="day3">Wed</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="day4" value="8">
+                        <label for="day4">Thu</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="day5" value="16">
+                        <label for="day5">Fri</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="day6" value="32">
+                        <label for="day6">Sat</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="day7" value="64">
+                        <label for="day7">Sun</label>
+                    </div>
                 </div>
-            </form>
+            </div>
+
+            <div class="form-group">
+                <label>Date (1-31, 0 = Any Day)</label>
+                <input type="number" id="schedDate" min="0" max="31" value="0">
+            </div>
+
+            <div class="form-group">
+                <label>Month (1-12, 0 = Any Month)</label>
+                <input type="number" id="schedMonth" min="0" max="12" value="0">
+            </div>
+
+            <div class="form-group">
+                <label>Year (Optional, 0 = Any Year)</label>
+                <input type="number" id="schedYear" min="0" max="2100" value="0">
+            </div>
+
+            <div class="form-group">
+                <label>Time (Hour : Minute)</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="schedHour" min="0" max="23" value="18" placeholder="Hour" style="width: 50%;">
+                    <input type="number" id="schedMinute" min="0" max="59" value="0" placeholder="Minute" style="width: 50%;">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Enable Schedule</span>
+                    <div class="toggle active" id="schedEnabledToggle" onclick="toggleScheduleEnabled()"></div>
+                </label>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-admin" onclick="saveSchedule()" style="flex: 1;">💾 Save</button>
+                <button class="btn btn-off" onclick="closeScheduleModal()" style="flex: 1;">✕ Cancel</button>
+            </div>
         </div>
     </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
-        // ============== FIREBASE INIT ==============
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCfRXQKtfSQemzyESufRa-8MGNd_Pi2EeE",
             authDomain: "lampu-pju-njati.firebaseapp.com",
@@ -200,179 +782,422 @@
             messagingSenderId: "1095543830018",
             appId: "1:1095543830018:web:f6506f68944145869c591b"
         };
+
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        const database = firebase.database();
 
-        // ============== GLOBAL STATE ==============
+        // Global Variables
+        let isAdmin = localStorage.getItem('smartlamp_admin') === 'true';
         let schedules = [];
-        let lastHeartbeat = null;
-        let isAdmin = localStorage.getItem('pju_admin') === 'RCLED123';
+        let currentEditIndex = -1;
+        let scheduleEnabled = true;
+        let espOnline = false;
+        let lampState = false;
+        let lastUpdate = 0;
 
-        // ============== UI UPDATE REAL-TIME ==============
-        const statusRef = db.ref('/status/esp01');
-        statusRef.on('value', (snap) => {
-            const d = snap.val();
-            if (d) {
-                // Online indicator
-                const led = document.getElementById('onlineIndicator');
-                led.innerHTML = d.online ? '<span class="status-led online"></span> Online' : '<span class="status-led offline"></span> Offline';
-                // RSSI
-                document.getElementById('rssiValue').innerText = d.rssi + ' dBm';
-                updateRSSIBars(d.rssi);
-                // Relay status
-                document.getElementById('relayStatus').innerText = d.relay ? 'ON' : 'OFF';
-                // heartbeat time
-                lastHeartbeat = d.timestamp;
+        // Check Admin Status
+        if (isAdmin) {
+            document.getElementById('adminPanel').classList.add('active');
+        }
+
+        // Firebase Listeners
+        database.ref('/status').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                updateStatus(data);
             }
         });
 
-        // Jadwal listener
-        const schedRef = db.ref('/schedules');
-        schedRef.on('value', (snap) => {
+        database.ref('/schedules').on('value', (snapshot) => {
+            const data = snapshot.val();
             schedules = [];
-            snap.forEach(child => {
-                let s = child.val();
-                s.key = child.key;
-                schedules.push(s);
-            });
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    schedules.push({ id: key, ...data[key] });
+                });
+            }
             renderScheduleTable();
-            updateCountdown();
+            updateCountdowns();
         });
 
-        // ============== RSSI BARS ==============
-        function updateRSSIBars(rssi) {
-            let percent = Math.min(100, Math.max(0, (rssi + 100) * 2));
-            let bars = document.querySelectorAll('#rssiBars .bar');
-            bars.forEach((b, i) => {
-                if (i < percent / 20) b.classList.add('active');
-                else b.classList.remove('active');
-            });
+        // Update Status Display
+        function updateStatus(data) {
+            const now = Date.now() / 1000;
+            espOnline = data.lastUpdate && (now - data.lastUpdate) < 30;
+            
+            const espLed = document.getElementById('espLed');
+            const espStatus = document.getElementById('espStatus');
+            
+            if (espOnline) {
+                espLed.className = 'led online';
+                espStatus.textContent = 'Online';
+            } else {
+                espLed.className = 'led offline';
+                espStatus.textContent = 'Offline';
+            }
+
+            // WiFi Signal
+            if (data.rssi) {
+                const rssi = data.rssi;
+                const percent = Math.min(100, Math.max(0, 2 * (rssi + 100)));
+                document.getElementById('wifiStrength').textContent = percent.toFixed(0) + '%';
+                
+                const bars = document.querySelectorAll('.wifi-bar');
+                bars.forEach((bar, i) => {
+                    if (percent > (i * 25)) {
+                        bar.style.opacity = '1';
+                    } else {
+                        bar.style.opacity = '0.2';
+                    }
+                });
+            }
+
+            // Lamp Status
+            lampState = data.relay || false;
+            const lampLed = document.getElementById('lampLed');
+            const lampStatus = document.getElementById('lampStatus');
+            
+            if (lampState) {
+                lampLed.className = 'led online';
+                lampStatus.textContent = 'ON';
+            } else {
+                lampLed.className = 'led offline';
+                lampStatus.textContent = 'OFF';
+            }
         }
 
-        // ============== CONTROL BUTTONS ==============
-        document.getElementById('btnOn').onclick = () => db.ref('/status/esp01/relay').set(true);
-        document.getElementById('btnOff').onclick = () => db.ref('/status/esp01/relay').set(false);
+        // Control Lamp
+        function controlLamp(state) {
+            database.ref('/control/relay').set(state);
+        }
 
-        // ============== COUNTDOWN (REAL-TIME) ==============
-        function updateCountdown() {
-            const now = new Date();
-            let nextOn = null, nextOff = null;
-            schedules.forEach(s => {
-                if (!s.enabled) return;
-                let scheduleTime = getNextScheduleTime(s, now);
-                if (!scheduleTime) return;
-                if (s.mode === true || s.mode === 'ON') {
-                    if (!nextOn || scheduleTime < nextOn) nextOn = scheduleTime;
+        // PIN Input
+        function showPinInput() {
+            if (isAdmin) return;
+            document.getElementById('pinInput').classList.add('active');
+            document.getElementById('pinField').value = '';
+            document.getElementById('pinField').focus();
+        }
+
+        function closePinInput() {
+            document.getElementById('pinInput').classList.remove('active');
+        }
+
+        function checkPinEnter(event) {
+            if (event.key === 'Enter') {
+                checkPin();
+            }
+        }
+
+        function checkPin() {
+            const pin = document.getElementById('pinField').value;
+            if (pin === 'RCLED123') {
+                isAdmin = true;
+                localStorage.setItem('smartlamp_admin', 'true');
+                document.getElementById('adminPanel').classList.add('active');
+                closePinInput();
+                alert('✅ Welcome Admin!');
+            } else {
+                alert('❌ Invalid PIN!');
+                document.getElementById('pinField').value = '';
+            }
+        }
+
+        function logout() {
+            if (confirm('Logout from admin panel?')) {
+                isAdmin = false;
+                localStorage.removeItem('smartlamp_admin');
+                document.getElementById('adminPanel').classList.remove('active');
+            }
+        }
+
+        // Tab Switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        // Schedule Functions
+        function addSchedule(isON) {
+            currentEditIndex = -1;
+            document.getElementById('modalTitle').textContent = 'Add ' + (isON ? 'ON' : 'OFF') + ' Schedule';
+            document.getElementById('schedMode').value = isON;
+            
+            // Reset form
+            for (let i = 1; i <= 7; i++) {
+                document.getElementById('day' + i).checked = false;
+            }
+            document.getElementById('schedDate').value = 0;
+            document.getElementById('schedMonth').value = 0;
+            document.getElementById('schedYear').value = 0;
+            document.getElementById('schedHour').value = 18;
+            document.getElementById('schedMinute').value = 0;
+            scheduleEnabled = true;
+            document.getElementById('schedEnabledToggle').classList.add('active');
+            
+            document.getElementById('scheduleModal').classList.add('active');
+        }
+
+        function editSchedule(index) {
+            currentEditIndex = index;
+            const sched = schedules[index];
+            
+            document.getElementById('modalTitle').textContent = 'Edit Schedule';
+            document.getElementById('schedMode').value = sched.isON;
+            
+            // Set days
+            for (let i = 1; i <= 7; i++) {
+                const bit = Math.pow(2, i - 1);
+                document.getElementById('day' + i).checked = (sched.days & bit) !== 0;
+            }
+            
+            document.getElementById('schedDate').value = sched.date || 0;
+            document.getElementById('schedMonth').value = sched.month || 0;
+            document.getElementById('schedYear').value = sched.year || 0;
+            document.getElementById('schedHour').value = sched.hour;
+            document.getElementById('schedMinute').value = sched.minute;
+            
+            scheduleEnabled = sched.enabled;
+            if (scheduleEnabled) {
+                document.getElementById('schedEnabledToggle').classList.add('active');
+            } else {
+                document.getElementById('schedEnabledToggle').classList.remove('active');
+            }
+            
+            document.getElementById('scheduleModal').classList.add('active');
+        }
+
+        function closeScheduleModal() {
+            document.getElementById('scheduleModal').classList.remove('active');
+        }
+
+        function toggleScheduleEnabled() {
+            scheduleEnabled = !scheduleEnabled;
+            const toggle = document.getElementById('schedEnabledToggle');
+            if (scheduleEnabled) {
+                toggle.classList.add('active');
+            } else {
+                toggle.classList.remove('active');
+            }
+        }
+
+        function saveSchedule() {
+            let days = 0;
+            for (let i = 1; i <= 7; i++) {
+                if (document.getElementById('day' + i).checked) {
+                    days |= Math.pow(2, i - 1);
+                }
+            }
+
+            const schedule = {
+                enabled: scheduleEnabled,
+                isON: document.getElementById('schedMode').value === 'true',
+                days: days,
+                date: parseInt(document.getElementById('schedDate').value),
+                month: parseInt(document.getElementById('schedMonth').value),
+                year: parseInt(document.getElementById('schedYear').value),
+                hour: parseInt(document.getElementById('schedHour').value),
+                minute: parseInt(document.getElementById('schedMinute').value)
+            };
+
+            if (currentEditIndex >= 0) {
+                // Update existing
+                database.ref('/schedules/' + schedules[currentEditIndex].id).update(schedule);
+            } else {
+                // Add new
+                database.ref('/schedules').push(schedule);
+            }
+
+            closeScheduleModal();
+        }
+
+        function deleteSchedule(index) {
+            if (confirm('Delete this schedule?')) {
+                database.ref('/schedules/' + schedules[index].id).remove();
+            }
+        }
+
+        function toggleSchedule(index) {
+            const sched = schedules[index];
+            database.ref('/schedules/' + sched.id).update({ enabled: !sched.enabled });
+        }
+
+        function renderScheduleTable() {
+            const tbody = document.getElementById('scheduleBody');
+            
+            if (schedules.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No schedules yet</td></tr>';
+                return;
+            }
+
+            const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            
+            tbody.innerHTML = schedules.map((sched, index) => {
+                let daysText = '';
+                if (sched.days === 0) {
+                    daysText = 'Every Day';
                 } else {
-                    if (!nextOff || scheduleTime < nextOff) nextOff = scheduleTime;
+                    let selectedDays = [];
+                    for (let i = 0; i < 7; i++) {
+                        if (sched.days & (1 << i)) {
+                            selectedDays.push(dayNames[i]);
+                        }
+                    }
+                    daysText = selectedDays.join(', ');
+                }
+
+                const dateText = sched.date === 0 ? 'Any' : sched.date;
+                const monthText = sched.month === 0 ? 'Any' : sched.month;
+                const timeText = String(sched.hour).padStart(2, '0') + ':' + String(sched.minute).padStart(2, '0');
+                
+                return `
+                    <tr>
+                        <td style="color: ${sched.isON ? '#10b981' : '#ef4444'}; font-weight: bold;">
+                            ${sched.isON ? '🔆 ON' : '🌙 OFF'}
+                        </td>
+                        <td>${daysText}</td>
+                        <td>${dateText}</td>
+                        <td>${monthText}</td>
+                        <td>${timeText}</td>
+                        <td>
+                            <div class="toggle ${sched.enabled ? 'active' : ''}" onclick="toggleSchedule(${index})"></div>
+                        </td>
+                        <td>
+                            <button class="btn btn-admin btn-small" onclick="editSchedule(${index})">✏️</button>
+                            <button class="btn btn-off btn-small" onclick="deleteSchedule(${index})">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Countdown
+        function updateCountdowns() {
+            const now = new Date();
+            
+            let nextON = null;
+            let nextOFF = null;
+
+            schedules.forEach(sched => {
+                if (!sched.enabled) return;
+
+                const schedTime = new Date();
+                schedTime.setHours(sched.hour, sched.minute, 0, 0);
+
+                if (schedTime < now) {
+                    schedTime.setDate(schedTime.getDate() + 1);
+                }
+
+                if (sched.isON) {
+                    if (!nextON || schedTime < nextON) {
+                        nextON = schedTime;
+                    }
+                } else {
+                    if (!nextOFF || schedTime < nextOFF) {
+                        nextOFF = schedTime;
+                    }
                 }
             });
-            document.getElementById('countdownOn').innerText = nextOn ? formatCountdown(nextOn - now) : '--:--:--';
-            document.getElementById('countdownOff').innerText = nextOff ? formatCountdown(nextOff - now) : '--:--:--';
-            requestAnimationFrame(updateCountdown);
+
+            // Update ON countdown
+            if (nextON) {
+                const diff = nextON - now;
+                const hours = Math.floor(diff / 3600000);
+                const minutes = Math.floor((diff % 3600000) / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                document.getElementById('nextON').textContent = 
+                    String(hours).padStart(2, '0') + ':' + 
+                    String(minutes).padStart(2, '0') + ':' + 
+                    String(seconds).padStart(2, '0');
+            } else {
+                document.getElementById('nextON').textContent = 'No Schedule';
+            }
+
+            // Update OFF countdown
+            if (nextOFF) {
+                const diff = nextOFF - now;
+                const hours = Math.floor(diff / 3600000);
+                const minutes = Math.floor((diff % 3600000) / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                document.getElementById('nextOFF').textContent = 
+                    String(hours).padStart(2, '0') + ':' + 
+                    String(minutes).padStart(2, '0') + ':' + 
+                    String(seconds).padStart(2, '0');
+            } else {
+                document.getElementById('nextOFF').textContent = 'No Schedule';
+            }
         }
 
-        function getNextScheduleTime(s, now) {
-            // simplified: find next occurrence based on day/date/hour/minute
-            // (full implementation >100 lines, disingkat untuk kebutuhan demo)
-            return null; 
-        }
-        function formatCountdown(ms) { return '00:00:00'; } // real implementation skipped for brevity
-
-        // ============== ADMIN AUTH ==============
-        function promptAdmin() {
-            let pin = prompt('Masukkan PIN Admin:');
-            if (pin === 'RCLED123') {
-                localStorage.setItem('pju_admin', 'RCLED123');
-                isAdmin = true;
-                document.getElementById('adminPanel').style.display = 'block';
-            } else { alert('PIN salah!'); }
-        }
-        if (isAdmin) document.getElementById('adminPanel').style.display = 'block';
-
-        // ============== SCHEDULE TABLE RENDER ==============
-        function renderScheduleTable() {
-            let tbody = document.getElementById('scheduleBody');
-            tbody.innerHTML = '';
-            schedules.sort((a,b)=> (b.createdAt||0) - (a.createdAt||0));
-            schedules.forEach(s => {
-                let row = tbody.insertRow();
-                row.insertCell().innerText = s.mode===true||s.mode==='ON'? 'ON':'OFF';
-                row.insertCell().innerText = decodeDays(s.days||0);
-                row.insertCell().innerText = s.date||'*';
-                row.insertCell().innerText = s.month||'*';
-                row.insertCell().innerText = s.year||'*';
-                row.insertCell().innerText = `${s.hour||0}:${String(s.minute||0).padStart(2,'0')}`;
-                row.insertCell().innerHTML = s.enabled ? '<span style="color:#0f0">Enabled</span>' : '<span style="color:#f66">Disabled</span>';
-                row.insertCell().innerHTML = `<button onclick="editSchedule('${s.key}')">✏️</button> <button onclick="deleteSchedule('${s.key}')">🗑️</button>`;
-            });
+        // Buzzer Functions
+        function saveBuzzerMode() {
+            const mode = document.getElementById('buzzerMode').value;
+            database.ref('/settings/buzzerMode').set(parseInt(mode));
         }
 
-        function decodeDays(bitmask) {
-            if (bitmask==0) return 'Setiap Hari';
-            let days=['Sen','Sel','Rab','Kam','Jum','Sab','Min'];
-            let active=[];
-            for(let i=0;i<7;i++) if(bitmask>>i &1) active.push(days[i]);
-            return active.join(',');
+        function testBuzzer() {
+            const preset = document.getElementById('buzzerPreset').value;
+            database.ref('/control/testBuzzer').set(parseInt(preset));
         }
 
-        // ============== MODAL JADWAL ==============
-        window.openScheduleModal = (mode) => {
-            document.getElementById('modalTitle').innerText = 'Tambah Jadwal ' + mode;
-            document.getElementById('mode').value = mode;
-            document.getElementById('editKey').value = '';
-            document.getElementById('days').value = [];
-            document.getElementById('date').value = 0;
-            document.getElementById('month').value = 0;
-            document.getElementById('year').value = 0;
-            document.getElementById('hour').value = 18;
-            document.getElementById('minute').value = 0;
-            document.getElementById('enabled').checked = true;
-            document.getElementById('scheduleModal').style.display = 'flex';
-        };
+        // Settings Functions
+        function toggleAutoSave() {
+            const toggle = document.getElementById('autoSaveToggle');
+            const isActive = toggle.classList.contains('active');
+            
+            if (isActive) {
+                toggle.classList.remove('active');
+                database.ref('/settings/autoSave').set(false);
+            } else {
+                toggle.classList.add('active');
+                database.ref('/settings/autoSave').set(true);
+            }
+        }
 
-        window.editSchedule = (key) => {
-            let s = schedules.find(x=>x.key===key);
-            if(!s) return;
-            document.getElementById('modalTitle').innerText = 'Edit Jadwal';
-            document.getElementById('mode').value = (s.mode===true||s.mode==='ON')?'ON':'OFF';
-            document.getElementById('editKey').value = key;
-            // days: set multiple
-            let dayOpts = document.getElementById('days').options;
-            for(let i=0;i<dayOpts.length;i++) dayOpts[i].selected = (s.days>>i)&1;
-            document.getElementById('date').value = s.date||0;
-            document.getElementById('month').value = s.month||0;
-            document.getElementById('year').value = s.year||0;
-            document.getElementById('hour').value = s.hour||0;
-            document.getElementById('minute').value = s.minute||0;
-            document.getElementById('enabled').checked = s.enabled;
-            document.getElementById('scheduleModal').style.display = 'flex';
-        };
+        function saveSettings() {
+            const idleTone = document.getElementById('idleTone').value;
+            const ledAnimation = document.getElementById('ledAnimation').value;
+            
+            database.ref('/settings/idleTone').set(parseInt(idleTone));
+            database.ref('/settings/ledAnimation').set(parseInt(ledAnimation));
+            
+            alert('✅ Settings saved!');
+        }
 
-        window.saveSchedule = () => {
-            let daysMask = 0;
-            let daySelect = document.getElementById('days').selectedOptions;
-            for(let opt of daySelect) daysMask |= 1 << parseInt(opt.value);
-            let scheduleData = {
-                mode: document.getElementById('mode').value === 'ON' ? true : false,
-                days: daysMask,
-                date: parseInt(document.getElementById('date').value) || 0,
-                month: parseInt(document.getElementById('month').value) || 0,
-                year: parseInt(document.getElementById('year').value) || 0,
-                hour: parseInt(document.getElementById('hour').value),
-                minute: parseInt(document.getElementById('minute').value),
-                enabled: document.getElementById('enabled').checked,
-                createdAt: firebase.database.ServerValue.TIMESTAMP
-            };
-            let key = document.getElementById('editKey').value;
-            if(key) db.ref('/schedules/'+key).update(scheduleData);
-            else db.ref('/schedules').push(scheduleData);
-            closeModal();
-        };
+        function restartESP() {
+            if (confirm('Restart ESP device?')) {
+                database.ref('/control/restart').set(true);
+                alert('✅ Restart command sent!');
+            }
+        }
 
-        window.deleteSchedule = (key) => { if(confirm('Hapus jadwal?')) db.ref('/schedules/'+key).remove(); };
-        function closeModal() { document.getElementById('scheduleModal').style.display = 'none'; }
-        window.saveAllToFirebase = () => { alert('Sinkronisasi manual via Firebase otomatis'); };
+        // Load settings on init
+        database.ref('/settings').once('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                if (data.buzzerMode !== undefined) {
+                    document.getElementById('buzzerMode').value = data.buzzerMode;
+                }
+                if (data.autoSave !== undefined) {
+                    if (data.autoSave) {
+                        document.getElementById('autoSaveToggle').classList.add('active');
+                    } else {
+                        document.getElementById('autoSaveToggle').classList.remove('active');
+                    }
+                }
+                if (data.idleTone !== undefined) {
+                    document.getElementById('idleTone').value = data.idleTone;
+                }
+                if (data.ledAnimation !== undefined) {
+                    document.getElementById('ledAnimation').value = data.ledAnimation;
+                }
+            }
+        });
+
+        // Update countdowns every second
+        setInterval(updateCountdowns, 1000);
     </script>
 </body>
 </html>
