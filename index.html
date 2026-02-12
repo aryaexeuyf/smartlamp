@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartLamp PJU - Control Panel</title>
+    <title>SmartLamp PJU - Panel Kontrol</title>
     <style>
         * {
             margin: 0;
@@ -61,6 +61,25 @@
             font-size: 1.2em;
             opacity: 0.9;
         }
+
+        .debug-info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .debug-info .log {
+            margin: 3px 0;
+        }
+
+        .debug-info .log.success { color: #10b981; }
+        .debug-info .log.error { color: #ef4444; }
+        .debug-info .log.info { color: #3b82f6; }
 
         .status-grid {
             display: grid;
@@ -499,21 +518,26 @@
         <!-- Header -->
         <div class="header">
             <h1>💡 SmartLamp PJU</h1>
-            <div class="subtitle">Outdoor Professional Control System</div>
+            <div class="subtitle">Sistem Kontrol Lampu Profesional</div>
+        </div>
+
+        <!-- Debug Info -->
+        <div class="debug-info" id="debugInfo">
+            <div class="log info">🔄 Menginisialisasi sistem...</div>
         </div>
 
         <!-- Status Grid -->
         <div class="status-grid">
             <div class="status-card">
-                <h3>ESP Status</h3>
+                <h3>Status ESP</h3>
                 <div class="status-indicator">
                     <div class="led offline" id="espLed"></div>
-                    <span id="espStatus">Connecting...</span>
+                    <span id="espStatus">Menghubungkan...</span>
                 </div>
             </div>
 
             <div class="status-card">
-                <h3>WiFi Signal</h3>
+                <h3>Sinyal WiFi</h3>
                 <div class="status-indicator">
                     <div class="wifi-indicator" id="wifiIndicator">
                         <div class="wifi-bar"></div>
@@ -526,30 +550,30 @@
             </div>
 
             <div class="status-card">
-                <h3>Lamp Status</h3>
+                <h3>Status Lampu</h3>
                 <div class="status-indicator">
                     <div class="led offline" id="lampLed"></div>
-                    <span id="lampStatus">OFF</span>
+                    <span id="lampStatus">MATI</span>
                 </div>
             </div>
         </div>
 
         <!-- Control Panel -->
         <div class="control-panel">
-            <h2>💡 Manual Control</h2>
+            <h2>💡 Kontrol Manual</h2>
             <div class="button-group">
-                <button class="btn btn-on" onclick="controlLamp(true)">🔆 TURN ON</button>
-                <button class="btn btn-off" onclick="controlLamp(false)">🌙 TURN OFF</button>
-                <button class="btn btn-admin" onclick="showPinInput()">⚙️ ADMIN</button>
+                <button class="btn btn-on" onclick="kontrolLampu(true)">🔆 NYALAKAN</button>
+                <button class="btn btn-off" onclick="kontrolLampu(false)">🌙 MATIKAN</button>
+                <button class="btn btn-admin" onclick="tampilkanPIN()">⚙️ ADMIN</button>
             </div>
 
             <div class="countdown">
                 <div class="countdown-item">
-                    <h4>⏰ Next ON</h4>
+                    <h4>⏰ Jadwal ON Berikutnya</h4>
                     <div class="countdown-time" id="nextON">--:--:--</div>
                 </div>
                 <div class="countdown-item">
-                    <h4>⏰ Next OFF</h4>
+                    <h4>⏰ Jadwal OFF Berikutnya</h4>
                     <div class="countdown-time" id="nextOFF">--:--:--</div>
                 </div>
             </div>
@@ -557,37 +581,37 @@
 
         <!-- Admin Panel -->
         <div class="admin-panel" id="adminPanel">
-            <h2>🔐 Admin Panel</h2>
+            <h2>🔐 Panel Admin</h2>
             
             <div class="tabs">
-                <button class="tab active" onclick="switchTab('schedules')">📅 Schedules</button>
+                <button class="tab active" onclick="switchTab('jadwal')">📅 Jadwal</button>
                 <button class="tab" onclick="switchTab('buzzer')">🔊 Buzzer</button>
-                <button class="tab" onclick="switchTab('settings')">⚙️ Settings</button>
+                <button class="tab" onclick="switchTab('pengaturan')">⚙️ Pengaturan</button>
             </div>
 
-            <!-- Tab: Schedules -->
-            <div class="tab-content active" id="tab-schedules">
+            <!-- Tab: Jadwal -->
+            <div class="tab-content active" id="tab-jadwal">
                 <div class="button-group">
-                    <button class="btn btn-on" onclick="addSchedule(true)">➕ Add ON Schedule</button>
-                    <button class="btn btn-off" onclick="addSchedule(false)">➕ Add OFF Schedule</button>
+                    <button class="btn btn-on" onclick="tambahJadwal(true)">➕ Tambah Jadwal ON</button>
+                    <button class="btn btn-off" onclick="tambahJadwal(false)">➕ Tambah Jadwal OFF</button>
                 </div>
 
                 <div style="overflow-x: auto; margin-top: 20px;">
-                    <table id="scheduleTable">
+                    <table id="tabelJadwal">
                         <thead>
                             <tr>
                                 <th>Mode</th>
-                                <th>Days</th>
-                                <th>Date</th>
-                                <th>Month</th>
-                                <th>Time</th>
+                                <th>Hari</th>
+                                <th>Tanggal</th>
+                                <th>Bulan</th>
+                                <th>Waktu</th>
                                 <th>Status</th>
-                                <th>Actions</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="scheduleBody">
+                        <tbody id="bodyJadwal">
                             <tr>
-                                <td colspan="7" style="text-align: center;">No schedules yet</td>
+                                <td colspan="7" style="text-align: center;">Belum ada jadwal</td>
                             </tr>
                         </tbody>
                     </table>
@@ -597,36 +621,36 @@
             <!-- Tab: Buzzer -->
             <div class="tab-content" id="tab-buzzer">
                 <div class="form-group">
-                    <label>Buzzer Mode</label>
-                    <select id="buzzerMode" onchange="saveBuzzerMode()">
-                        <option value="0">OFF - No Sound</option>
-                        <option value="1">Button Tone Only</option>
-                        <option value="2">Alarm ON (30s before)</option>
-                        <option value="3">Alarm OFF (30s before)</option>
+                    <label>Mode Buzzer</label>
+                    <select id="buzzerMode" onchange="simpanModeBuzzer()">
+                        <option value="0">MATI - Tanpa Suara</option>
+                        <option value="1">Nada Tombol Saja</option>
+                        <option value="2">Alarm ON (30 detik sebelumnya)</option>
+                        <option value="3">Alarm OFF (30 detik sebelumnya)</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>Buzzer Presets</label>
-                    <select id="buzzerPreset" onchange="testBuzzer()">
-                        <option value="1">Tone 1 - Short Beep</option>
-                        <option value="2">Tone 2 - Double Beep</option>
-                        <option value="3">Tone 3 - Triple Beep</option>
-                        <option value="4">Tone 4 - Rising</option>
-                        <option value="5">Tone 5 - Falling</option>
-                        <option value="6">Tone 6 - Siren</option>
-                        <option value="7">Tone 7 - Melody</option>
-                        <option value="8">Tone 8 - Alert</option>
-                        <option value="9">Tone 9 - Chime</option>
-                        <option value="10">Tone 10 - Bell</option>
+                    <label>Preset Buzzer</label>
+                    <select id="buzzerPreset">
+                        <option value="1">Nada 1 - Beep Pendek</option>
+                        <option value="2">Nada 2 - Double Beep</option>
+                        <option value="3">Nada 3 - Triple Beep</option>
+                        <option value="4">Nada 4 - Naik</option>
+                        <option value="5">Nada 5 - Turun</option>
+                        <option value="6">Nada 6 - Sirene</option>
+                        <option value="7">Nada 7 - Melodi</option>
+                        <option value="8">Nada 8 - Alert</option>
+                        <option value="9">Nada 9 - Chime</option>
+                        <option value="10">Nada 10 - Bel</option>
                     </select>
                 </div>
 
-                <button class="btn btn-admin" onclick="testBuzzer()">🔊 Test Buzzer</button>
+                <button class="btn btn-admin" onclick="tesBuzzer()">🔊 Tes Buzzer</button>
             </div>
 
-            <!-- Tab: Settings -->
-            <div class="tab-content" id="tab-settings">
+            <!-- Tab: Pengaturan -->
+            <div class="tab-content" id="tab-pengaturan">
                 <div class="form-group">
                     <label style="display: flex; justify-content: space-between; align-items: center;">
                         <span>Auto Save (EEPROM + Firebase)</span>
@@ -635,21 +659,21 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Idle Tone (Every 3-10 min)</label>
+                    <label>Nada Idle (Setiap 3-10 menit)</label>
                     <select id="idleTone">
-                        <option value="0">Disabled</option>
-                        <option value="1">Random Every 3 min</option>
-                        <option value="2">Random Every 5 min</option>
-                        <option value="3">Random Every 7 min</option>
-                        <option value="4">Random Every 10 min</option>
+                        <option value="0">Nonaktif</option>
+                        <option value="1">Random Setiap 3 menit</option>
+                        <option value="2">Random Setiap 5 menit</option>
+                        <option value="3">Random Setiap 7 menit</option>
+                        <option value="4">Random Setiap 10 menit</option>
                         <option value="5">Sequential Preset</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>LED Animation</label>
+                    <label>Animasi LED</label>
                     <select id="ledAnimation">
-                        <option value="0">OFF - Default</option>
+                        <option value="0">MATI - Default</option>
                         <option value="1">Breathing Effect</option>
                         <option value="2">Pulse Wave</option>
                         <option value="3">Rainbow Cycle</option>
@@ -658,9 +682,9 @@
                     </select>
                 </div>
 
-                <button class="btn btn-admin" onclick="saveSettings()">💾 Save Settings</button>
+                <button class="btn btn-admin" onclick="simpanPengaturan()">💾 Simpan Pengaturan</button>
                 <button class="btn btn-off" style="margin-top: 10px;" onclick="restartESP()">🔄 Restart ESP</button>
-                <button class="btn btn-off" style="margin-top: 10px;" onclick="logout()">🚪 Logout</button>
+                <button class="btn btn-off" style="margin-top: 10px;" onclick="logout()">🚪 Keluar</button>
             </div>
         </div>
     </div>
@@ -674,95 +698,98 @@
     <!-- PIN Input Modal -->
     <div class="pin-input" id="pinInput">
         <div class="pin-box">
-            <h2>🔐 Enter Admin PIN</h2>
-            <input type="password" id="pinField" placeholder="Enter PIN" maxlength="10" onkeypress="checkPinEnter(event)">
+            <h2>🔐 Masukkan PIN Admin</h2>
+            <input type="password" id="pinField" placeholder="Masukkan PIN" maxlength="10" onkeypress="cekPINEnter(event)">
             <div style="margin-top: 20px;">
-                <button class="btn btn-admin" onclick="checkPin()">✓ Login</button>
-                <button class="btn btn-off" style="margin-top: 10px;" onclick="closePinInput()">✕ Cancel</button>
+                <button class="btn btn-admin" onclick="cekPIN()">✓ Login</button>
+                <button class="btn btn-off" style="margin-top: 10px;" onclick="tutupPIN()">✕ Batal</button>
             </div>
         </div>
     </div>
 
     <!-- Schedule Modal -->
-    <div class="modal" id="scheduleModal">
+    <div class="modal" id="modalJadwal">
         <div class="modal-content">
-            <h2 id="modalTitle">Add Schedule</h2>
+            <h2 id="judulModal">Tambah Jadwal</h2>
             
             <div class="form-group">
                 <label>Mode</label>
-                <select id="schedMode">
-                    <option value="true">ON - Turn Light ON</option>
-                    <option value="false">OFF - Turn Light OFF</option>
+                <select id="modeJadwal">
+                    <option value="true">ON - Nyalakan Lampu</option>
+                    <option value="false">OFF - Matikan Lampu</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Days (Multiple Selection)</label>
+                <label>Hari (Pilih Multiple)</label>
                 <div class="checkbox-group">
                     <div class="checkbox-item">
-                        <input type="checkbox" id="day1" value="1">
-                        <label for="day1">Mon</label>
+                        <input type="checkbox" id="hari1" value="1">
+                        <label for="hari1">Sen</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="day2" value="2">
-                        <label for="day2">Tue</label>
+                        <input type="checkbox" id="hari2" value="2">
+                        <label for="hari2">Sel</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="day3" value="4">
-                        <label for="day3">Wed</label>
+                        <input type="checkbox" id="hari3" value="4">
+                        <label for="hari3">Rab</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="day4" value="8">
-                        <label for="day4">Thu</label>
+                        <input type="checkbox" id="hari4" value="8">
+                        <label for="hari4">Kam</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="day5" value="16">
-                        <label for="day5">Fri</label>
+                        <input type="checkbox" id="hari5" value="16">
+                        <label for="hari5">Jum</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="day6" value="32">
-                        <label for="day6">Sat</label>
+                        <input type="checkbox" id="hari6" value="32">
+                        <label for="hari6">Sab</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="day7" value="64">
-                        <label for="day7">Sun</label>
+                        <input type="checkbox" id="hari7" value="64">
+                        <label for="hari7">Min</label>
                     </div>
                 </div>
+                <small style="opacity: 0.7; display: block; margin-top: 5px;">
+                    * Kosongkan semua untuk "Setiap Hari"
+                </small>
             </div>
 
             <div class="form-group">
-                <label>Date (1-31, 0 = Any Day)</label>
-                <input type="number" id="schedDate" min="0" max="31" value="0">
+                <label>Tanggal (1-31, 0 = Setiap Tanggal)</label>
+                <input type="number" id="jadwalTanggal" min="0" max="31" value="0">
             </div>
 
             <div class="form-group">
-                <label>Month (1-12, 0 = Any Month)</label>
-                <input type="number" id="schedMonth" min="0" max="12" value="0">
+                <label>Bulan (1-12, 0 = Setiap Bulan)</label>
+                <input type="number" id="jadwalBulan" min="0" max="12" value="0">
             </div>
 
             <div class="form-group">
-                <label>Year (Optional, 0 = Any Year)</label>
-                <input type="number" id="schedYear" min="0" max="2100" value="0">
+                <label>Tahun (Opsional, 0 = Setiap Tahun)</label>
+                <input type="number" id="jadwalTahun" min="0" max="2100" value="0">
             </div>
 
             <div class="form-group">
-                <label>Time (Hour : Minute)</label>
+                <label>Waktu (Jam : Menit)</label>
                 <div style="display: flex; gap: 10px;">
-                    <input type="number" id="schedHour" min="0" max="23" value="18" placeholder="Hour" style="width: 50%;">
-                    <input type="number" id="schedMinute" min="0" max="59" value="0" placeholder="Minute" style="width: 50%;">
+                    <input type="number" id="jadwalJam" min="0" max="23" value="18" placeholder="Jam" style="width: 50%;">
+                    <input type="number" id="jadwalMenit" min="0" max="59" value="0" placeholder="Menit" style="width: 50%;">
                 </div>
             </div>
 
             <div class="form-group">
                 <label style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>Enable Schedule</span>
-                    <div class="toggle active" id="schedEnabledToggle" onclick="toggleScheduleEnabled()"></div>
+                    <span>Aktifkan Jadwal</span>
+                    <div class="toggle active" id="jadwalEnabledToggle" onclick="toggleJadwalEnabled()"></div>
                 </label>
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn btn-admin" onclick="saveSchedule()" style="flex: 1;">💾 Save</button>
-                <button class="btn btn-off" onclick="closeScheduleModal()" style="flex: 1;">✕ Cancel</button>
+                <button class="btn btn-admin" onclick="simpanJadwal()" style="flex: 1;">💾 Simpan</button>
+                <button class="btn btn-off" onclick="tutupModalJadwal()" style="flex: 1;">✕ Batal</button>
             </div>
         </div>
     </div>
@@ -772,7 +799,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
-        // Firebase Configuration
+        // ==================== KONFIGURASI FIREBASE ====================
         const firebaseConfig = {
             apiKey: "AIzaSyCfRXQKtfSQemzyESufRa-8MGNd_Pi2EeE",
             authDomain: "lampu-pju-njati.firebaseapp.com",
@@ -783,47 +810,90 @@
             appId: "1:1095543830018:web:f6506f68944145869c591b"
         };
 
+        // Inisialisasi Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        
+        logDebug('Firebase diinisialisasi', 'success');
 
-        // Global Variables
+        // ==================== VARIABEL GLOBAL ====================
         let isAdmin = localStorage.getItem('smartlamp_admin') === 'true';
-        let schedules = [];
+        let jadwalList = [];
         let currentEditIndex = -1;
-        let scheduleEnabled = true;
+        let jadwalEnabled = true;
         let espOnline = false;
-        let lampState = false;
-        let lastUpdate = 0;
+        let statusLampu = false;
 
-        // Check Admin Status
+        // Cek status admin
         if (isAdmin) {
             document.getElementById('adminPanel').classList.add('active');
+            logDebug('Masuk sebagai Admin', 'success');
         }
 
-        // Firebase Listeners
+        // ==================== FUNGSI DEBUG LOG ====================
+        function logDebug(message, type = 'info') {
+            const debugDiv = document.getElementById('debugInfo');
+            const timestamp = new Date().toLocaleTimeString('id-ID');
+            const logClass = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log ' + logClass;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            debugDiv.appendChild(logEntry);
+            debugDiv.scrollTop = debugDiv.scrollHeight;
+            
+            // Limit log entries
+            const logs = debugDiv.getElementsByClassName('log');
+            if (logs.length > 20) {
+                debugDiv.removeChild(logs[0]);
+            }
+            
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        // ==================== FIREBASE LISTENERS ====================
+        // Listen ke status ESP
         database.ref('/status').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
+                logDebug('Data status diterima dari Firebase', 'success');
                 updateStatus(data);
+            } else {
+                logDebug('Tidak ada data status di Firebase', 'error');
             }
+        }, (error) => {
+            logDebug('Error membaca status: ' + error.message, 'error');
         });
 
+        // Listen ke jadwal
         database.ref('/schedules').on('value', (snapshot) => {
             const data = snapshot.val();
-            schedules = [];
+            jadwalList = [];
+            
             if (data) {
                 Object.keys(data).forEach(key => {
-                    schedules.push({ id: key, ...data[key] });
+                    jadwalList.push({ id: key, ...data[key] });
                 });
+                logDebug(`${jadwalList.length} jadwal dimuat`, 'success');
+            } else {
+                logDebug('Tidak ada jadwal', 'info');
             }
-            renderScheduleTable();
+            
+            renderTabelJadwal();
             updateCountdowns();
+        }, (error) => {
+            logDebug('Error membaca jadwal: ' + error.message, 'error');
         });
 
-        // Update Status Display
+        // ==================== UPDATE STATUS DISPLAY ====================
         function updateStatus(data) {
-            const now = Date.now() / 1000;
-            espOnline = data.lastUpdate && (now - data.lastUpdate) < 30;
+            // Cek ESP Online/Offline
+            const now = Math.floor(Date.now() / 1000);
+            const lastUpdate = data.lastUpdate || 0;
+            const timeDiff = now - lastUpdate;
+            
+            espOnline = timeDiff < 30; // Online jika update < 30 detik
             
             const espLed = document.getElementById('espLed');
             const espStatus = document.getElementById('espStatus');
@@ -831,14 +901,17 @@
             if (espOnline) {
                 espLed.className = 'led online';
                 espStatus.textContent = 'Online';
+                logDebug('ESP Online (update ' + timeDiff + 's lalu)', 'success');
             } else {
                 espLed.className = 'led offline';
                 espStatus.textContent = 'Offline';
+                logDebug('ESP Offline (update ' + timeDiff + 's lalu)', 'error');
             }
 
             // WiFi Signal
             if (data.rssi) {
                 const rssi = data.rssi;
+                // Convert RSSI to percentage (typical range: -100 to -40)
                 const percent = Math.min(100, Math.max(0, 2 * (rssi + 100)));
                 document.getElementById('wifiStrength').textContent = percent.toFixed(0) + '%';
                 
@@ -850,68 +923,87 @@
                         bar.style.opacity = '0.2';
                     }
                 });
+                
+                logDebug(`WiFi RSSI: ${rssi} dBm (${percent.toFixed(0)}%)`, 'info');
             }
 
-            // Lamp Status
-            lampState = data.relay || false;
+            // Status Lampu
+            statusLampu = data.relay || false;
             const lampLed = document.getElementById('lampLed');
             const lampStatus = document.getElementById('lampStatus');
             
-            if (lampState) {
+            if (statusLampu) {
                 lampLed.className = 'led online';
-                lampStatus.textContent = 'ON';
+                lampStatus.textContent = 'NYALA';
+                logDebug('Lampu NYALA', 'success');
             } else {
                 lampLed.className = 'led offline';
-                lampStatus.textContent = 'OFF';
+                lampStatus.textContent = 'MATI';
+                logDebug('Lampu MATI', 'info');
             }
         }
 
-        // Control Lamp
-        function controlLamp(state) {
-            database.ref('/control/relay').set(state);
+        // ==================== KONTROL LAMPU ====================
+        function kontrolLampu(state) {
+            logDebug('Mengirim perintah: ' + (state ? 'NYALAKAN' : 'MATIKAN'), 'info');
+            
+            database.ref('/control/relay').set(state)
+                .then(() => {
+                    logDebug('Perintah terkirim ke Firebase', 'success');
+                })
+                .catch((error) => {
+                    logDebug('Error: ' + error.message, 'error');
+                    alert('Gagal mengirim perintah: ' + error.message);
+                });
         }
 
-        // PIN Input
-        function showPinInput() {
-            if (isAdmin) return;
+        // ==================== PIN INPUT ====================
+        function tampilkanPIN() {
+            if (isAdmin) {
+                logDebug('Sudah login sebagai admin', 'info');
+                return;
+            }
             document.getElementById('pinInput').classList.add('active');
             document.getElementById('pinField').value = '';
             document.getElementById('pinField').focus();
         }
 
-        function closePinInput() {
+        function tutupPIN() {
             document.getElementById('pinInput').classList.remove('active');
         }
 
-        function checkPinEnter(event) {
+        function cekPINEnter(event) {
             if (event.key === 'Enter') {
-                checkPin();
+                cekPIN();
             }
         }
 
-        function checkPin() {
+        function cekPIN() {
             const pin = document.getElementById('pinField').value;
             if (pin === 'RCLED123') {
                 isAdmin = true;
                 localStorage.setItem('smartlamp_admin', 'true');
                 document.getElementById('adminPanel').classList.add('active');
-                closePinInput();
-                alert('✅ Welcome Admin!');
+                tutupPIN();
+                logDebug('Login Admin Berhasil!', 'success');
+                alert('✅ Selamat Datang Admin!');
             } else {
-                alert('❌ Invalid PIN!');
+                logDebug('PIN Salah!', 'error');
+                alert('❌ PIN Salah!');
                 document.getElementById('pinField').value = '';
             }
         }
 
         function logout() {
-            if (confirm('Logout from admin panel?')) {
+            if (confirm('Keluar dari panel admin?')) {
                 isAdmin = false;
                 localStorage.removeItem('smartlamp_admin');
                 document.getElementById('adminPanel').classList.remove('active');
+                logDebug('Logout dari admin', 'info');
             }
         }
 
-        // Tab Switching
+        // ==================== TAB SWITCHING ====================
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -920,184 +1012,213 @@
             document.getElementById('tab-' + tabName).classList.add('active');
         }
 
-        // Schedule Functions
-        function addSchedule(isON) {
+        // ==================== FUNGSI JADWAL ====================
+        function tambahJadwal(isON) {
             currentEditIndex = -1;
-            document.getElementById('modalTitle').textContent = 'Add ' + (isON ? 'ON' : 'OFF') + ' Schedule';
-            document.getElementById('schedMode').value = isON;
+            document.getElementById('judulModal').textContent = 'Tambah Jadwal ' + (isON ? 'ON' : 'OFF');
+            document.getElementById('modeJadwal').value = isON;
             
             // Reset form
             for (let i = 1; i <= 7; i++) {
-                document.getElementById('day' + i).checked = false;
+                document.getElementById('hari' + i).checked = false;
             }
-            document.getElementById('schedDate').value = 0;
-            document.getElementById('schedMonth').value = 0;
-            document.getElementById('schedYear').value = 0;
-            document.getElementById('schedHour').value = 18;
-            document.getElementById('schedMinute').value = 0;
-            scheduleEnabled = true;
-            document.getElementById('schedEnabledToggle').classList.add('active');
+            document.getElementById('jadwalTanggal').value = 0;
+            document.getElementById('jadwalBulan').value = 0;
+            document.getElementById('jadwalTahun').value = 0;
+            document.getElementById('jadwalJam').value = 18;
+            document.getElementById('jadwalMenit').value = 0;
+            jadwalEnabled = true;
+            document.getElementById('jadwalEnabledToggle').classList.add('active');
             
-            document.getElementById('scheduleModal').classList.add('active');
+            document.getElementById('modalJadwal').classList.add('active');
         }
 
-        function editSchedule(index) {
+        function editJadwal(index) {
             currentEditIndex = index;
-            const sched = schedules[index];
+            const jadwal = jadwalList[index];
             
-            document.getElementById('modalTitle').textContent = 'Edit Schedule';
-            document.getElementById('schedMode').value = sched.isON;
+            document.getElementById('judulModal').textContent = 'Edit Jadwal';
+            document.getElementById('modeJadwal').value = jadwal.isON;
             
-            // Set days
+            // Set hari
             for (let i = 1; i <= 7; i++) {
                 const bit = Math.pow(2, i - 1);
-                document.getElementById('day' + i).checked = (sched.days & bit) !== 0;
+                document.getElementById('hari' + i).checked = (jadwal.days & bit) !== 0;
             }
             
-            document.getElementById('schedDate').value = sched.date || 0;
-            document.getElementById('schedMonth').value = sched.month || 0;
-            document.getElementById('schedYear').value = sched.year || 0;
-            document.getElementById('schedHour').value = sched.hour;
-            document.getElementById('schedMinute').value = sched.minute;
+            document.getElementById('jadwalTanggal').value = jadwal.date || 0;
+            document.getElementById('jadwalBulan').value = jadwal.month || 0;
+            document.getElementById('jadwalTahun').value = jadwal.year || 0;
+            document.getElementById('jadwalJam').value = jadwal.hour;
+            document.getElementById('jadwalMenit').value = jadwal.minute;
             
-            scheduleEnabled = sched.enabled;
-            if (scheduleEnabled) {
-                document.getElementById('schedEnabledToggle').classList.add('active');
+            jadwalEnabled = jadwal.enabled;
+            if (jadwalEnabled) {
+                document.getElementById('jadwalEnabledToggle').classList.add('active');
             } else {
-                document.getElementById('schedEnabledToggle').classList.remove('active');
+                document.getElementById('jadwalEnabledToggle').classList.remove('active');
             }
             
-            document.getElementById('scheduleModal').classList.add('active');
+            document.getElementById('modalJadwal').classList.add('active');
         }
 
-        function closeScheduleModal() {
-            document.getElementById('scheduleModal').classList.remove('active');
+        function tutupModalJadwal() {
+            document.getElementById('modalJadwal').classList.remove('active');
         }
 
-        function toggleScheduleEnabled() {
-            scheduleEnabled = !scheduleEnabled;
-            const toggle = document.getElementById('schedEnabledToggle');
-            if (scheduleEnabled) {
+        function toggleJadwalEnabled() {
+            jadwalEnabled = !jadwalEnabled;
+            const toggle = document.getElementById('jadwalEnabledToggle');
+            if (jadwalEnabled) {
                 toggle.classList.add('active');
             } else {
                 toggle.classList.remove('active');
             }
         }
 
-        function saveSchedule() {
+        function simpanJadwal() {
             let days = 0;
             for (let i = 1; i <= 7; i++) {
-                if (document.getElementById('day' + i).checked) {
+                if (document.getElementById('hari' + i).checked) {
                     days |= Math.pow(2, i - 1);
                 }
             }
 
-            const schedule = {
-                enabled: scheduleEnabled,
-                isON: document.getElementById('schedMode').value === 'true',
+            const jadwal = {
+                enabled: jadwalEnabled,
+                isON: document.getElementById('modeJadwal').value === 'true',
                 days: days,
-                date: parseInt(document.getElementById('schedDate').value),
-                month: parseInt(document.getElementById('schedMonth').value),
-                year: parseInt(document.getElementById('schedYear').value),
-                hour: parseInt(document.getElementById('schedHour').value),
-                minute: parseInt(document.getElementById('schedMinute').value)
+                date: parseInt(document.getElementById('jadwalTanggal').value),
+                month: parseInt(document.getElementById('jadwalBulan').value),
+                year: parseInt(document.getElementById('jadwalTahun').value),
+                hour: parseInt(document.getElementById('jadwalJam').value),
+                minute: parseInt(document.getElementById('jadwalMenit').value)
             };
+
+            logDebug('Menyimpan jadwal...', 'info');
 
             if (currentEditIndex >= 0) {
                 // Update existing
-                database.ref('/schedules/' + schedules[currentEditIndex].id).update(schedule);
+                database.ref('/schedules/' + jadwalList[currentEditIndex].id).update(jadwal)
+                    .then(() => {
+                        logDebug('Jadwal berhasil diupdate', 'success');
+                        tutupModalJadwal();
+                    })
+                    .catch((error) => {
+                        logDebug('Error update jadwal: ' + error.message, 'error');
+                        alert('Gagal update jadwal: ' + error.message);
+                    });
             } else {
                 // Add new
-                database.ref('/schedules').push(schedule);
+                database.ref('/schedules').push(jadwal)
+                    .then(() => {
+                        logDebug('Jadwal baru berhasil ditambahkan', 'success');
+                        tutupModalJadwal();
+                    })
+                    .catch((error) => {
+                        logDebug('Error tambah jadwal: ' + error.message, 'error');
+                        alert('Gagal tambah jadwal: ' + error.message);
+                    });
             }
-
-            closeScheduleModal();
         }
 
-        function deleteSchedule(index) {
-            if (confirm('Delete this schedule?')) {
-                database.ref('/schedules/' + schedules[index].id).remove();
+        function hapusJadwal(index) {
+            if (confirm('Hapus jadwal ini?')) {
+                database.ref('/schedules/' + jadwalList[index].id).remove()
+                    .then(() => {
+                        logDebug('Jadwal berhasil dihapus', 'success');
+                    })
+                    .catch((error) => {
+                        logDebug('Error hapus jadwal: ' + error.message, 'error');
+                        alert('Gagal hapus jadwal: ' + error.message);
+                    });
             }
         }
 
-        function toggleSchedule(index) {
-            const sched = schedules[index];
-            database.ref('/schedules/' + sched.id).update({ enabled: !sched.enabled });
+        function toggleJadwal(index) {
+            const jadwal = jadwalList[index];
+            database.ref('/schedules/' + jadwal.id).update({ enabled: !jadwal.enabled })
+                .then(() => {
+                    logDebug('Status jadwal diubah', 'success');
+                })
+                .catch((error) => {
+                    logDebug('Error toggle jadwal: ' + error.message, 'error');
+                });
         }
 
-        function renderScheduleTable() {
-            const tbody = document.getElementById('scheduleBody');
+        function renderTabelJadwal() {
+            const tbody = document.getElementById('bodyJadwal');
             
-            if (schedules.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No schedules yet</td></tr>';
+            if (jadwalList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Belum ada jadwal</td></tr>';
                 return;
             }
 
-            const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const namaHari = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
             
-            tbody.innerHTML = schedules.map((sched, index) => {
-                let daysText = '';
-                if (sched.days === 0) {
-                    daysText = 'Every Day';
+            tbody.innerHTML = jadwalList.map((jadwal, index) => {
+                let teksHari = '';
+                if (jadwal.days === 0) {
+                    teksHari = 'Setiap Hari';
                 } else {
-                    let selectedDays = [];
+                    let hariTerpilih = [];
                     for (let i = 0; i < 7; i++) {
-                        if (sched.days & (1 << i)) {
-                            selectedDays.push(dayNames[i]);
+                        if (jadwal.days & (1 << i)) {
+                            hariTerpilih.push(namaHari[i]);
                         }
                     }
-                    daysText = selectedDays.join(', ');
+                    teksHari = hariTerpilih.join(', ');
                 }
 
-                const dateText = sched.date === 0 ? 'Any' : sched.date;
-                const monthText = sched.month === 0 ? 'Any' : sched.month;
-                const timeText = String(sched.hour).padStart(2, '0') + ':' + String(sched.minute).padStart(2, '0');
+                const teksTanggal = jadwal.date === 0 ? 'Setiap Tanggal' : jadwal.date;
+                const teksBulan = jadwal.month === 0 ? 'Setiap Bulan' : jadwal.month;
+                const teksWaktu = String(jadwal.hour).padStart(2, '0') + ':' + String(jadwal.minute).padStart(2, '0');
                 
                 return `
                     <tr>
-                        <td style="color: ${sched.isON ? '#10b981' : '#ef4444'}; font-weight: bold;">
-                            ${sched.isON ? '🔆 ON' : '🌙 OFF'}
+                        <td style="color: ${jadwal.isON ? '#10b981' : '#ef4444'}; font-weight: bold;">
+                            ${jadwal.isON ? '🔆 ON' : '🌙 OFF'}
                         </td>
-                        <td>${daysText}</td>
-                        <td>${dateText}</td>
-                        <td>${monthText}</td>
-                        <td>${timeText}</td>
+                        <td>${teksHari}</td>
+                        <td>${teksTanggal}</td>
+                        <td>${teksBulan}</td>
+                        <td>${teksWaktu}</td>
                         <td>
-                            <div class="toggle ${sched.enabled ? 'active' : ''}" onclick="toggleSchedule(${index})"></div>
+                            <div class="toggle ${jadwal.enabled ? 'active' : ''}" onclick="toggleJadwal(${index})"></div>
                         </td>
                         <td>
-                            <button class="btn btn-admin btn-small" onclick="editSchedule(${index})">✏️</button>
-                            <button class="btn btn-off btn-small" onclick="deleteSchedule(${index})">🗑️</button>
+                            <button class="btn btn-admin btn-small" onclick="editJadwal(${index})">✏️</button>
+                            <button class="btn btn-off btn-small" onclick="hapusJadwal(${index})">🗑️</button>
                         </td>
                     </tr>
                 `;
             }).join('');
         }
 
-        // Countdown
+        // ==================== COUNTDOWN ====================
         function updateCountdowns() {
             const now = new Date();
             
             let nextON = null;
             let nextOFF = null;
 
-            schedules.forEach(sched => {
-                if (!sched.enabled) return;
+            jadwalList.forEach(jadwal => {
+                if (!jadwal.enabled) return;
 
-                const schedTime = new Date();
-                schedTime.setHours(sched.hour, sched.minute, 0, 0);
+                const jadwalTime = new Date();
+                jadwalTime.setHours(jadwal.hour, jadwal.minute, 0, 0);
 
-                if (schedTime < now) {
-                    schedTime.setDate(schedTime.getDate() + 1);
+                if (jadwalTime < now) {
+                    jadwalTime.setDate(jadwalTime.getDate() + 1);
                 }
 
-                if (sched.isON) {
-                    if (!nextON || schedTime < nextON) {
-                        nextON = schedTime;
+                if (jadwal.isON) {
+                    if (!nextON || jadwalTime < nextON) {
+                        nextON = jadwalTime;
                     }
                 } else {
-                    if (!nextOFF || schedTime < nextOFF) {
-                        nextOFF = schedTime;
+                    if (!nextOFF || jadwalTime < nextOFF) {
+                        nextOFF = jadwalTime;
                     }
                 }
             });
@@ -1113,7 +1234,7 @@
                     String(minutes).padStart(2, '0') + ':' + 
                     String(seconds).padStart(2, '0');
             } else {
-                document.getElementById('nextON').textContent = 'No Schedule';
+                document.getElementById('nextON').textContent = 'Tidak Ada';
             }
 
             // Update OFF countdown
@@ -1127,22 +1248,34 @@
                     String(minutes).padStart(2, '0') + ':' + 
                     String(seconds).padStart(2, '0');
             } else {
-                document.getElementById('nextOFF').textContent = 'No Schedule';
+                document.getElementById('nextOFF').textContent = 'Tidak Ada';
             }
         }
 
-        // Buzzer Functions
-        function saveBuzzerMode() {
+        // ==================== BUZZER FUNCTIONS ====================
+        function simpanModeBuzzer() {
             const mode = document.getElementById('buzzerMode').value;
-            database.ref('/settings/buzzerMode').set(parseInt(mode));
+            database.ref('/settings/buzzerMode').set(parseInt(mode))
+                .then(() => {
+                    logDebug('Mode buzzer disimpan', 'success');
+                })
+                .catch((error) => {
+                    logDebug('Error simpan buzzer mode: ' + error.message, 'error');
+                });
         }
 
-        function testBuzzer() {
+        function tesBuzzer() {
             const preset = document.getElementById('buzzerPreset').value;
-            database.ref('/control/testBuzzer').set(parseInt(preset));
+            database.ref('/control/testBuzzer').set(parseInt(preset))
+                .then(() => {
+                    logDebug('Tes buzzer terkirim', 'success');
+                })
+                .catch((error) => {
+                    logDebug('Error tes buzzer: ' + error.message, 'error');
+                });
         }
 
-        // Settings Functions
+        // ==================== PENGATURAN ====================
         function toggleAutoSave() {
             const toggle = document.getElementById('autoSaveToggle');
             const isActive = toggle.classList.contains('active');
@@ -1150,30 +1283,44 @@
             if (isActive) {
                 toggle.classList.remove('active');
                 database.ref('/settings/autoSave').set(false);
+                logDebug('Auto save dinonaktifkan', 'info');
             } else {
                 toggle.classList.add('active');
                 database.ref('/settings/autoSave').set(true);
+                logDebug('Auto save diaktifkan', 'success');
             }
         }
 
-        function saveSettings() {
+        function simpanPengaturan() {
             const idleTone = document.getElementById('idleTone').value;
             const ledAnimation = document.getElementById('ledAnimation').value;
             
-            database.ref('/settings/idleTone').set(parseInt(idleTone));
-            database.ref('/settings/ledAnimation').set(parseInt(ledAnimation));
-            
-            alert('✅ Settings saved!');
+            Promise.all([
+                database.ref('/settings/idleTone').set(parseInt(idleTone)),
+                database.ref('/settings/ledAnimation').set(parseInt(ledAnimation))
+            ]).then(() => {
+                logDebug('Pengaturan disimpan', 'success');
+                alert('✅ Pengaturan berhasil disimpan!');
+            }).catch((error) => {
+                logDebug('Error simpan pengaturan: ' + error.message, 'error');
+                alert('❌ Gagal simpan: ' + error.message);
+            });
         }
 
         function restartESP() {
-            if (confirm('Restart ESP device?')) {
-                database.ref('/control/restart').set(true);
-                alert('✅ Restart command sent!');
+            if (confirm('Restart perangkat ESP?')) {
+                database.ref('/control/restart').set(true)
+                    .then(() => {
+                        logDebug('Perintah restart terkirim', 'success');
+                        alert('✅ Perintah restart terkirim!');
+                    })
+                    .catch((error) => {
+                        logDebug('Error restart: ' + error.message, 'error');
+                    });
             }
         }
 
-        // Load settings on init
+        // ==================== LOAD SETTINGS ====================
         database.ref('/settings').once('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -1193,11 +1340,14 @@
                 if (data.ledAnimation !== undefined) {
                     document.getElementById('ledAnimation').value = data.ledAnimation;
                 }
+                logDebug('Pengaturan dimuat', 'success');
             }
         });
 
-        // Update countdowns every second
+        // Update countdowns setiap detik
         setInterval(updateCountdowns, 1000);
+        
+        logDebug('Sistem siap!', 'success');
     </script>
 </body>
 </html>
