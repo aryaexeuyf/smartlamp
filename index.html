@@ -1,149 +1,322 @@
-<!-- index.html for GitHub Pages -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Control PJU Lamp Outdoor</title>
+    <title>SmartLamp PJU - AryaProject</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Modern glassmorphism */
-        body { background: linear-gradient(135deg, #f5f7fa, #c3cfe2); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .container { background: rgba(255, 255, 255, 0.25); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); backdrop-filter: blur(4px); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.18); padding: 20px; max-width: 600px; width: 100%; }
-        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; animation: fadeOut 1s 4s forwards; }
-        @keyframes fadeOut { to { opacity: 0; display: none; } }
-        /* More styles for tables, modals, animations */
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glow-green { box-shadow: 0 0 15px #22c55e; }
+        .glow-red { box-shadow: 0 0 15px #ef4444; }
+        .btn-switch { transition: all 0.3s ease; }
+        .btn-switch:active { transform: scale(0.95); }
+        #adminPanel { display: none; }
     </style>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
 </head>
-<body>
-    <div id="loading">
-        <h1>Logo Smart Lamp Outdoor</h1>
-        <p>Project by AryaTeam</p>
-    </div>
-    <div class="container" style="display: none;" id="main">
-        <h1>Smart Control PJU Lamp Outdoor</h1>
-        <div id="device-status"></div>
-        <div id="wifi-signal"></div>
-        <!-- Login for Admin -->
-        <input type="password" id="pin" placeholder="Admin PIN">
-        <button onclick="loginAdmin()">Login</button>
-        <!-- User: ON/OFF -->
-        <button onclick="setLamp(true)">ON</button>
-        <button onclick="setLamp(false)">OFF</button>
-        <!-- Admin sections: hidden until login -->
-        <div id="admin-sections" style="display:none;">
-            <!-- Jadwal: table, add/edit/delete -->
-            <div id="jadwal"></div>
-            <!-- Buzzer: dropdown, save -->
-            <!-- Setting: presets -->
-            <button onclick="disconnectWiFi()">Putus WiFi</button>
+<body class="min-h-screen flex flex-col items-center py-10 px-4 relative">
+
+    <!-- HEADER & STATUS -->
+    <div class="w-full max-w-lg glass-panel rounded-2xl p-6 mb-6 relative">
+        <button id="adminBtn" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fas fa-lock"></i></button>
+        
+        <h1 class="text-2xl font-bold text-center mb-6 text-blue-400">SMART LAMP PJU</h1>
+        
+        <div class="flex justify-between items-center mb-4 bg-slate-800 p-4 rounded-xl">
+            <div class="flex items-center gap-3">
+                <div id="statusDot" class="w-4 h-4 rounded-full bg-red-500 glow-red"></div>
+                <span id="statusText" class="font-semibold text-gray-300">OFFLINE</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-300">
+                <i class="fas fa-wifi text-lg"></i>
+                <span id="rssiText" class="font-mono">- dBm</span>
+            </div>
+        </div>
+
+        <!-- MAIN CONTROL -->
+        <div class="flex gap-4 mb-6">
+            <button id="btnOn" class="btn-switch flex-1 bg-slate-700 hover:bg-green-600 text-white py-4 rounded-xl font-bold text-xl flex items-center justify-center gap-2">
+                <i class="fas fa-power-off"></i> ON
+            </button>
+            <button id="btnOff" class="btn-switch flex-1 bg-slate-700 hover:bg-red-600 text-white py-4 rounded-xl font-bold text-xl flex items-center justify-center gap-2">
+                <i class="fas fa-power-off"></i> OFF
+            </button>
+        </div>
+
+        <!-- COUNTDOWN -->
+        <div class="bg-slate-800 p-5 rounded-xl text-center">
+            <p class="text-sm text-gray-400 mb-1">Jadwal Aktif Berikutnya</p>
+            <h2 id="countdownText" class="text-3xl font-mono font-bold text-blue-300">Menghitung...</h2>
+            <p id="nextActionText" class="text-sm text-blue-400 mt-1">-</p>
         </div>
     </div>
 
-    <script>
-        // Firebase config
+    <!-- ADMIN PANEL (HIDDEN) -->
+    <div id="adminPanel" class="w-full max-w-4xl glass-panel rounded-2xl p-6 mb-6">
+        <div class="flex justify-between items-center mb-6 border-b border-slate-600 pb-4">
+            <h2 class="text-2xl font-bold text-yellow-400"><i class="fas fa-cogs"></i> Admin Panel</h2>
+            <button id="logoutBtn" class="text-red-400 hover:text-red-300"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+        </div>
+
+        <div class="mb-4">
+            <h3 class="text-xl font-semibold mb-3">Schedule Manager</h3>
+            <button onclick="openModal()" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-sm font-bold mb-4"><i class="fas fa-plus"></i> Tambah Jadwal</button>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-300">
+                    <thead class="text-xs uppercase bg-slate-800 text-gray-400">
+                        <tr>
+                            <th class="px-4 py-3">Mode</th>
+                            <th class="px-4 py-3">Waktu</th>
+                            <th class="px-4 py-3">Hari</th>
+                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTable" class="divide-y divide-slate-700">
+                        <!-- Table Content Injected via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TAMBAH JADWAL -->
+    <div id="scheduleModal" class="fixed inset-0 bg-black bg-opacity-75 hidden justify-center items-center z-50 px-4">
+        <div class="bg-slate-800 p-6 rounded-2xl w-full max-w-md border border-slate-600">
+            <h3 class="text-xl font-bold mb-4" id="modalTitle">Tambah Jadwal</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Mode Relay</label>
+                    <select id="schMode" class="w-full bg-slate-700 p-2 rounded text-white border border-slate-600 focus:outline-none focus:border-blue-500">
+                        <option value="ON">Hidup (ON)</option>
+                        <option value="OFF">Mati (OFF)</option>
+                    </select>
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm text-gray-400 mb-1">Jam (0-23)</label>
+                        <input type="number" id="schHour" min="0" max="23" class="w-full bg-slate-700 p-2 rounded text-white border border-slate-600" value="18">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm text-gray-400 mb-1">Menit (0-59)</label>
+                        <input type="number" id="schMin" min="0" max="59" class="w-full bg-slate-700 p-2 rounded text-white border border-slate-600" value="00">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Hari (Pilih Multiple)</label>
+                    <input type="text" id="schDays" placeholder="Contoh: 1,2,3 (1=Senin, 0=Minggu, Kosong=Tiap Hari)" class="w-full bg-slate-700 p-2 rounded text-white border border-slate-600">
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button onclick="closeModal()" class="px-4 py-2 bg-slate-600 rounded text-white hover:bg-slate-500">Batal</button>
+                    <button onclick="saveSchedule()" class="px-4 py-2 bg-blue-600 rounded text-white hover:bg-blue-500 font-bold">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WATERMARK -->
+    <div class="fixed bottom-4 right-4 text-xs text-gray-500 font-mono">
+        by : AryaProject profesional programer
+    </div>
+
+    <!-- FIREBASE & LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, update, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
         const firebaseConfig = {
-            apiKey: "your-api-key",
-            authDomain: "your-project.firebaseapp.com",
-            databaseURL: "https://your-project.firebaseio.com",
-            projectId: "your-project",
-            // etc.
+            apiKey: "AIzaSyCfRXQKtfSQemzyESufRa-8MGNd_Pi2EeE",
+            authDomain: "lampu-pju-njati.firebaseapp.com",
+            databaseURL: "https://lampu-pju-njati-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "lampu-pju-njati",
+            storageBucket: "lampu-pju-njati.firebasestorage.app",
+            messagingSenderId: "1095543830018",
+            appId: "1:1095543830018:web:f6506f68944145869c591b"
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
 
-        // Show main after loading
-        setTimeout(() => {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('main').style.display = 'block';
-        }, 4000);
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        // Device Status
-        let lastHeartbeat = 0;
-        db.ref('/device/status/heartbeat').on('value', snap => {
-            lastHeartbeat = snap.val();
+        // --- DOM Elements ---
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const rssiText = document.getElementById('rssiText');
+        const btnOn = document.getElementById('btnOn');
+        const btnOff = document.getElementById('btnOff');
+        const countdownText = document.getElementById('countdownText');
+        const nextActionText = document.getElementById('nextActionText');
+        
+        let allSchedules = [];
+
+        // --- Admin Login Logic ---
+        const adminBtn = document.getElementById('adminBtn');
+        const adminPanel = document.getElementById('adminPanel');
+        
+        if(localStorage.getItem('adminAuth') === 'RCLED123') {
+            adminPanel.style.display = 'block';
+            adminBtn.style.display = 'none';
+        }
+
+        adminBtn.addEventListener('click', () => {
+            const pin = prompt("Masukkan PIN Admin:");
+            if(pin === "RCLED123") {
+                localStorage.setItem('adminAuth', pin);
+                adminPanel.style.display = 'block';
+                adminBtn.style.display = 'none';
+            } else if(pin) {
+                alert("PIN Salah!");
+            }
         });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('adminAuth');
+            adminPanel.style.display = 'none';
+            adminBtn.style.display = 'block';
+        });
+
+        // --- Firebase Listeners ---
+        const statusRef = ref(db, 'status');
+        onValue(statusRef, (snapshot) => {
+            const data = snapshot.val();
+            if(data) {
+                // Heartbeat check (timeout 15 detik)
+                const now = Date.now();
+                if(now - data.timestamp < 15000) {
+                    statusDot.className = "w-4 h-4 rounded-full bg-green-500 glow-green";
+                    statusText.innerText = "ONLINE";
+                    rssiText.innerText = `${data.rssi} dBm`;
+                } else {
+                    statusDot.className = "w-4 h-4 rounded-full bg-red-500 glow-red";
+                    statusText.innerText = "OFFLINE";
+                }
+
+                // Relay Buttons UI
+                if(data.relay) {
+                    btnOn.className = "btn-switch flex-1 bg-green-600 text-white py-4 rounded-xl font-bold text-xl flex items-center justify-center gap-2 ring-2 ring-green-400";
+                    btnOff.className = "btn-switch flex-1 bg-slate-700 text-gray-400 py-4 rounded-xl font-bold text-xl flex items-center justify-center gap-2";
+                } else {
+                    btnOff.className = "btn-switch flex-1 bg-red-600 text-white py-4 rounded-xl font-bold text-xl flex items-center justify-center gap-2 ring-2 ring-red-400";
+                    btnOn.className = "btn-switch flex-1 bg-slate-700 text-gray-400 py-4 rounded-xl font-bold text-xl flex items-center justify-center gap-2";
+                }
+            }
+        });
+
+        const schedulesRef = ref(db, 'schedules');
+        onValue(schedulesRef, (snapshot) => {
+            allSchedules = [];
+            const tbody = document.getElementById('scheduleTable');
+            tbody.innerHTML = '';
+            
+            snapshot.forEach((child) => {
+                const sch = child.val();
+                sch.id = child.key;
+                allSchedules.push(sch);
+                
+                // Render Table Row
+                const modeColor = sch.mode === 'ON' ? 'text-green-400' : 'text-red-400';
+                const statusColor = sch.enabled ? 'text-green-400' : 'text-gray-500';
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-4 py-3 font-bold ${modeColor}">${sch.mode}</td>
+                    <td class="px-4 py-3 text-lg">${String(sch.hour).padStart(2,'0')}:${String(sch.minute).padStart(2,'0')}</td>
+                    <td class="px-4 py-3">${sch.days === '' ? 'Tiap Hari' : sch.days}</td>
+                    <td class="px-4 py-3 font-semibold ${statusColor}">${sch.enabled ? 'Aktif' : 'Non-Aktif'}</td>
+                    <td class="px-4 py-3 flex gap-2">
+                        <button onclick="window.toggleSch('${sch.id}', ${!sch.enabled})" class="bg-slate-600 hover:bg-slate-500 p-2 rounded"><i class="fas fa-power-off"></i></button>
+                        <button onclick="window.delSch('${sch.id}')" class="bg-red-900 text-red-300 hover:bg-red-800 p-2 rounded"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        });
+
+        // --- Manual Control ---
+        const controlRef = ref(db, 'control');
+        btnOn.onclick = () => update(controlRef, { relay: true, override: true });
+        btnOff.onclick = () => update(controlRef, { relay: false, override: true });
+
+        // --- Schedule Global Functions ---
+        window.toggleSch = (id, state) => update(ref(db, `schedules/${id}`), { enabled: state });
+        window.delSch = (id) => { if(confirm('Hapus jadwal ini?')) remove(ref(db, `schedules/${id}`)); };
+        
+        window.openModal = () => document.getElementById('scheduleModal').style.display = 'flex';
+        window.closeModal = () => document.getElementById('scheduleModal').style.display = 'none';
+        
+        window.saveSchedule = () => {
+            const data = {
+                mode: document.getElementById('schMode').value,
+                hour: parseInt(document.getElementById('schHour').value),
+                minute: parseInt(document.getElementById('schMin').value),
+                days: document.getElementById('schDays').value,
+                date: 0, month: 0,
+                enabled: true
+            };
+            push(ref(db, 'schedules'), data);
+            closeModal();
+        };
+
+        // --- Countdown Logic ---
         setInterval(() => {
-            if (Date.now() / 1000 - lastHeartbeat > 15) {
-                document.getElementById('device-status').innerText = 'Your device not connected to internet';
+            const now = new Date();
+            let nextRun = null;
+            let nextAct = "";
+
+            allSchedules.forEach(sch => {
+                if(!sch.enabled) return;
+                let target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), sch.hour, sch.minute, 0);
+                
+                // Jika sudah lewat hari ini, set ke besok
+                if(target <= now) {
+                    target.setDate(target.getDate() + 1);
+                }
+
+                // Filter berdasarkan hari (sederhana)
+                if(sch.days !== "") {
+                    const allowedDays = sch.days.split(',').map(Number);
+                    while(!allowedDays.includes(target.getDay())) {
+                        target.setDate(target.getDate() + 1);
+                    }
+                }
+
+                if(!nextRun || target < nextRun) {
+                    nextRun = target;
+                    nextAct = sch.mode;
+                }
+            });
+
+            if(nextRun) {
+                const diff = Math.floor((nextRun - now) / 1000);
+                const h = Math.floor(diff / 3600);
+                const m = Math.floor((diff % 3600) / 60);
+                const s = diff % 60;
+                countdownText.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                nextActionText.innerText = `Menuju Relay ${nextAct}`;
             } else {
-                document.getElementById('device-status').innerText = 'Your device connected to internet';
+                countdownText.innerText = "--:--:--";
+                nextActionText.innerText = "Tidak Ada Jadwal Aktif";
+            }
+
+            // Fallback status indicator jika Firebase putus connection client-side
+            if(Date.now() - window.lastHeartbeatRender > 16000) {
+                 statusDot.className = "w-4 h-4 rounded-full bg-red-500 glow-red";
+                 statusText.innerText = "OFFLINE";
             }
         }, 1000);
-
-        // WiFi Signal
-        db.ref('/device/rssi').on('value', snap => {
-            const rssi = snap.val();
-            // Convert to bars: e.g., if rssi > -60: 4 bars, etc.
-            let bars = /* calculate */;
-            document.getElementById('wifi-signal').innerHTML = /* icon bars */;
-        });
-
-        // Admin Login
-        async function loginAdmin() {
-            const pin = document.getElementById('pin').value;
-            // Validate via Firebase rules or function, but since rule, assume set data with pin and check success
-            try {
-                await db.ref('/admin/pin').set(pin);
-                // If success (rule allows only if pin correct), set localStorage
-                localStorage.setItem('admin', true);
-                document.getElementById('admin-sections').style.display = 'block';
-            } catch (e) {
-                alert('Invalid PIN');
-            }
-        }
-        if (localStorage.getItem('admin')) {
-            document.getElementById('admin-sections').style.display = 'block';
-        }
-
-        // Set Lamp
-        function setLamp(state) {
-            db.ref('/lamp/state').set(state);
-        }
-
-        // Jadwal: listen to path, render table
-        db.ref('/jadwal').on('value', snap => {
-            const data = snap.val();
-            // Render dynamic table, add/edit/delete buttons with db updates
-        });
-
-        // Similar for buzzer, setting
-
-        // Disconnect WiFi
-        function disconnectWiFi() {
-            db.ref('/device/disconnect').set(true);
-        }
-
-        // Deteksi Terang Gelap
-        let lastUpdate = 0;
-        async function detectBrightness() {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            const video = document.createElement('video');
-            video.srcObject = stream;
-            video.play();
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-
-            setInterval(() => {
-                if (Date.now() - lastUpdate < 3000) return;  // Debounce
-                ctx.drawImage(video, 0, 0, 320, 240);
-                const data = ctx.getImageData(0, 0, 320, 240).data;
-                let brightness = 0;
-                for (let i = 0; i < data.length; i += 4) {
-                    brightness += (data[i] + data[i+1] + data[i+2]) / 3;
-                }
-                brightness /= (data.length / 4);
-                const threshold = 100;  // Configurable
-                db.ref('/lamp/state').set(brightness < threshold);
-                lastUpdate = Date.now();
-            }, 1000);
-        }
-        detectBrightness();
-
-        // Modular JS: can split into functions
     </script>
 </body>
 </html>
+```
+
+### Panduan Setup Realtime Database:
+Di console Firebase Anda, pastikan settingan "Rules" (Aturan) Realtime Database disetting menjadi `true` agar ESP-01 bisa memanggil jalur REST API dengan lancar tanpa terblokir sistem autentikasi, seperti berikut:
+```json
+{
+  "rules": {
+    ".read": "true",
+    ".write": "true"
+  }
+}
