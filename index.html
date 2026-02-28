@@ -302,6 +302,11 @@ th { background: rgba(255, 255, 255, 0.1); font-weight: bold; }
     <div class="clock-time" id="clockTime">--:--:--</div>
     <div class="clock-date" id="clockDate">--/--/----</div>
     <div class="clock-status" id="clockStatus">⏳ Menunggu sinkronisasi...</div>
+    <!-- [v5] Status jadwal offline indicator -->
+    <div id="scheduleStatus" style="margin-top:8px; font-size:0.85em; opacity:0.8;">
+      📅 Jadwal tersimpan: <span id="scheduleCount" style="color:#10b981; font-weight:bold;">—</span> |
+      ⏰ Alarm: <span id="alarmStatus" style="color:#f59e0b; font-weight:bold;">—</span>
+    </div>
   </div>
   
   <!-- Debug Info -->
@@ -444,7 +449,7 @@ th { background: rgba(255, 255, 255, 0.1); font-weight: bold; }
         </select>
       </div>
       <hr style="border-color:rgba(255,255,255,0.15); margin: 20px 0;">
-      <!-- [v4-D] PRE-ALARM BUZZER JADWAL -->
+      <!-- [v6] PRE-ALARM BUZZER JADWAL -->
       <div class="form-group">
         <label style="display: flex; justify-content: space-between; align-items: center;">
           <span>⏰ Alarm Buzzer Jadwal <small style="opacity:.6">(10 dtk sebelum ON/OFF)</small></span>
@@ -454,11 +459,16 @@ th { background: rgba(255, 255, 255, 0.1); font-weight: bold; }
       <div class="form-group">
         <label>Nada Alarm Jadwal</label>
         <select id="alarmTone" onchange="simpanAlarmTone()">
-          <option value="1">🔔 Nada 1 — Beep pendek</option>
-          <option value="2">🔔 Nada 2 — Beep panjang</option>
-          <option value="3">🔔 Nada 3 — Double beep</option>
-          <option value="4">🔔 Nada 4 — Naik (do-mi-sol)</option>
-          <option value="5">🔔 Nada 5 — Triple eskalasi</option>
+          <option value="1">🔔 Nada 1 — Alarm Panjang Klasik (do-do-dooo)</option>
+          <option value="2">🚨 Nada 2 — Sirine Naik-Turun (weeoo-weeoo)</option>
+          <option value="3">🔥 Nada 3 — Fire Alarm (cepat × 5 + panjang)</option>
+          <option value="4">🎵 Nada 4 — Eskalasi Musikal (do-re-mi-fa-sol-la)</option>
+          <option value="5">📻 Nada 5 — Morse SOS (···---···)</option>
+          <option value="6">🚑 Nada 6 — Ambulans (nee-naw bergantian)</option>
+          <option value="7">😡 Nada 7 — Beep Marah Panjang × 5 + super panjang</option>
+          <option value="8">🔔 Nada 8 — Lonceng Ding × 5 + panjang</option>
+          <option value="9">🚒 Nada 9 — High-Low Cepat (kebakaran)</option>
+          <option value="10">🌌 Nada 10 — Imperial March (Star Wars)</option>
         </select>
       </div>
       <hr style="border-color:rgba(255,255,255,0.15); margin: 20px 0;">
@@ -466,11 +476,16 @@ th { background: rgba(255, 255, 255, 0.1); font-weight: bold; }
       <div class="form-group">
         <label>Test Buzzer Manual</label>
         <select id="buzzerPreset">
-          <option value="1">Nada 1</option>
-          <option value="2">Nada 2</option>
-          <option value="3">Nada 3</option>
-          <option value="4">Nada 4</option>
-          <option value="5">Nada 5</option>
+          <option value="1">Nada 1 — Alarm Panjang Klasik</option>
+          <option value="2">Nada 2 — Sirine Naik-Turun</option>
+          <option value="3">Nada 3 — Fire Alarm</option>
+          <option value="4">Nada 4 — Eskalasi Musikal</option>
+          <option value="5">Nada 5 — Morse SOS</option>
+          <option value="6">Nada 6 — Ambulans</option>
+          <option value="7">Nada 7 — Beep Marah</option>
+          <option value="8">Nada 8 — Lonceng</option>
+          <option value="9">Nada 9 — High-Low Kebakaran</option>
+          <option value="10">Nada 10 — Imperial March</option>
         </select>
       </div>
       <button class="btn btn-admin" onclick="tesBuzzer()">🔊 Tes Sekarang</button>
@@ -638,8 +653,19 @@ database.ref('/schedules').on('value', (snapshot) => {
     Object.keys(data).forEach(key => {
       jadwalList.push({ id: key, ...data[key] });
     });
-    logDebug(`${jadwalList.length} jadwal dimuat`, 'success');
   }
+  // Update header schedule count
+  const countEl = document.getElementById('scheduleCount');
+  if (countEl) {
+    countEl.textContent = jadwalList.length > 0 ? `${jadwalList.length} aktif` : 'Kosong';
+    countEl.style.color = jadwalList.length > 0 ? '#10b981' : '#ef4444';
+  }
+  const alarmEl = document.getElementById('alarmStatus');
+  if (alarmEl) {
+    alarmEl.textContent = 'Standby';
+    alarmEl.style.color = '#10b981';
+  }
+  logDebug(`📅 ${jadwalList.length} jadwal dimuat`, 'success');
   renderTabelJadwal();
   updateCountdowns();
 }, (error) => {
@@ -1002,58 +1028,84 @@ function renderTabelJadwal() {
 // ==================== SCHEDULE EXECUTION ENGINE ====================
 // [FIX JADWAL] Eksekusi jadwal di client-side — kirim perintah nyata ke Firebase
 // Backup dari ESP executeSchedules, juga jalan mandiri di browser
+// ==================== SCHEDULE ENGINE ====================
+// Jadwal utama dieksekusi oleh ESP32 (firmware v5 - offline/online).
+// Fungsi ini adalah BACKUP dari browser saat web sedang terbuka.
+// Tidak perlu espOnline — kalau Firebase connect, perintah akan sampai ke ESP.
+
 const executedScheduleKeys = new Set();
+const alarmFiredKeys = new Set();
 let lastCleanupMinute = -1;
 
 function checkScheduleExecution() {
-  if (!espOnline) return;
+  // Tidak perlu cek espOnline — Firebase yang menentukan apakah command sampai
   if (jadwalList.length === 0) return;
 
   const now = new Date();
   const currentH     = now.getHours();
   const currentM     = now.getMinutes();
   const currentS     = now.getSeconds();
-  const currentDay   = now.getDay();       // 0=Min, 1=Sen ... 6=Sab (sama tm_wday ESP32)
+  const currentDay   = now.getDay();
   const currentDate  = now.getDate();
   const currentMonth = now.getMonth() + 1;
   const currentYear  = now.getFullYear();
+  const nowTotalSec  = currentH * 3600 + currentM * 60 + currentS;
 
-  // Bersihkan set saat menit berganti
+  // Bersihkan executed set saat menit berganti
   if (currentM !== lastCleanupMinute) {
     lastCleanupMinute = currentM;
     executedScheduleKeys.forEach(key => {
-      const suffix = `-${String(currentH).padStart(2,'0')}-${String(currentM).padStart(2,'0')}`;
-      if (!key.endsWith(suffix)) executedScheduleKeys.delete(key);
+      const minSuffix = `-${String(currentH).padStart(2,'0')}-${String(currentM).padStart(2,'0')}`;
+      if (!key.endsWith(minSuffix)) executedScheduleKeys.delete(key);
     });
   }
 
-  // Window eksekusi: detik 0-4 dari menit target saja (toleransi 5 detik, anti spam)
-  if (currentS > 4) return;
-
   jadwalList.forEach(jadwal => {
     if (!jadwal.enabled) return;
-    if (jadwal.hour !== currentH || jadwal.minute !== currentM) return;
 
-    // Cek hari (days=0 artinya setiap hari)
-    const dayMatch = (jadwal.days === 0) || ((jadwal.days & (1 << currentDay)) !== 0);
-    if (!dayMatch) return;
+    const jH = parseInt(jadwal.hour);
+    const jM = parseInt(jadwal.minute);
+    const dayMatch   = (jadwal.days === 0) || ((jadwal.days & (1 << currentDay)) !== 0);
+    const dateMatch  = (!jadwal.date  || jadwal.date  === 0 || jadwal.date  === currentDate);
+    const monthMatch = (!jadwal.month || jadwal.month === 0 || jadwal.month === currentMonth);
+    const yearMatch  = (!jadwal.year  || jadwal.year  === 0 || jadwal.year  === currentYear);
+    if (!dayMatch || !dateMatch || !monthMatch || !yearMatch) return;
 
-    // Cek tanggal/bulan/tahun (0 artinya setiap)
-    if (jadwal.date  && jadwal.date  !== 0 && jadwal.date  !== currentDate)  return;
-    if (jadwal.month && jadwal.month !== 0 && jadwal.month !== currentMonth) return;
-    if (jadwal.year  && jadwal.year  !== 0 && jadwal.year  !== currentYear)  return;
+    const schedTotalSec = jH * 3600 + jM * 60;
+    let secsUntil = schedTotalSec - nowTotalSec;
+    if (secsUntil < -60)  secsUntil += 86400;
+    if (secsUntil > 86400) secsUntil -= 86400;
 
-    // Key unik per jadwal per menit — cegah double-fire
-    const execKey = `${jadwal.id}-${currentYear}-${currentMonth}-${currentDate}-${String(currentH).padStart(2,'0')}-${String(currentM).padStart(2,'0')}`;
+    const alarmKey = `alarm-${jadwal.id}-${currentYear}-${currentMonth}-${currentDate}-${String(jH).padStart(2,'0')}-${String(jM).padStart(2,'0')}`;
+
+    // [v5-C] PRE-ALARM 8–12 detik sebelum jadwal (5 detik window)
+    if (secsUntil >= 8 && secsUntil <= 12 && !alarmFiredKeys.has(alarmKey)) {
+      alarmFiredKeys.add(alarmKey);
+      const cmd = jadwal.isON === true || jadwal.isON === 'true';
+      logDebug(`🔔 ALARM: ${cmd ? '🔆 NYALA' : '🌙 MATI'} dalam ${secsUntil} detik`, 'info');
+      document.getElementById('alarmStatus').textContent = `Aktif (${secsUntil}s)`;
+      document.getElementById('alarmStatus').style.color = '#ef4444';
+      // Reset alarm status setelah 15 detik
+      setTimeout(() => {
+        document.getElementById('alarmStatus').textContent = 'Standby';
+        document.getElementById('alarmStatus').style.color = '#10b981';
+      }, 15000);
+    }
+
+    // EKSEKUSI jadwal: detik 0–4
+    if (jH !== currentH || jM !== currentM) return;
+    if (currentS > 4) return;
+
+    const execKey = `${jadwal.id}-${currentYear}-${currentMonth}-${currentDate}-${String(jH).padStart(2,'0')}-${String(jM).padStart(2,'0')}`;
     if (executedScheduleKeys.has(execKey)) return;
     executedScheduleKeys.add(execKey);
 
     const cmd = jadwal.isON === true || jadwal.isON === 'true';
-    logDebug(`⏰ JADWAL AKTIF: ${cmd ? '🔆 NYALA' : '🌙 MATI'} jam ${String(currentH).padStart(2,'0')}:${String(currentM).padStart(2,'0')}`, 'success');
+    logDebug(`⏰ JADWAL JALAN: ${cmd ? '🔆 NYALA' : '🌙 MATI'} @ ${String(jH).padStart(2,'0')}:${String(jM).padStart(2,'0')}`, 'success');
 
     database.ref('/control/relay').set(cmd)
-      .then(() => logDebug(`✅ Jadwal terkirim ke ESP: ${cmd ? 'ON' : 'OFF'}`, 'success'))
-      .catch((err) => logDebug('❌ Gagal kirim jadwal: ' + err.message, 'error'));
+      .then(() => logDebug(`✅ Perintah jadwal terkirim: ${cmd ? 'ON' : 'OFF'}`, 'success'))
+      .catch((err) => logDebug('❌ Gagal: ' + err.message, 'error'));
   });
 }
 
@@ -1170,25 +1222,35 @@ function restartESP() {
   }
 }
 
-// Satu interval menangani clock, countdown, dan eksekusi jadwal
+// Satu interval: clock + countdown + schedule execution (setiap detik)
 setInterval(() => {
-  // Update jam display
   const now = new Date();
   const h = String(now.getHours()).padStart(2,'0');
   const m = String(now.getMinutes()).padStart(2,'0');
   const s = String(now.getSeconds()).padStart(2,'0');
   document.getElementById('clockTime').textContent = `${h}:${m}:${s}`;
 
-  // Update countdown timer
   updateCountdowns();
-
-  // [FIX JADWAL] Cek dan eksekusi jadwal setiap detik
   checkScheduleExecution();
+
+  // Update next-alarm countdown di header jika ada jadwal dalam 15 detik
+  const sec = parseInt(s);
+  if (sec === 0) {
+    // Reset alarm fired keys setiap awal menit baru (jam berbeda)
+    const minuteKey = `${h}${m}`;
+    alarmFiredKeys.forEach(k => {
+      if (!k.includes(`-${h.padStart(2,'0')}-${m.padStart(2,'0')}`)) {
+        // key dari menit lain - biarkan, dibersihkan nanti
+      }
+    });
+  }
 }, 1000);
 
-// Init gradient slider saat load
+// Init pada load
 updateSliderGradient(0);
-logDebug('✅ Sistem siap! Schedule engine aktif.', 'success');
+const alarmEl = document.getElementById('alarmStatus');
+if (alarmEl) { alarmEl.textContent = 'Standby'; alarmEl.style.color = '#10b981'; }
+logDebug('✅ Sistem siap! Jadwal & alarm engine aktif (ESP32 + Browser backup).', 'success');
 </script>
 </body>
 </html>
