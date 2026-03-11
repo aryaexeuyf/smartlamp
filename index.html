@@ -17,100 +17,68 @@ body {
 }
 @keyframes gradientShift {
   0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  50%       { background-position: 100% 50%; }
 }
 .container { max-width: 1200px; margin: 0 auto; }
 .header { text-align: center; margin-bottom: 30px; animation: fadeInDown 0.8s ease; }
 @keyframes fadeInDown {
   from { opacity: 0; transform: translateY(-30px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .header h1 {
-  font-size: 3em;
-  text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  margin-bottom: 10px;
+  font-size: 3em; text-shadow: 0 4px 10px rgba(0,0,0,0.3); margin-bottom: 10px;
   background: linear-gradient(90deg, #fff, #a5f3fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
 .header .subtitle { font-size: 1.2em; opacity: 0.9; }
 
-/* Clock Panel */
+/* Clock */
 .clock-panel {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 20px;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+  border-radius: 20px; padding: 20px; margin-bottom: 20px;
+  text-align: center; border: 1px solid rgba(255,255,255,0.2);
 }
-.clock-time {
-  font-size: 3em;
-  font-weight: bold;
-  font-family: 'Courier New', monospace;
-  text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
-}
-.clock-date {
-  font-size: 1.2em;
-  opacity: 0.8;
-  margin-top: 5px;
-}
-.clock-status {
-  font-size: 0.9em;
-  opacity: 0.7;
-  margin-top: 5px;
-}
+.clock-time { font-size: 3em; font-weight: bold; font-family: 'Courier New', monospace; text-shadow: 0 0 20px rgba(16,185,129,0.5); }
+.clock-date { font-size: 1.2em; opacity: 0.8; margin-top: 5px; }
+.clock-status { font-size: 0.9em; opacity: 0.7; margin-top: 5px; }
 
+/* Debug */
 .debug-info {
-  background: rgba(0, 0, 0, 0.3);
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  font-family: 'Courier New', monospace;
-  font-size: 0.9em;
-  max-height: 150px;
-  overflow-y: auto;
+  background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;
+  margin-bottom: 20px; font-family: 'Courier New', monospace;
+  font-size: 0.9em; max-height: 150px; overflow-y: auto;
 }
 .debug-info .log { margin: 3px 0; }
 .debug-info .log.success { color: #10b981; }
-.debug-info .log.error { color: #ef4444; }
-.debug-info .log.info { color: #3b82f6; }
+.debug-info .log.error   { color: #ef4444; }
+.debug-info .log.info    { color: #3b82f6; }
 
+/* Status Grid */
 .status-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px; margin-bottom: 30px;
 }
 .status-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 25px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  animation: fadeInUp 0.8s ease;
+  background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+  border-radius: 20px; padding: 25px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.2); animation: fadeInUp 0.8s ease;
 }
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .status-card h3 { font-size: 1.1em; margin-bottom: 15px; opacity: 0.8; }
 .status-indicator { display: flex; align-items: center; gap: 15px; font-size: 1.5em; font-weight: bold; }
-.led {
-  width: 20px; height: 20px; border-radius: 50%;
-  animation: pulse 2s ease-in-out infinite;
-}
+.led { width: 20px; height: 20px; border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
 @keyframes pulse {
   0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.8; }
+  50%       { transform: scale(1.1); opacity: 0.8; }
 }
-.led.online { background: #10b981; box-shadow: 0 0 20px #10b981; }
+.led.online  { background: #10b981; box-shadow: 0 0 20px #10b981; }
 .led.offline { background: #ef4444; box-shadow: 0 0 20px #ef4444; animation: blink 1s ease-in-out infinite; }
 @keyframes blink {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  50%       { opacity: 0.3; }
 }
 .wifi-indicator { display: flex; align-items: flex-end; gap: 3px; height: 30px; }
 .wifi-bar { width: 6px; background: #10b981; border-radius: 2px; transition: all 0.3s; }
@@ -119,79 +87,68 @@ body {
 .wifi-bar:nth-child(3) { height: 70%; }
 .wifi-bar:nth-child(4) { height: 100%; }
 
+/* Control Panel */
 .control-panel {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  margin-bottom: 30px;
+  background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+  border-radius: 20px; padding: 30px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.2); margin-bottom: 30px;
 }
 .button-group { display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
 .btn {
   flex: 1; min-width: 150px; padding: 18px 30px; border: none;
   border-radius: 15px; font-size: 1.1em; font-weight: bold;
-  cursor: pointer; transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   text-transform: uppercase; letter-spacing: 1px;
 }
-.btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+.btn:hover  { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
 .btn:active { transform: translateY(0); }
-.btn-on { background: linear-gradient(135deg, #10b981, #059669); color: white; }
-.btn-off { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+.btn-on    { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+.btn-off   { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
 .btn-admin { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
 .btn-reset { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
 
+/* Countdown */
 .countdown { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
-.countdown-item {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 20px; border-radius: 15px; text-align: center;
-}
+.countdown-item { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; text-align: center; }
 .countdown-item h4 { opacity: 0.7; margin-bottom: 10px; }
 .countdown-time { font-size: 2em; font-weight: bold; font-family: 'Courier New', monospace; }
 
+/* Watermark */
 .watermark {
   position: fixed; bottom: 20px; right: 20px;
-  background: rgba(0, 0, 0, 0.5); padding: 10px 20px;
+  background: rgba(0,0,0,0.5); padding: 10px 20px;
   border-radius: 10px; font-size: 0.9em; opacity: 0.8;
 }
 
+/* Admin Panel */
 .admin-panel {
-  display: none;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  margin-bottom: 30px;
+  display: none; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+  border-radius: 20px; padding: 30px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.2); margin-bottom: 30px;
 }
 .admin-panel.active { display: block; animation: fadeInUp 0.5s ease; }
 .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 .tab {
-  padding: 12px 25px; background: rgba(255, 255, 255, 0.1);
+  padding: 12px 25px; background: rgba(255,255,255,0.1);
   border: none; border-radius: 10px; color: white;
   cursor: pointer; transition: all 0.3s; font-weight: bold;
 }
-.tab:hover { background: rgba(255, 255, 255, 0.2); }
+.tab:hover  { background: rgba(255,255,255,0.2); }
 .tab.active { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
 .tab-content { display: none; }
 .tab-content.active { display: block; animation: fadeIn 0.5s ease; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-table {
-  width: 100%; border-collapse: collapse;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px; overflow: hidden;
-}
-th, td { padding: 15px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-th { background: rgba(255, 255, 255, 0.1); font-weight: bold; }
+/* Table */
+table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
+th, td { padding: 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+th { background: rgba(255,255,255,0.1); font-weight: bold; }
 .btn-small { padding: 8px 15px; font-size: 0.9em; border-radius: 8px; margin: 0 5px; }
 
+/* Modal */
 .modal {
   display: none; position: fixed; top: 0; left: 0;
-  width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8);
+  width: 100%; height: 100%; background: rgba(0,0,0,0.8);
   z-index: 1000; justify-content: center; align-items: center; padding: 20px;
 }
 .modal.active { display: flex; animation: fadeIn 0.3s ease; }
@@ -204,33 +161,31 @@ th { background: rgba(255, 255, 255, 0.1); font-weight: bold; }
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
 .form-group input, .form-group select {
-  width: 100%; padding: 12px; border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 10px; background: rgba(255, 255, 255, 0.1);
+  width: 100%; padding: 12px; border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 10px; background: rgba(255,255,255,0.1);
   color: white; font-size: 1em;
 }
-.form-group input:focus, .form-group select:focus {
-  outline: none; border-color: #8b5cf6;
-}
+.form-group input:focus, .form-group select:focus { outline: none; border-color: #8b5cf6; }
 .checkbox-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
 .checkbox-item { display: flex; align-items: center; gap: 8px; }
 .checkbox-item input[type="checkbox"] { width: auto; }
 
+/* Toggle */
 .toggle {
   position: relative; width: 60px; height: 30px;
-  background: rgba(255, 255, 255, 0.2); border-radius: 15px;
-  cursor: pointer; transition: all 0.3s;
+  background: rgba(255,255,255,0.2); border-radius: 15px; cursor: pointer; transition: all 0.3s;
 }
 .toggle.active { background: #10b981; }
 .toggle::after {
   content: ''; position: absolute; top: 3px; left: 3px;
-  width: 24px; height: 24px; background: white;
-  border-radius: 50%; transition: all 0.3s;
+  width: 24px; height: 24px; background: white; border-radius: 50%; transition: all 0.3s;
 }
 .toggle.active::after { left: 33px; }
 
+/* PIN */
 .pin-input {
   display: none; position: fixed; top: 0; left: 0;
-  width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9);
+  width: 100%; height: 100%; background: rgba(0,0,0,0.9);
   z-index: 2000; justify-content: center; align-items: center;
 }
 .pin-input.active { display: flex; animation: fadeIn 0.3s ease; }
@@ -241,44 +196,42 @@ th { background: rgba(255, 255, 255, 0.1); font-weight: bold; }
 }
 .pin-box h2 { margin-bottom: 20px; }
 .pin-box input {
-  width: 250px; padding: 15px; border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 10px; background: rgba(255, 255, 255, 0.1);
+  width: 250px; padding: 15px; border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 10px; background: rgba(255,255,255,0.1);
   color: white; font-size: 1.2em; text-align: center; letter-spacing: 5px;
 }
 
+/* Brightness Slider */
 .brightness-control {
   margin-top: 20px; padding: 20px;
-  background: rgba(255, 255, 255, 0.05); border-radius: 15px;
+  background: rgba(255,255,255,0.05); border-radius: 15px;
 }
 .brightness-slider {
   width: 100%; height: 10px; border-radius: 5px;
   outline: none; -webkit-appearance: none; appearance: none;
   cursor: pointer;
-  /* gradient diupdate via JS - default 0% */
   background: linear-gradient(to right, #10b981 0%, rgba(255,255,255,0.2) 0%);
   transition: none;
 }
 .brightness-slider::-webkit-slider-thumb {
   -webkit-appearance: none; width: 28px; height: 28px;
   border-radius: 50%; background: #10b981; cursor: pointer;
-  box-shadow: 0 0 12px #10b981, 0 0 4px rgba(0,0,0,0.4);
-  border: 2px solid white;
-  transition: transform 0.1s;
-}
-.brightness-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
+  box-shadow: 0 0 12px #10b981, 0 0 4px rgba(0,0,0,0.4); border: 2px solid white;
 }
 .brightness-slider::-moz-range-thumb {
   width: 28px; height: 28px; border-radius: 50%;
   background: #10b981; cursor: pointer; border: 2px solid white;
-  box-shadow: 0 0 12px #10b981;
 }
 
-.manual-override-badge {
-  background: #f59e0b; color: white; padding: 5px 15px;
-  border-radius: 20px; font-size: 0.8em; display: inline-block;
-  margin-top: 10px;
+/* Buzzer test buttons */
+.btn-buzz-test {
+  padding: 10px 8px; font-size: 0.85em; font-weight: 600;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+  color: white; border-radius: 10px; cursor: pointer; transition: all 0.2s; text-align: center;
 }
+.btn-buzz-test:hover  { background: rgba(255,255,255,0.15); transform: scale(1.02); }
+.btn-buzz-test:active { transform: scale(0.96); background: rgba(16,185,129,0.3); border-color: #10b981; }
+.btn-buzz-test.playing { background: rgba(16,185,129,0.3); border-color: #10b981; color: #10b981; }
 
 @media (max-width: 768px) {
   .header h1 { font-size: 2em; }
@@ -291,29 +244,29 @@ th { background: rgba(255, 255, 255, 0.1); font-weight: bold; }
 </head>
 <body>
 <div class="container">
+
   <!-- Header -->
   <div class="header">
     <h1>💡 SmartLamp PJU</h1>
     <div class="subtitle">Sistem Kontrol Lampu Profesional</div>
   </div>
-  
+
   <!-- Clock Panel -->
   <div class="clock-panel">
     <div class="clock-time" id="clockTime">--:--:--</div>
     <div class="clock-date" id="clockDate">--/--/----</div>
-    <div class="clock-status" id="clockStatus">⏳ Menunggu sinkronisasi...</div>
-    <!-- [v5] Status jadwal offline indicator -->
+    <div class="clock-status" id="clockStatus">⏳ Memuat...</div>
     <div id="scheduleStatus" style="margin-top:8px; font-size:0.85em; opacity:0.8;">
-      📅 Jadwal tersimpan: <span id="scheduleCount" style="color:#10b981; font-weight:bold;">—</span> |
-      ⏰ Alarm: <span id="alarmStatus" style="color:#f59e0b; font-weight:bold;">—</span>
+      📅 Jadwal: <span id="scheduleCount" style="color:#10b981; font-weight:bold;">—</span> |
+      ⏰ Alarm: <span id="alarmStatus" style="color:#f59e0b; font-weight:bold;">Standby</span>
     </div>
   </div>
-  
+
   <!-- Debug Info -->
   <div class="debug-info" id="debugInfo">
     <div class="log info">🔄 Menginisialisasi sistem...</div>
   </div>
-  
+
   <!-- Status Grid -->
   <div class="status-grid">
     <div class="status-card">
@@ -322,24 +275,20 @@ th { background: rgba(255, 255, 255, 0.1); font-weight: bold; }
         <div class="led offline" id="espLed"></div>
         <span id="espStatus">Menghubungkan...</span>
       </div>
-      <div style="margin-top: 10px; font-size: 0.8em; opacity: 0.7;">
-        IP: <span id="espIP">--</span>
-      </div>
+      <div style="margin-top:10px; font-size:0.8em; opacity:0.7;">IP: <span id="espIP">--</span></div>
     </div>
     <div class="status-card">
       <h3>Sinyal WiFi</h3>
       <div class="status-indicator">
-        <div class="wifi-indicator" id="wifiIndicator">
-          <div class="wifi-bar"></div>
-          <div class="wifi-bar"></div>
-          <div class="wifi-bar"></div>
-          <div class="wifi-bar"></div>
+        <div class="wifi-indicator">
+          <div class="wifi-bar" id="wbar1"></div>
+          <div class="wifi-bar" id="wbar2"></div>
+          <div class="wifi-bar" id="wbar3"></div>
+          <div class="wifi-bar" id="wbar4"></div>
         </div>
         <span id="wifiStrength">--</span>
       </div>
-      <div style="margin-top: 10px; font-size: 0.8em; opacity: 0.7;">
-        RSSI: <span id="wifiRSSI">--</span> dBm
-      </div>
+      <div style="margin-top:10px; font-size:0.8em; opacity:0.7;">RSSI: <span id="wifiRSSI">--</span> dBm</div>
     </div>
     <div class="status-card">
       <h3>Status Lampu</h3>
@@ -347,234 +296,218 @@ th { background: rgba(255, 255, 255, 0.1); font-weight: bold; }
         <div class="led offline" id="lampLed"></div>
         <span id="lampStatus">MATI</span>
       </div>
-      <div style="margin-top: 10px; font-size: 0.8em; opacity: 0.7;">
-        Brightness: <span id="lampBrightness">0</span>%
-      </div>
-      <div id="manualOverrideBadge" class="manual-override-badge" style="display: none;">
-        🔧 Manual Override (5 min)
-      </div>
+      <div style="margin-top:10px; font-size:0.8em; opacity:0.7;">Brightness: <span id="lampBrightness">0</span>%</div>
     </div>
   </div>
-  
+
   <!-- Control Panel -->
   <div class="control-panel">
     <h2>💡 Kontrol Manual</h2>
     <div class="button-group">
-      <button class="btn btn-on" onclick="kontrolLampu(true)">🔆 NYALAKAN</button>
-      <button class="btn btn-off" onclick="kontrolLampu(false)">🌙 MATIKAN</button>
+      <button class="btn btn-on"    onclick="kontrolLampu(true)">🔆 NYALAKAN</button>
+      <button class="btn btn-off"   onclick="kontrolLampu(false)">🌙 MATIKAN</button>
       <button class="btn btn-admin" onclick="tampilkanPIN()">⚙️ ADMIN</button>
-      <button class="btn btn-reset" onclick="resetSettings()">🔄 RESET SETTINGS</button>
+      <button class="btn btn-reset" onclick="resetSettings()">🔄 RESET</button>
     </div>
-    
-    <!-- Brightness Control -->
+    <!-- Brightness Slider -->
     <div class="brightness-control">
-      <label style="display: flex; justify-content: space-between;">
+      <label style="display:flex; justify-content:space-between;">
         <span>🔅 Kecerahan Lampu</span>
         <span id="brightnessValue">0%</span>
       </label>
-      <!-- [FIX SLIDER] Kirim ke Firebase HANYA saat lepas (mouseup/touchend), 
-           bukan setiap pixel drag — mencegah spam Firebase ratusan kali sedetik.
-           oninput hanya update label + visual gradient saja (tidak kirim). -->
-      <input type="range" min="0" max="100" value="0" class="brightness-slider"
-             id="brightnessSlider"
+      <input type="range" min="0" max="100" value="0"
+             class="brightness-slider" id="brightnessSlider"
              onmousedown="isDragging=true"
              ontouchstart="isDragging=true"
              oninput="updateBrightnessLabel(this.value); updateSliderGradient(this.value)"
              onmouseup="isDragging=false; setBrightness(this.value)"
              ontouchend="isDragging=false; setBrightness(this.value)">
     </div>
-    
+    <!-- Countdown -->
     <div class="countdown">
       <div class="countdown-item">
-        <h4>⏰ Jadwal ON Berikutnya</h4>
+        <h4>⏱ Nyala Berikutnya</h4>
         <div class="countdown-time" id="nextON">--:--:--</div>
       </div>
       <div class="countdown-item">
-        <h4>⏰ Jadwal OFF Berikutnya</h4>
+        <h4>⏱ Mati Berikutnya</h4>
         <div class="countdown-time" id="nextOFF">--:--:--</div>
       </div>
     </div>
   </div>
-  
+
   <!-- Admin Panel -->
   <div class="admin-panel" id="adminPanel">
-    <h2>🔐 Panel Admin</h2>
-    <div class="tabs">
-      <button class="tab active" onclick="switchTab('jadwal')">📅 Jadwal</button>
-      <button class="tab" onclick="switchTab('buzzer')">🔊 Buzzer</button>
-      <button class="tab" onclick="switchTab('pengaturan')">⚙️ Pengaturan</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h2>⚙️ Panel Admin</h2>
+      <button class="btn btn-off btn-small" onclick="logout()">🚪 Logout</button>
     </div>
-    
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('jadwal', this)">📅 Jadwal</button>
+      <button class="tab" onclick="switchTab('buzzer', this)">🔊 Buzzer</button>
+      <button class="tab" onclick="switchTab('pengaturan', this)">⚙️ Pengaturan</button>
+    </div>
+
     <!-- Tab: Jadwal -->
     <div class="tab-content active" id="tab-jadwal">
-      <div class="button-group">
-        <button class="btn btn-on" onclick="tambahJadwal(true)">➕ Tambah Jadwal ON</button>
-        <button class="btn btn-off" onclick="tambahJadwal(false)">➕ Tambah Jadwal OFF</button>
+      <div class="button-group" style="margin-bottom:20px;">
+        <button class="btn btn-on btn-small"  onclick="tambahJadwal(true)">➕ Tambah ON</button>
+        <button class="btn btn-off btn-small" onclick="tambahJadwal(false)">➕ Tambah OFF</button>
       </div>
-      <div style="overflow-x: auto; margin-top: 20px;">
-        <table id="tabelJadwal">
+      <div style="overflow-x:auto;">
+        <table>
           <thead>
             <tr>
-              <th>Mode</th>
-              <th>Hari</th>
-              <th>Tanggal</th>
-              <th>Bulan</th>
-              <th>Waktu</th>
-              <th>Status</th>
-              <th>Aksi</th>
+              <th>Mode</th><th>Hari</th><th>Tanggal</th><th>Bulan</th><th>Waktu</th><th>Aktif</th><th>Aksi</th>
             </tr>
           </thead>
           <tbody id="bodyJadwal">
-            <tr><td colspan="7" style="text-align: center;">Belum ada jadwal</td></tr>
+            <tr><td colspan="7" style="text-align:center;">Memuat jadwal...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
-    
+
     <!-- Tab: Buzzer -->
     <div class="tab-content" id="tab-buzzer">
-      <!-- Master ON/OFF -->
       <div class="form-group">
-        <label style="display: flex; justify-content: space-between; align-items: center;">
+        <label style="display:flex; justify-content:space-between; align-items:center;">
           <span>🔊 Master Buzzer</span>
           <div class="toggle active" id="buzzerEnabledToggle" onclick="toggleBuzzerEnabled()"></div>
         </label>
       </div>
-      <!-- Tombol feedback tone -->
       <div class="form-group">
-        <label>Nada Feedback Tombol</label>
+        <label>Nada Feedback Tombol (ON/OFF)</label>
         <select id="buzzerMode" onchange="simpanModeBuzzer()">
           <option value="0">Mati — Tanpa suara</option>
-          <option value="1">Aktif — Berbunyi tiap tekan tombol</option>
+          <option value="1">Aktif — Bunyi singkat tiap tombol</option>
         </select>
       </div>
-      <hr style="border-color:rgba(255,255,255,0.15); margin: 20px 0;">
-      <!-- [v6] PRE-ALARM BUZZER JADWAL -->
+      <hr style="border-color:rgba(255,255,255,0.15); margin:20px 0;">
       <div class="form-group">
-        <label style="display: flex; justify-content: space-between; align-items: center;">
-          <span>⏰ Alarm Buzzer Jadwal <small style="opacity:.6">(10 dtk sebelum ON/OFF)</small></span>
+        <label style="display:flex; justify-content:space-between; align-items:center;">
+          <span>⏰ Alarm Jadwal <small style="opacity:.6">(10 dtk sebelum ON/OFF)</small></span>
           <div class="toggle active" id="alarmEnabledToggle" onclick="toggleAlarmEnabled()"></div>
         </label>
       </div>
       <div class="form-group">
-        <label>Nada Alarm Jadwal</label>
-        <select id="alarmTone" onchange="simpanAlarmTone()">
-          <option value="1">🔔 Nada 1 — Alarm Panjang Klasik (do-do-dooo)</option>
-          <option value="2">🚨 Nada 2 — Sirine Naik-Turun (weeoo-weeoo)</option>
-          <option value="3">🔥 Nada 3 — Fire Alarm (cepat × 5 + panjang)</option>
-          <option value="4">🎵 Nada 4 — Eskalasi Musikal (do-re-mi-fa-sol-la)</option>
-          <option value="5">📻 Nada 5 — Morse SOS (···---···)</option>
-          <option value="6">🚑 Nada 6 — Ambulans (nee-naw bergantian)</option>
-          <option value="7">😡 Nada 7 — Beep Marah Panjang × 5 + super panjang</option>
-          <option value="8">🔔 Nada 8 — Lonceng Ding × 5 + panjang</option>
-          <option value="9">🚒 Nada 9 — High-Low Cepat (kebakaran)</option>
-          <option value="10">🌌 Nada 10 — Imperial March (Star Wars)</option>
-        </select>
+        <label>Nada Alarm Jadwal — pilih lalu tes:</label>
+        <div style="display:flex; gap:8px; align-items:center; margin-top:8px;">
+          <select id="alarmTone" onchange="simpanAlarmTone()" style="flex:1;">
+            <option value="1">🔔 Nada 1 — Alarm Panjang Klasik</option>
+            <option value="2">🚨 Nada 2 — Sirine Naik-Turun</option>
+            <option value="3">🔥 Nada 3 — Fire Alarm (burst)</option>
+            <option value="4">🎵 Nada 4 — Eskalasi Musikal</option>
+            <option value="5">📻 Nada 5 — Morse SOS</option>
+            <option value="6">🚑 Nada 6 — Ambulans</option>
+            <option value="7">😡 Nada 7 — Beep Marah Panjang</option>
+            <option value="8">🔔 Nada 8 — Lonceng Ding</option>
+            <option value="9">🚒 Nada 9 — Alarm Kebakaran</option>
+            <option value="10">🌌 Nada 10 — Imperial March</option>
+          </select>
+          <button class="btn btn-admin" style="min-width:auto; padding:10px 16px; flex-shrink:0;"
+            onclick="tesAlarmTone()">▶ Tes</button>
+        </div>
       </div>
-      <hr style="border-color:rgba(255,255,255,0.15); margin: 20px 0;">
-      <!-- Tes manual -->
+      <hr style="border-color:rgba(255,255,255,0.15); margin:20px 0;">
       <div class="form-group">
-        <label>Test Buzzer Manual</label>
-        <select id="buzzerPreset">
-          <option value="1">Nada 1 — Alarm Panjang Klasik</option>
-          <option value="2">Nada 2 — Sirine Naik-Turun</option>
-          <option value="3">Nada 3 — Fire Alarm</option>
-          <option value="4">Nada 4 — Eskalasi Musikal</option>
-          <option value="5">Nada 5 — Morse SOS</option>
-          <option value="6">Nada 6 — Ambulans</option>
-          <option value="7">Nada 7 — Beep Marah</option>
-          <option value="8">Nada 8 — Lonceng</option>
-          <option value="9">Nada 9 — High-Low Kebakaran</option>
-          <option value="10">Nada 10 — Imperial March</option>
-        </select>
+        <label>🎛️ Tes Semua Nada Buzzer</label>
+        <p style="font-size:0.8em; opacity:0.6; margin-bottom:12px;">Tekan tiap tombol untuk preview bunyi langsung di ESP32</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <button class="btn-buzz-test" onclick="tesBuzzerNada(1)">🔔 Nada 1</button>
+          <button class="btn-buzz-test" onclick="tesBuzzerNada(2)">🚨 Nada 2</button>
+          <button class="btn-buzz-test" onclick="tesBuzzerNada(3)">🔥 Nada 3</button>
+          <button class="btn-buzz-test" onclick="tesBuzzerNada(4)">🎵 Nada 4</button>
+          <button class="btn-buzz-test" onclick="tesBuzzerNada(5)">📻 Nada 5</button>
+          <button class="btn-buzz-test" onclick="tesBuzzerNada(6)">🚑 Nada 6</button>
+          <button class="btn-buzz-test" onclick="tesBuzzerNada(7)">😡 Nada 7</button>
+          <button class="btn-buzz-test" onclick="tesBuzzerNada(8)">🔔 Nada 8</button>
+          <button class="btn-buzz-test" onclick="tesBuzzerNada(9)">🚒 Nada 9</button>
+          <button class="btn-buzz-test" onclick="tesBuzzerNada(10)">🌌 Nada 10</button>
+        </div>
       </div>
-      <button class="btn btn-admin" onclick="tesBuzzer()">🔊 Tes Sekarang</button>
     </div>
-    
+
     <!-- Tab: Pengaturan -->
     <div class="tab-content" id="tab-pengaturan">
       <div class="form-group">
-        <label style="display: flex; justify-content: space-between; align-items: center;">
-          <span>Auto Save (EEPROM + Firebase)</span>
+        <label style="display:flex; justify-content:space-between; align-items:center;">
+          <span>💾 Auto Save (EEPROM)</span>
           <div class="toggle" id="autoSaveToggle" onclick="toggleAutoSave()"></div>
         </label>
       </div>
-      <button class="btn btn-admin" onclick="simpanPengaturan()">💾 Simpan Pengaturan</button>
-      <button class="btn btn-reset" style="margin-top: 10px;" onclick="resetAllSettings()">🔄 Reset Semua Pengaturan</button>
-      <button class="btn btn-off" style="margin-top: 10px;" onclick="restartESP()">🔄 Restart ESP</button>
-      <button class="btn btn-off" style="margin-top: 10px;" onclick="logout()">🚪 Keluar</button>
+      <button class="btn btn-admin" style="margin-top:10px;" onclick="simpanPengaturan()">💾 Simpan Pengaturan</button>
+      <hr style="border-color:rgba(255,255,255,0.15); margin:20px 0;">
+      <button class="btn btn-reset" style="margin-top:10px;" onclick="restartESP()">🔁 Restart ESP32</button>
+      <button class="btn btn-off"   style="margin-top:10px;" onclick="resetAllSettings()">⚠️ Reset Semua</button>
     </div>
   </div>
-  
+
   <!-- Watermark -->
-  <div class="watermark">
-    by: <strong>AryaProject</strong><br>
-    Professional Programmer
-  </div>
-  
-  <!-- PIN Input Modal -->
-  <div class="pin-input" id="pinInput">
-    <div class="pin-box">
-      <h2>🔐 Masukkan PIN Admin</h2>
-      <input type="password" id="pinField" placeholder="Masukkan PIN" maxlength="10" 
-             onkeypress="cekPINEnter(event)">
-      <div style="margin-top: 20px;">
-        <button class="btn btn-admin" onclick="cekPIN()">✓ Login</button>
-        <button class="btn btn-off" style="margin-top: 10px;" onclick="tutupPIN()">✕ Batal</button>
+  <div class="watermark">SmartLamp PJU v8 • AryaProject</div>
+</div>
+
+<!-- Modal Jadwal -->
+<div class="modal" id="modalJadwal">
+  <div class="modal-content">
+    <h2 id="judulModal" style="margin-bottom:20px;">Tambah Jadwal</h2>
+    <div class="form-group">
+      <label>Mode</label>
+      <select id="modeJadwal">
+        <option value="true">ON — Nyalakan Lampu</option>
+        <option value="false">OFF — Matikan Lampu</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Hari (Pilih Multiple)</label>
+      <div class="checkbox-group">
+        <div class="checkbox-item"><input type="checkbox" id="hari0" value="0"><label for="hari0">Min</label></div>
+        <div class="checkbox-item"><input type="checkbox" id="hari1" value="1"><label for="hari1">Sen</label></div>
+        <div class="checkbox-item"><input type="checkbox" id="hari2" value="2"><label for="hari2">Sel</label></div>
+        <div class="checkbox-item"><input type="checkbox" id="hari3" value="3"><label for="hari3">Rab</label></div>
+        <div class="checkbox-item"><input type="checkbox" id="hari4" value="4"><label for="hari4">Kam</label></div>
+        <div class="checkbox-item"><input type="checkbox" id="hari5" value="5"><label for="hari5">Jum</label></div>
+        <div class="checkbox-item"><input type="checkbox" id="hari6" value="6"><label for="hari6">Sab</label></div>
       </div>
     </div>
+    <div class="form-group">
+      <label>Tanggal (1–31, 0 = Setiap Tanggal)</label>
+      <input type="number" id="jadwalTanggal" min="0" max="31" value="0">
+    </div>
+    <div class="form-group">
+      <label>Bulan (1–12, 0 = Setiap Bulan)</label>
+      <input type="number" id="jadwalBulan" min="0" max="12" value="0">
+    </div>
+    <div class="form-group">
+      <label>Waktu (Jam : Menit)</label>
+      <div style="display:flex; gap:10px;">
+        <input type="number" id="jadwalJam"   min="0" max="23" value="18" placeholder="Jam"   style="width:50%;">
+        <input type="number" id="jadwalMenit" min="0" max="59" value="0"  placeholder="Menit" style="width:50%;">
+      </div>
+    </div>
+    <div class="form-group">
+      <label style="display:flex; justify-content:space-between; align-items:center;">
+        <span>Aktifkan Jadwal</span>
+        <div class="toggle active" id="jadwalEnabledToggle" onclick="toggleJadwalEnabled()"></div>
+      </label>
+    </div>
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button class="btn btn-admin" onclick="simpanJadwal()" style="flex:1;">💾 Simpan</button>
+      <button class="btn btn-off"   onclick="tutupModalJadwal()" style="flex:1;">✕ Batal</button>
+    </div>
   </div>
-  
-  <!-- Schedule Modal -->
-  <div class="modal" id="modalJadwal">
-    <div class="modal-content">
-      <h2 id="judulModal">Tambah Jadwal</h2>
-      <div class="form-group">
-        <label>Mode</label>
-        <select id="modeJadwal">
-          <option value="true">ON - Nyalakan Lampu</option>
-          <option value="false">OFF - Matikan Lampu</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Hari (Pilih Multiple)</label>
-        <div class="checkbox-group">
-          <!-- [FIX #5] Urutan sesuai tm_wday ESP32: 0=Min, 1=Sen, 2=Sel, 3=Rab, 4=Kam, 5=Jum, 6=Sab -->
-          <!-- bit = (1 << tm_wday): Min=1, Sen=2, Sel=4, Rab=8, Kam=16, Jum=32, Sab=64 -->
-          <div class="checkbox-item"><input type="checkbox" id="hari0" value="0"><label for="hari0">Min</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="hari1" value="1"><label for="hari1">Sen</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="hari2" value="2"><label for="hari2">Sel</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="hari3" value="3"><label for="hari3">Rab</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="hari4" value="4"><label for="hari4">Kam</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="hari5" value="5"><label for="hari5">Jum</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="hari6" value="6"><label for="hari6">Sab</label></div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Tanggal (1-31, 0 = Setiap Tanggal)</label>
-        <input type="number" id="jadwalTanggal" min="0" max="31" value="0">
-      </div>
-      <div class="form-group">
-        <label>Bulan (1-12, 0 = Setiap Bulan)</label>
-        <input type="number" id="jadwalBulan" min="0" max="12" value="0">
-      </div>
-      <div class="form-group">
-        <label>Waktu (Jam : Menit)</label>
-        <div style="display: flex; gap: 10px;">
-          <input type="number" id="jadwalJam" min="0" max="23" value="18" placeholder="Jam" style="width: 50%;">
-          <input type="number" id="jadwalMenit" min="0" max="59" value="0" placeholder="Menit" style="width: 50%;">
-        </div>
-      </div>
-      <div class="form-group">
-        <label style="display: flex; justify-content: space-between; align-items: center;">
-          <span>Aktifkan Jadwal</span>
-          <div class="toggle active" id="jadwalEnabledToggle" onclick="toggleJadwalEnabled()"></div>
-        </label>
-      </div>
-      <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button class="btn btn-admin" onclick="simpanJadwal()" style="flex: 1;">💾 Simpan</button>
-        <button class="btn btn-off" onclick="tutupModalJadwal()" style="flex: 1;">✕ Batal</button>
-      </div>
+</div>
+
+<!-- PIN Input -->
+<div class="pin-input" id="pinInput">
+  <div class="pin-box">
+    <h2>🔐 Masukkan PIN Admin</h2>
+    <input type="password" id="pinField" placeholder="••••••••"
+           onkeydown="cekPINEnter(event)" style="margin-bottom:20px;">
+    <div style="display:flex; gap:10px; justify-content:center;">
+      <button class="btn btn-admin btn-small" onclick="cekPIN()">✅ Masuk</button>
+      <button class="btn btn-off btn-small"   onclick="tutupPIN()">✕ Batal</button>
     </div>
   </div>
 </div>
@@ -583,8 +516,28 @@ th { background: rgba(255, 255, 255, 0.1); font-weight: bold; }
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
-// ==================== KONFIGURASI FIREBASE ====================
-const firebaseConfig = {
+// ============================================================
+// DEBUG LOG — didefinisikan PERTAMA sebelum apapun dipanggil
+// ============================================================
+function logDebug(message, type) {
+  type = type || 'info';
+  var debugDiv = document.getElementById('debugInfo');
+  if (!debugDiv) { console.log(message); return; }
+  var timestamp = new Date().toLocaleTimeString('id-ID');
+  var entry = document.createElement('div');
+  entry.className = 'log ' + (type === 'success' ? 'success' : type === 'error' ? 'error' : 'info');
+  entry.textContent = '[' + timestamp + '] ' + message;
+  debugDiv.appendChild(entry);
+  debugDiv.scrollTop = debugDiv.scrollHeight;
+  var logs = debugDiv.getElementsByClassName('log');
+  if (logs.length > 25) debugDiv.removeChild(logs[0]);
+  console.log('[' + timestamp + '] ' + message);
+}
+
+// ============================================================
+// FIREBASE INIT
+// ============================================================
+var firebaseConfig = {
   apiKey: "AIzaSyCfRXQKtfSQemzyESufRa-8MGNd_Pi2EeE",
   authDomain: "lampu-pju-njati.firebaseapp.com",
   databaseURL: "https://lampu-pju-njati-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -593,256 +546,191 @@ const firebaseConfig = {
   messagingSenderId: "1095543830018",
   appId: "1:1095543830018:web:f6506f68944145869c591b"
 };
-
 firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
+var database = firebase.database();
 logDebug('Firebase diinisialisasi', 'success');
 
-// ==================== VARIABEL GLOBAL ====================
-let isAdmin = localStorage.getItem('smartlamp_admin') === 'true';
-let jadwalList = [];
-let currentEditIndex = -1;
-let jadwalEnabled = true;
-let espOnline = false;
-let statusLampu = false;
-let brightnessLevel = 0;    // [FIX #1] Default 0, bukan 50
-let lastHeartbeat = 0;
-let manualOverride = false;
-let buzzerEnabled = true;
-let isDragging = false;     // [FIX #4] Flag: user sedang geser slider, jangan overwrite
-let alarmEnabled = true;    // [v4-D] status pre-alarm jadwal
+// ============================================================
+// VARIABEL GLOBAL
+// ============================================================
+var isAdmin         = localStorage.getItem('smartlamp_admin') === 'true';
+var jadwalList      = [];
+var currentEditIdx  = -1;
+var jadwalEnabled   = true;
+var espOnline       = false;
+var statusLampu     = false;
+var brightnessLevel = 0;
+var buzzerEnabled   = true;
+var alarmEnabled    = true;
+var isDragging      = false;
+var buzzerTestLock  = false;
 
+// Aktifkan admin panel jika sudah login sebelumnya
 if (isAdmin) {
   document.getElementById('adminPanel').classList.add('active');
-  logDebug('Masuk sebagai Admin', 'success');
+  logDebug('Auto-login Admin', 'success');
 }
 
-// ==================== FUNGSI DEBUG LOG ====================
-function logDebug(message, type = 'info') {
-  const debugDiv = document.getElementById('debugInfo');
-  const timestamp = new Date().toLocaleTimeString('id-ID');
-  const logClass = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
-  const logEntry = document.createElement('div');
-  logEntry.className = 'log ' + logClass;
-  logEntry.textContent = `[${timestamp}] ${message}`;
-  debugDiv.appendChild(logEntry);
-  debugDiv.scrollTop = debugDiv.scrollHeight;
-  const logs = debugDiv.getElementsByClassName('log');
-  if (logs.length > 20) debugDiv.removeChild(logs[0]);
-  console.log(`[${timestamp}] ${message}`);
-}
-
-// ==================== FIREBASE LISTENERS ====================
-database.ref('/status').on('value', (snapshot) => {
-  const data = snapshot.val();
-  if (data) {
-    logDebug('Data status diterima dari Firebase', 'success');
-    updateStatus(data);
-    updateClock(data);
-  } else {
-    logDebug('Tidak ada data status di Firebase', 'error');
-  }
-}, (error) => {
-  logDebug('Error membaca status: ' + error.message, 'error');
+// ============================================================
+// FIREBASE LISTENERS
+// ============================================================
+database.ref('/status').on('value', function(snap) {
+  var data = snap.val();
+  if (!data) { logDebug('Belum ada data status', 'error'); return; }
+  updateStatus(data);
+}, function(err) {
+  logDebug('Error status: ' + err.message, 'error');
 });
 
-database.ref('/schedules').on('value', (snapshot) => {
-  const data = snapshot.val();
+database.ref('/schedules').on('value', function(snap) {
+  var data = snap.val();
   jadwalList = [];
   if (data) {
-    Object.keys(data).forEach(key => {
-      jadwalList.push({ id: key, ...data[key] });
+    Object.keys(data).forEach(function(key) {
+      jadwalList.push(Object.assign({ id: key }, data[key]));
     });
+    try { localStorage.setItem('smartlamp_jadwal_cache', JSON.stringify(jadwalList)); } catch(e) {}
   }
-  // Update header schedule count
-  const countEl = document.getElementById('scheduleCount');
-  if (countEl) {
-    countEl.textContent = jadwalList.length > 0 ? `${jadwalList.length} aktif` : 'Kosong';
-    countEl.style.color = jadwalList.length > 0 ? '#10b981' : '#ef4444';
-  }
-  const alarmEl = document.getElementById('alarmStatus');
-  if (alarmEl) {
-    alarmEl.textContent = 'Standby';
-    alarmEl.style.color = '#10b981';
-  }
-  logDebug(`📅 ${jadwalList.length} jadwal dimuat`, 'success');
+  var el = document.getElementById('scheduleCount');
+  if (el) { el.textContent = jadwalList.length > 0 ? (jadwalList.length + ' aktif') : 'Kosong'; el.style.color = jadwalList.length > 0 ? '#10b981' : '#ef4444'; }
+  logDebug(jadwalList.length + ' jadwal dimuat', 'success');
   renderTabelJadwal();
   updateCountdowns();
-}, (error) => {
-  logDebug('Error membaca jadwal: ' + error.message, 'error');
+}, function(err) {
+  logDebug('Error jadwal: ' + err.message, 'error');
 });
 
-database.ref('/settings').on('value', (snapshot) => {
-  const data = snapshot.val();
+database.ref('/settings').on('value', function(snap) {
+  var data = snap.val();
   if (!data) return;
-  if (data.buzzerMode !== undefined)
-    document.getElementById('buzzerMode').value = data.buzzerMode;
-  if (data.buzzerEnabled !== undefined) {
-    buzzerEnabled = data.buzzerEnabled;
-    document.getElementById('buzzerEnabledToggle').classList.toggle('active', buzzerEnabled);
-  }
-  if (data.autoSave !== undefined)
-    document.getElementById('autoSaveToggle').classList.toggle('active', data.autoSave);
-  // [v4-D] Alarm settings
-  if (data.alarmEnabled !== undefined) {
-    alarmEnabled = data.alarmEnabled;
-    document.getElementById('alarmEnabledToggle').classList.toggle('active', alarmEnabled);
-  }
-  if (data.alarmTone !== undefined)
-    document.getElementById('alarmTone').value = data.alarmTone;
+  if (data.buzzerMode   !== undefined) document.getElementById('buzzerMode').value = data.buzzerMode;
+  if (data.buzzerEnabled !== undefined) { buzzerEnabled = data.buzzerEnabled; document.getElementById('buzzerEnabledToggle').classList.toggle('active', buzzerEnabled); }
+  if (data.autoSave     !== undefined) document.getElementById('autoSaveToggle').classList.toggle('active', data.autoSave);
+  if (data.alarmEnabled  !== undefined) { alarmEnabled = data.alarmEnabled; document.getElementById('alarmEnabledToggle').classList.toggle('active', alarmEnabled); }
+  if (data.alarmTone    !== undefined) document.getElementById('alarmTone').value = data.alarmTone;
 });
 
-// ==================== CLOCK FUNCTIONS ====================
-function updateClock(data) {
-  // [v4-A] Tampilkan waktu dari ESP (lebih akurat, sudah NTP sync)
-  if (data.lastUpdate && data.lastUpdate > 1000000000) {
-    const now = new Date(data.lastUpdate * 1000);
-    const day = String(now.getDate()).padStart(2,'0');
-    const month = String(now.getMonth()+1).padStart(2,'0');
-    const year = now.getFullYear();
-    document.getElementById('clockDate').textContent = `${day}/${month}/${year}`;
-    document.getElementById('clockStatus').textContent = '✅ Tersinkronisasi dengan ESP32 (NTP)';
-    document.getElementById('clockStatus').style.color = '#10b981';
-  }
-}
-
-// ==================== UPDATE STATUS DISPLAY ====================
+// ============================================================
+// UPDATE STATUS — satu if/else yang benar, tidak ada duplikat
+// ============================================================
 function updateStatus(data) {
-  const now = Math.floor(Date.now() / 1000);
-  // [FIX #2] ESP nulis ke /status/lastUpdate, bukan lastHeartbeat
-  // Bug asal: data.lastHeartbeat selalu undefined → timeDiff always huge → espOnline always false
-  const lastBeat = data.lastUpdate || 0;
-  const timeDiff = now - lastBeat;
+  var nowSec  = Math.floor(Date.now() / 1000);
+  var lastSeen = data.lastSeen || data.lastUpdate || 0;
+  var ageSec   = nowSec - lastSeen;
 
-  espOnline = timeDiff < 30;
+  espOnline = (lastSeen > 0 && ageSec < 45);
 
-  const espLed = document.getElementById('espLed');
-  const espStatus = document.getElementById('espStatus');
-  const espIP = document.getElementById('espIP');
-
+  // ESP status
+  var espLed    = document.getElementById('espLed');
+  var espStatus = document.getElementById('espStatus');
+  var espIP     = document.getElementById('espIP');
   if (espOnline) {
-    espLed.className = 'led online';
+    espLed.className      = 'led online';
     espStatus.textContent = 'Online';
-    espIP.textContent = data.ip || '--';
+    espIP.textContent     = data.ip || '--';
+    // Update clock status badge saat ESP reply
+    var cs = document.getElementById('clockStatus');
+    if (cs) { cs.textContent = '✅ Tersinkronisasi ESP32 (NTP)'; cs.style.color = '#10b981'; }
   } else {
-    espLed.className = 'led offline';
-    espStatus.textContent = 'Offline (' + timeDiff + 's)';
-    espIP.textContent = '--';
+    espLed.className      = 'led offline';
+    espStatus.textContent = lastSeen > 0 ? ('Offline (' + ageSec + 's)') : 'Offline';
+    espIP.textContent     = '--';
   }
 
-  if (data.rssi) {
-    const rssi = data.rssi;
-    const percent = Math.min(100, Math.max(0, 2 * (rssi + 100)));
+  // WiFi bars
+  if (data.rssi !== undefined) {
+    var rssi    = data.rssi;
+    var percent = Math.min(100, Math.max(0, 2 * (rssi + 100)));
     document.getElementById('wifiStrength').textContent = percent.toFixed(0) + '%';
-    document.getElementById('wifiRSSI').textContent = rssi;
-    const bars = document.querySelectorAll('.wifi-bar');
-    bars.forEach((bar, i) => {
-      bar.style.opacity = percent > (i * 25) ? '1' : '0.2';
-    });
+    document.getElementById('wifiRSSI').textContent     = rssi;
+    var bars = document.querySelectorAll('.wifi-bar');
+    bars.forEach(function(bar, i) { bar.style.opacity = percent > (i * 25) ? '1' : '0.2'; });
   }
 
-  statusLampu = data.relay === true;
-  // [FIX #3] Bug: data.brightness || 50 → kalau brightness=0 (lampu mati), hasilnya 50 karena 0 falsy!
-  // Fix: cek null/undefined secara eksplisit
+  // Lamp status
+  statusLampu     = data.relay === true;
   brightnessLevel = (data.brightness !== undefined && data.brightness !== null) ? data.brightness : 0;
-  manualOverride = data.manualOverride || false;
 
-  const lampLed = document.getElementById('lampLed');
-  const lampStatus = document.getElementById('lampStatus');
-  const lampBrightness = document.getElementById('lampBrightness');
-  const brightnessSlider = document.getElementById('brightnessSlider');
-  const manualBadge = document.getElementById('manualOverrideBadge');
-
+  var lampLed    = document.getElementById('lampLed');
+  var lampStatus = document.getElementById('lampStatus');
   if (statusLampu && brightnessLevel > 0) {
-    lampLed.className = 'led online';
+    lampLed.className     = 'led online';
     lampStatus.textContent = 'NYALA';
   } else {
-    lampLed.className = 'led offline';
+    lampLed.className     = 'led offline';
     lampStatus.textContent = 'MATI';
   }
+  document.getElementById('lampBrightness').textContent = brightnessLevel;
 
-  lampBrightness.textContent = brightnessLevel;
-  // [FIX #4] Jangan update slider kalau user sedang geser (isDragging)
-  // Bug asal: Firebase heartbeat setiap 10 detik reset posisi slider ke nilai lama
+  // Slider — hanya update kalau user tidak sedang geser
   if (!isDragging) {
-    brightnessSlider.value = brightnessLevel;
+    var sl = document.getElementById('brightnessSlider');
+    sl.value = brightnessLevel;
     updateBrightnessLabel(brightnessLevel);
-    updateSliderGradient(brightnessLevel);   // sync visual gradient juga
+    updateSliderGradient(brightnessLevel);
   }
-
-  manualBadge.style.display = manualOverride ? 'inline-block' : 'none';
 }
 
-// ==================== KONTROL LAMPU ====================
+// ============================================================
+// KONTROL LAMPU
+// ============================================================
 function kontrolLampu(state) {
-  if (!espOnline) {
-    alert('⚠️ ESP Offline! Tidak dapat mengirim perintah.');
-    return;
-  }
-  
-  logDebug('Mengirim perintah: ' + (state ? 'NYALAKAN' : 'MATIKAN'), 'info');
+  logDebug('Kirim relay: ' + (state ? 'ON' : 'OFF'), 'info');
   database.ref('/control/relay').set(state)
-    .then(() => logDebug('Perintah terkirim', 'success'))
-    .catch((error) => {
-      logDebug('Error: ' + error.message, 'error');
-      alert('Gagal: ' + error.message);
-    });
+    .then(function() { logDebug('Relay terkirim', 'success'); })
+    .catch(function(e) { logDebug('Error: ' + e.message, 'error'); alert('Gagal: ' + e.message); });
 }
 
 function setBrightness(value) {
-  if (!espOnline) {
-    alert('⚠️ ESP Offline!');
-    return;
-  }
   value = parseInt(value);
-  if (value === brightnessLevel && !isDragging) return;
-
-  logDebug('🔅 Kirim brightness: ' + value + '%', 'info');
+  if (isNaN(value)) return;
+  logDebug('Kirim brightness: ' + value + '%', 'info');
   database.ref('/control/brightness').set(value)
-    .then(() => logDebug('✅ Brightness terkirim: ' + value + '%', 'success'))
-    .catch((error) => logDebug('❌ Error brightness: ' + error.message, 'error'));
+    .then(function() { logDebug('Brightness terkirim: ' + value + '%', 'success'); })
+    .catch(function(e) { logDebug('Error brightness: ' + e.message, 'error'); });
 }
 
 function updateBrightnessLabel(value) {
   document.getElementById('brightnessValue').textContent = value + '%';
 }
 
-// [FIX SLIDER VISUAL] Update gradient track sesuai posisi thumb
 function updateSliderGradient(value) {
-  const slider = document.getElementById('brightnessSlider');
-  const pct = value + '%';
-  slider.style.background = `linear-gradient(to right, #10b981 ${pct}, rgba(255,255,255,0.2) ${pct})`;
+  var sl = document.getElementById('brightnessSlider');
+  sl.style.background = 'linear-gradient(to right, #10b981 ' + value + '%, rgba(255,255,255,0.2) ' + value + '%)';
 }
 
-// ==================== RESET SETTINGS ====================
+// ============================================================
+// RESET / RESTART
+// ============================================================
 function resetSettings() {
-  if (confirm('Reset pengaturan ke default?')) {
-    database.ref('/control/resetSettings').set(true)
-      .then(() => {
-        logDebug('Reset terkirim', 'success');
-        alert('✅ Reset sedang diproses...');
-      })
-      .catch((error) => alert('❌ Gagal: ' + error.message));
-  }
+  if (!confirm('Reset pengaturan ke default?')) return;
+  database.ref('/control/resetSettings').set(true)
+    .then(function() { logDebug('Reset terkirim', 'success'); alert('✅ Reset diproses...'); })
+    .catch(function(e) { alert('❌ Gagal: ' + e.message); });
 }
 
 function resetAllSettings() {
-  if (confirm('RESET SEMUA PENGATURAN?')) {
-    database.ref('/settings').remove()
-      .then(() => {
-        logDebug('All reset', 'success');
-        alert('✅ Semua direset!');
-      })
-      .catch((error) => alert('❌ Gagal: ' + error.message));
-  }
+  if (!confirm('RESET SEMUA PENGATURAN?')) return;
+  database.ref('/settings').remove()
+    .then(function() { logDebug('All reset', 'success'); alert('✅ Semua direset!'); })
+    .catch(function(e) { alert('❌ Gagal: ' + e.message); });
 }
 
-// ==================== PIN INPUT ====================
+function restartESP() {
+  if (!confirm('Restart ESP32?')) return;
+  database.ref('/control/restart').set(true)
+    .then(function() { logDebug('Restart terkirim', 'success'); alert('✅ Restart terkirim!'); })
+    .catch(function(e) { logDebug('Error: ' + e.message, 'error'); });
+}
+
+// ============================================================
+// PIN / AUTH
+// ============================================================
 function tampilkanPIN() {
-  if (isAdmin) return;
+  if (isAdmin) { document.getElementById('adminPanel').classList.add('active'); return; }
   document.getElementById('pinInput').classList.add('active');
   document.getElementById('pinField').value = '';
-  document.getElementById('pinField').focus();
+  setTimeout(function() { document.getElementById('pinField').focus(); }, 100);
 }
 
 function tutupPIN() {
@@ -854,7 +742,7 @@ function cekPINEnter(event) {
 }
 
 function cekPIN() {
-  const pin = document.getElementById('pinField').value;
+  var pin = document.getElementById('pinField').value;
   if (pin === 'RCLED123') {
     isAdmin = true;
     localStorage.setItem('smartlamp_admin', 'true');
@@ -869,56 +757,52 @@ function cekPIN() {
 }
 
 function logout() {
-  if (confirm('Keluar dari admin?')) {
-    isAdmin = false;
-    localStorage.removeItem('smartlamp_admin');
-    document.getElementById('adminPanel').classList.remove('active');
-    logDebug('Logout', 'info');
-  }
+  if (!confirm('Keluar dari admin?')) return;
+  isAdmin = false;
+  localStorage.removeItem('smartlamp_admin');
+  document.getElementById('adminPanel').classList.remove('active');
+  logDebug('Logout', 'info');
 }
 
-// ==================== TAB SWITCHING ====================
-function switchTab(tabName) {
-  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('tab-' + tabName).classList.add('active');
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(tabName, el) {
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  var tc = document.getElementById('tab-' + tabName);
+  if (tc) tc.classList.add('active');
 }
 
-// ==================== FUNGSI JADWAL ====================
+// ============================================================
+// JADWAL FUNCTIONS
+// ============================================================
 function tambahJadwal(isON) {
-  currentEditIndex = -1;
+  currentEditIdx = -1;
   document.getElementById('judulModal').textContent = 'Tambah Jadwal ' + (isON ? 'ON' : 'OFF');
-  document.getElementById('modeJadwal').value = isON;
-  // [FIX #5] Clear hari0-6
-  for (let i = 0; i <= 6; i++) {
-    const cb = document.getElementById('hari' + i);
-    if (cb) cb.checked = false;
-  }
+  document.getElementById('modeJadwal').value = isON.toString();
+  for (var i = 0; i <= 6; i++) { var cb = document.getElementById('hari' + i); if (cb) cb.checked = false; }
   document.getElementById('jadwalTanggal').value = 0;
-  document.getElementById('jadwalBulan').value = 0;
-  document.getElementById('jadwalJam').value = 18;
-  document.getElementById('jadwalMenit').value = 0;
+  document.getElementById('jadwalBulan').value   = 0;
+  document.getElementById('jadwalJam').value     = 18;
+  document.getElementById('jadwalMenit').value   = 0;
   jadwalEnabled = true;
   document.getElementById('jadwalEnabledToggle').classList.add('active');
   document.getElementById('modalJadwal').classList.add('active');
 }
 
 function editJadwal(index) {
-  currentEditIndex = index;
-  const jadwal = jadwalList[index];
+  currentEditIdx = index;
+  var j = jadwalList[index];
   document.getElementById('judulModal').textContent = 'Edit Jadwal';
-  document.getElementById('modeJadwal').value = jadwal.isON;
-  // [FIX #5] Sesuai hari0-6 (tm_wday index)
-  for (let i = 0; i <= 6; i++) {
-    const cb = document.getElementById('hari' + i);
-    if (cb) cb.checked = (jadwal.days & (1 << i)) !== 0;
-  }
-  document.getElementById('jadwalTanggal').value = jadwal.date || 0;
-  document.getElementById('jadwalBulan').value = jadwal.month || 0;
-  document.getElementById('jadwalJam').value = jadwal.hour;
-  document.getElementById('jadwalMenit').value = jadwal.minute;
-  jadwalEnabled = jadwal.enabled;
+  document.getElementById('modeJadwal').value = j.isON.toString();
+  for (var i = 0; i <= 6; i++) { var cb = document.getElementById('hari' + i); if (cb) cb.checked = (j.days & (1 << i)) !== 0; }
+  document.getElementById('jadwalTanggal').value = j.date   || 0;
+  document.getElementById('jadwalBulan').value   = j.month  || 0;
+  document.getElementById('jadwalJam').value     = j.hour;
+  document.getElementById('jadwalMenit').value   = j.minute;
+  jadwalEnabled = j.enabled;
   document.getElementById('jadwalEnabledToggle').classList.toggle('active', jadwalEnabled);
   document.getElementById('modalJadwal').classList.add('active');
 }
@@ -933,204 +817,91 @@ function toggleJadwalEnabled() {
 }
 
 function simpanJadwal() {
-  let days = 0;
-  // [FIX #5] Loop hari0-6 sesuai tm_wday (0=Min...6=Sab), bit = (1 << tm_wday_index)
-  for (let i = 0; i <= 6; i++) {
-    const cb = document.getElementById('hari' + i);
-    if (cb && cb.checked) {
-      days |= (1 << i);
-    }
-  }
-  
-  const jadwal = {
+  var days = 0;
+  for (var i = 0; i <= 6; i++) { var cb = document.getElementById('hari' + i); if (cb && cb.checked) days |= (1 << i); }
+  var data = {
     enabled: jadwalEnabled,
-    isON: document.getElementById('modeJadwal').value === 'true',
-    days: days,
-    date: parseInt(document.getElementById('jadwalTanggal').value),
-    month: parseInt(document.getElementById('jadwalBulan').value),
-    hour: parseInt(document.getElementById('jadwalJam').value),
-    minute: parseInt(document.getElementById('jadwalMenit').value)
+    isON:    document.getElementById('modeJadwal').value === 'true',
+    days:    days,
+    date:    parseInt(document.getElementById('jadwalTanggal').value) || 0,
+    month:   parseInt(document.getElementById('jadwalBulan').value)   || 0,
+    hour:    parseInt(document.getElementById('jadwalJam').value),
+    minute:  parseInt(document.getElementById('jadwalMenit').value)
   };
-  
-  if (currentEditIndex >= 0) {
-    database.ref('/schedules/' + jadwalList[currentEditIndex].id).update(jadwal)
-      .then(() => { logDebug('Jadwal diupdate', 'success'); tutupModalJadwal(); })
-      .catch((error) => alert('Gagal: ' + error.message));
+  var ref = currentEditIdx >= 0
+    ? database.ref('/schedules/' + jadwalList[currentEditIdx].id)
+    : database.ref('/schedules').push;
+  if (currentEditIdx >= 0) {
+    database.ref('/schedules/' + jadwalList[currentEditIdx].id).update(data)
+      .then(function() { logDebug('Jadwal diupdate', 'success'); tutupModalJadwal(); })
+      .catch(function(e) { alert('Gagal: ' + e.message); });
   } else {
-    database.ref('/schedules').push(jadwal)
-      .then(() => { logDebug('Jadwal ditambah', 'success'); tutupModalJadwal(); })
-      .catch((error) => alert('Gagal: ' + error.message));
+    database.ref('/schedules').push(data)
+      .then(function() { logDebug('Jadwal ditambah', 'success'); tutupModalJadwal(); })
+      .catch(function(e) { alert('Gagal: ' + e.message); });
   }
 }
 
 function hapusJadwal(index) {
-  if (confirm('Hapus jadwal?')) {
-    database.ref('/schedules/' + jadwalList[index].id).remove()
-      .then(() => logDebug('Jadwal dihapus', 'success'))
-      .catch((error) => alert('Gagal: ' + error.message));
-  }
+  if (!confirm('Hapus jadwal?')) return;
+  database.ref('/schedules/' + jadwalList[index].id).remove()
+    .then(function() { logDebug('Jadwal dihapus', 'success'); })
+    .catch(function(e) { alert('Gagal: ' + e.message); });
 }
 
 function toggleJadwal(index) {
-  const jadwal = jadwalList[index];
-  database.ref('/schedules/' + jadwal.id).update({ enabled: !jadwal.enabled })
-    .then(() => logDebug('Status diubah', 'success'))
-    .catch((error) => logDebug('Error: ' + error.message, 'error'));
+  var j = jadwalList[index];
+  database.ref('/schedules/' + j.id).update({ enabled: !j.enabled })
+    .then(function() { logDebug('Status jadwal diubah', 'success'); })
+    .catch(function(e) { logDebug('Error: ' + e.message, 'error'); });
 }
 
 function renderTabelJadwal() {
-  const tbody = document.getElementById('bodyJadwal');
+  var tbody = document.getElementById('bodyJadwal');
+  if (!tbody) return;
   if (jadwalList.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Belum ada jadwal</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; opacity:0.6;">Belum ada jadwal</td></tr>';
     return;
   }
-  
-  // [FIX #5] Index sesuai tm_wday: 0=Min, 1=Sen, ..., 6=Sab
-  const namaHari = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-  tbody.innerHTML = jadwalList.map((jadwal, index) => {
-    let teksHari = '';
-    if (jadwal.days === 0) {
-      teksHari = 'Setiap Hari';
-    } else {
-      let hariTerpilih = [];
-      for (let i = 0; i < 7; i++) {
-        if (jadwal.days & (1 << i)) hariTerpilih.push(namaHari[i]);
-      }
-      teksHari = hariTerpilih.join(', ');
-    }
-    
-    const teksTanggal = jadwal.date === 0 ? 'Setiap Tanggal' : jadwal.date;
-    const teksBulan = jadwal.month === 0 ? 'Setiap Bulan' : jadwal.month;
-    const teksWaktu = String(jadwal.hour).padStart(2, '0') + ':' + String(jadwal.minute).padStart(2, '0');
-    
-    return `
-      <tr>
-        <td style="color: ${jadwal.isON ? '#10b981' : '#ef4444'}; font-weight: bold;">
-          ${jadwal.isON ? '🔆 ON' : '🌙 OFF'}
-        </td>
-        <td>${teksHari}</td>
-        <td>${teksTanggal}</td>
-        <td>${teksBulan}</td>
-        <td>${teksWaktu}</td>
-        <td>
-          <div class="toggle ${jadwal.enabled ? 'active' : ''}" onclick="toggleJadwal(${index})"></div>
-        </td>
-        <td>
-          <button class="btn btn-admin btn-small" onclick="editJadwal(${index})">✏️</button>
-          <button class="btn btn-off btn-small" onclick="hapusJadwal(${index})">🗑️</button>
-        </td>
-      </tr>
-    `;
+  var namaHari = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+  tbody.innerHTML = jadwalList.map(function(j, idx) {
+    var teksHari = j.days === 0 ? 'Setiap Hari' : namaHari.filter(function(_, i) { return j.days & (1 << i); }).join(', ');
+    var waktu    = String(j.hour).padStart(2,'0') + ':' + String(j.minute).padStart(2,'0');
+    return '<tr>'
+      + '<td style="color:' + (j.isON ? '#10b981' : '#ef4444') + '; font-weight:bold;">' + (j.isON ? '🔆 ON' : '🌙 OFF') + '</td>'
+      + '<td>' + teksHari + '</td>'
+      + '<td>' + (j.date  === 0 ? 'Setiap' : j.date)  + '</td>'
+      + '<td>' + (j.month === 0 ? 'Setiap' : j.month) + '</td>'
+      + '<td>' + waktu + '</td>'
+      + '<td><div class="toggle ' + (j.enabled ? 'active' : '') + '" onclick="toggleJadwal(' + idx + ')"></div></td>'
+      + '<td>'
+        + '<button class="btn btn-admin btn-small" onclick="editJadwal(' + idx + ')">✏️</button>'
+        + '<button class="btn btn-off btn-small"   onclick="hapusJadwal(' + idx + ')">🗑️</button>'
+      + '</td>'
+      + '</tr>';
   }).join('');
 }
 
-// ==================== COUNTDOWN ====================
-// ==================== SCHEDULE EXECUTION ENGINE ====================
-// [FIX JADWAL] Eksekusi jadwal di client-side — kirim perintah nyata ke Firebase
-// Backup dari ESP executeSchedules, juga jalan mandiri di browser
-// ==================== SCHEDULE ENGINE ====================
-// Jadwal utama dieksekusi oleh ESP32 (firmware v5 - offline/online).
-// Fungsi ini adalah BACKUP dari browser saat web sedang terbuka.
-// Tidak perlu espOnline — kalau Firebase connect, perintah akan sampai ke ESP.
-
-const executedScheduleKeys = new Set();
-const alarmFiredKeys = new Set();
-let lastCleanupMinute = -1;
-
-function checkScheduleExecution() {
-  // Tidak perlu cek espOnline — Firebase yang menentukan apakah command sampai
-  if (jadwalList.length === 0) return;
-
-  const now = new Date();
-  const currentH     = now.getHours();
-  const currentM     = now.getMinutes();
-  const currentS     = now.getSeconds();
-  const currentDay   = now.getDay();
-  const currentDate  = now.getDate();
-  const currentMonth = now.getMonth() + 1;
-  const currentYear  = now.getFullYear();
-  const nowTotalSec  = currentH * 3600 + currentM * 60 + currentS;
-
-  // Bersihkan executed set saat menit berganti
-  if (currentM !== lastCleanupMinute) {
-    lastCleanupMinute = currentM;
-    executedScheduleKeys.forEach(key => {
-      const minSuffix = `-${String(currentH).padStart(2,'0')}-${String(currentM).padStart(2,'0')}`;
-      if (!key.endsWith(minSuffix)) executedScheduleKeys.delete(key);
-    });
-  }
-
-  jadwalList.forEach(jadwal => {
-    if (!jadwal.enabled) return;
-
-    const jH = parseInt(jadwal.hour);
-    const jM = parseInt(jadwal.minute);
-    const dayMatch   = (jadwal.days === 0) || ((jadwal.days & (1 << currentDay)) !== 0);
-    const dateMatch  = (!jadwal.date  || jadwal.date  === 0 || jadwal.date  === currentDate);
-    const monthMatch = (!jadwal.month || jadwal.month === 0 || jadwal.month === currentMonth);
-    const yearMatch  = (!jadwal.year  || jadwal.year  === 0 || jadwal.year  === currentYear);
-    if (!dayMatch || !dateMatch || !monthMatch || !yearMatch) return;
-
-    const schedTotalSec = jH * 3600 + jM * 60;
-    let secsUntil = schedTotalSec - nowTotalSec;
-    if (secsUntil < -60)  secsUntil += 86400;
-    if (secsUntil > 86400) secsUntil -= 86400;
-
-    const alarmKey = `alarm-${jadwal.id}-${currentYear}-${currentMonth}-${currentDate}-${String(jH).padStart(2,'0')}-${String(jM).padStart(2,'0')}`;
-
-    // [v5-C] PRE-ALARM 8–12 detik sebelum jadwal (5 detik window)
-    if (secsUntil >= 8 && secsUntil <= 12 && !alarmFiredKeys.has(alarmKey)) {
-      alarmFiredKeys.add(alarmKey);
-      const cmd = jadwal.isON === true || jadwal.isON === 'true';
-      logDebug(`🔔 ALARM: ${cmd ? '🔆 NYALA' : '🌙 MATI'} dalam ${secsUntil} detik`, 'info');
-      document.getElementById('alarmStatus').textContent = `Aktif (${secsUntil}s)`;
-      document.getElementById('alarmStatus').style.color = '#ef4444';
-      // Reset alarm status setelah 15 detik
-      setTimeout(() => {
-        document.getElementById('alarmStatus').textContent = 'Standby';
-        document.getElementById('alarmStatus').style.color = '#10b981';
-      }, 15000);
-    }
-
-    // EKSEKUSI jadwal: detik 0–4
-    if (jH !== currentH || jM !== currentM) return;
-    if (currentS > 4) return;
-
-    const execKey = `${jadwal.id}-${currentYear}-${currentMonth}-${currentDate}-${String(jH).padStart(2,'0')}-${String(jM).padStart(2,'0')}`;
-    if (executedScheduleKeys.has(execKey)) return;
-    executedScheduleKeys.add(execKey);
-
-    const cmd = jadwal.isON === true || jadwal.isON === 'true';
-    logDebug(`⏰ JADWAL JALAN: ${cmd ? '🔆 NYALA' : '🌙 MATI'} @ ${String(jH).padStart(2,'0')}:${String(jM).padStart(2,'0')}`, 'success');
-
-    database.ref('/control/relay').set(cmd)
-      .then(() => logDebug(`✅ Perintah jadwal terkirim: ${cmd ? 'ON' : 'OFF'}`, 'success'))
-      .catch((err) => logDebug('❌ Gagal: ' + err.message, 'error'));
-  });
-}
-
-// ==================== COUNTDOWN ====================
+// ============================================================
+// COUNTDOWN — next ON / OFF
+// ============================================================
 function updateCountdowns() {
-  const now = new Date();
-  let nextON  = null;
-  let nextOFF = null;
-  const currentDay = now.getDay();
+  var now        = new Date();
+  var currentDay = now.getDay();
+  var nextON     = null;
+  var nextOFF    = null;
 
-  jadwalList.forEach(jadwal => {
-    if (!jadwal.enabled) return;
-
-    // Cari hari terdekat yang match (cek 7 hari ke depan)
-    for (let d = 0; d < 8; d++) {
-      const checkDay = (currentDay + d) % 7;
-      const dayMatch = (jadwal.days === 0) || ((jadwal.days & (1 << checkDay)) !== 0);
+  jadwalList.forEach(function(j) {
+    if (!j.enabled) return;
+    for (var d = 0; d < 8; d++) {
+      var checkDay  = (currentDay + d) % 7;
+      var dayMatch  = (j.days === 0) || ((j.days & (1 << checkDay)) !== 0);
       if (!dayMatch) continue;
-
-      const candidate = new Date(now);
+      var candidate = new Date(now);
       candidate.setDate(now.getDate() + d);
-      candidate.setHours(jadwal.hour, jadwal.minute, 0, 0);
+      candidate.setHours(j.hour, j.minute, 0, 0);
       if (candidate <= now) continue;
-
-      const isON = jadwal.isON === true || jadwal.isON === 'true';
+      var isON = (j.isON === true || j.isON === 'true');
       if (isON)  { if (!nextON  || candidate < nextON)  nextON  = candidate; }
       else       { if (!nextOFF || candidate < nextOFF) nextOFF = candidate; }
       break;
@@ -1138,119 +909,218 @@ function updateCountdowns() {
   });
 
   function fmt(target) {
-    const diff = target - now;
+    var diff = target - now;
     if (diff <= 0) return '00:00:00';
-    const h = Math.floor(diff / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    var h = Math.floor(diff / 3600000);
+    var m = Math.floor((diff % 3600000) / 60000);
+    var s = Math.floor((diff % 60000) / 1000);
+    return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
   }
 
-  document.getElementById('nextON').textContent  = nextON  ? fmt(nextON)  : 'Tidak Ada';
-  document.getElementById('nextOFF').textContent = nextOFF ? fmt(nextOFF) : 'Tidak Ada';
+  var elON  = document.getElementById('nextON');
+  var elOFF = document.getElementById('nextOFF');
+  if (elON)  elON.textContent  = nextON  ? fmt(nextON)  : 'Tidak Ada';
+  if (elOFF) elOFF.textContent = nextOFF ? fmt(nextOFF) : 'Tidak Ada';
 }
 
-// ==================== BUZZER FUNCTIONS ====================
+// ============================================================
+// SCHEDULE EXECUTION ENGINE — backup eksekusi dari browser
+// ============================================================
+var executedScheduleKeys = {};  // object sebagai set — lebih reliable dari Set di Firefox lama
+var alarmFiredKeys       = {};
+var lastCleanupMinute    = -1;
+
+function checkScheduleExecution() {
+  if (jadwalList.length === 0) return;
+  var now         = new Date();
+  var currentH    = now.getHours();
+  var currentM    = now.getMinutes();
+  var currentS    = now.getSeconds();
+  var currentDay  = now.getDay();
+  var currentDate = now.getDate();
+  var currentMon  = now.getMonth() + 1;
+  var currentYear = now.getFullYear();
+
+  // Bersihkan executed keys saat menit berganti
+  if (currentM !== lastCleanupMinute) {
+    lastCleanupMinute = currentM;
+    Object.keys(executedScheduleKeys).forEach(function(k) {
+      if (k.indexOf('-' + String(currentH).padStart(2,'0') + '-' + String(currentM).padStart(2,'0')) < 0) {
+        delete executedScheduleKeys[k];
+      }
+    });
+  }
+
+  jadwalList.forEach(function(j) {
+    if (!j.enabled) return;
+    var jH = parseInt(j.hour);
+    var jM = parseInt(j.minute);
+
+    var dayMatch  = (j.days === 0) || ((j.days & (1 << currentDay)) !== 0);
+    var dateMatch = (!j.date  || j.date  === 0 || j.date  === currentDate);
+    var monMatch  = (!j.month || j.month === 0 || j.month === currentMon);
+    var yearMatch = (!j.year  || j.year  === 0 || j.year  === currentYear);
+    if (!dayMatch || !dateMatch || !monMatch || !yearMatch) return;
+
+    // PRE-ALARM: 8–12 detik sebelum jadwal
+    var nowTotalSec   = currentH * 3600 + currentM * 60 + currentS;
+    var schedTotalSec = jH * 3600 + jM * 60;
+    var secsUntil = schedTotalSec - nowTotalSec;
+    if (secsUntil < -60)   secsUntil += 86400;
+    if (secsUntil > 86400) secsUntil -= 86400;
+
+    var alarmKey = 'alarm-' + j.id + '-' + currentYear + '-' + currentMon + '-' + currentDate + '-' + String(jH).padStart(2,'0') + '-' + String(jM).padStart(2,'0');
+    if (secsUntil >= 8 && secsUntil <= 12 && !alarmFiredKeys[alarmKey]) {
+      alarmFiredKeys[alarmKey] = true;
+      var cmd = (j.isON === true || j.isON === 'true');
+      logDebug('🔔 ALARM: ' + (cmd ? '🔆 NYALA' : '🌙 MATI') + ' dalam ' + secsUntil + ' detik', 'info');
+      var alarmEl = document.getElementById('alarmStatus');
+      if (alarmEl) { alarmEl.textContent = 'Aktif (' + secsUntil + 's)'; alarmEl.style.color = '#ef4444'; }
+      setTimeout(function() {
+        var el = document.getElementById('alarmStatus');
+        if (el) { el.textContent = 'Standby'; el.style.color = '#10b981'; }
+      }, 15000);
+    }
+
+    // EKSEKUSI tepat waktu (detik 0–4)
+    if (jH !== currentH || jM !== currentM || currentS > 4) return;
+    var execKey = j.id + '-' + currentYear + '-' + currentMon + '-' + currentDate + '-' + String(jH).padStart(2,'0') + '-' + String(jM).padStart(2,'0');
+    if (executedScheduleKeys[execKey]) return;
+    executedScheduleKeys[execKey] = true;
+
+    var cmdOn = (j.isON === true || j.isON === 'true');
+    logDebug('⏰ JADWAL: ' + (cmdOn ? '🔆 ON' : '🌙 OFF') + ' @ ' + String(jH).padStart(2,'0') + ':' + String(jM).padStart(2,'0'), 'success');
+    database.ref('/control/relay').set(cmdOn)
+      .then(function() { logDebug('✅ Jadwal terkirim ke Firebase', 'success'); })
+      .catch(function(e) { logDebug('❌ Gagal: ' + e.message, 'error'); });
+  });
+}
+
+// ============================================================
+// BUZZER FUNCTIONS
+// ============================================================
 function toggleBuzzerEnabled() {
   buzzerEnabled = !buzzerEnabled;
   document.getElementById('buzzerEnabledToggle').classList.toggle('active', buzzerEnabled);
   database.ref('/settings/buzzerEnabled').set(buzzerEnabled)
-    .then(() => logDebug('Buzzer: ' + (buzzerEnabled ? 'ON' : 'OFF'), 'success'))
-    .catch((error) => logDebug('Error: ' + error.message, 'error'));
+    .then(function() { logDebug('Buzzer: ' + (buzzerEnabled ? 'ON' : 'OFF'), 'success'); })
+    .catch(function(e) { logDebug('Error: ' + e.message, 'error'); });
 }
 
-// [v4-D] Pre-alarm toggle
 function toggleAlarmEnabled() {
   alarmEnabled = !alarmEnabled;
   document.getElementById('alarmEnabledToggle').classList.toggle('active', alarmEnabled);
   database.ref('/settings/alarmEnabled').set(alarmEnabled)
-    .then(() => logDebug('Alarm jadwal: ' + (alarmEnabled ? 'ON' : 'OFF'), 'success'))
-    .catch((error) => logDebug('Error: ' + error.message, 'error'));
+    .then(function() { logDebug('Alarm jadwal: ' + (alarmEnabled ? 'ON' : 'OFF'), 'success'); })
+    .catch(function(e) { logDebug('Error: ' + e.message, 'error'); });
 }
 
-// [v4-D] Simpan pilihan nada alarm
 function simpanAlarmTone() {
-  const tone = parseInt(document.getElementById('alarmTone').value);
+  var tone = parseInt(document.getElementById('alarmTone').value);
   database.ref('/settings/alarmTone').set(tone)
-    .then(() => logDebug('Nada alarm disimpan: ' + tone, 'success'))
-    .catch((error) => logDebug('Error: ' + error.message, 'error'));
+    .then(function() { logDebug('Nada alarm: ' + tone, 'success'); })
+    .catch(function(e) { logDebug('Error: ' + e.message, 'error'); });
 }
 
 function simpanModeBuzzer() {
-  const mode = document.getElementById('buzzerMode').value;
-  database.ref('/settings/buzzerMode').set(parseInt(mode))
-    .then(() => logDebug('Mode buzzer disimpan', 'success'))
-    .catch((error) => logDebug('Error: ' + error.message, 'error'));
+  var mode = parseInt(document.getElementById('buzzerMode').value);
+  database.ref('/settings/buzzerMode').set(mode)
+    .then(function() { logDebug('Mode buzzer: ' + mode, 'success'); })
+    .catch(function(e) { logDebug('Error: ' + e.message, 'error'); });
 }
 
-function tesBuzzer() {
-  const preset = document.getElementById('buzzerPreset').value;
-  database.ref('/control/testBuzzer').set(parseInt(preset))
-    .then(() => logDebug('Tes buzzer terkirim', 'success'))
-    .catch((error) => logDebug('Error: ' + error.message, 'error'));
+function tesBuzzerNada(nada) {
+  if (buzzerTestLock) { logDebug('⏳ Tunggu sebentar...', 'info'); return; }
+  buzzerTestLock = true;
+  document.querySelectorAll('.btn-buzz-test').forEach(function(b) { b.classList.remove('playing'); });
+  var btns = document.querySelectorAll('.btn-buzz-test');
+  if (btns[nada - 1]) btns[nada - 1].classList.add('playing');
+  logDebug('🔊 Tes Nada ' + nada + '...', 'info');
+  database.ref('/control/testBuzzer').set(nada)
+    .then(function() {
+      logDebug('✅ Nada ' + nada + ' diputar di ESP32', 'success');
+      setTimeout(function() {
+        database.ref('/control/testBuzzer').set(0);
+        document.querySelectorAll('.btn-buzz-test').forEach(function(b) { b.classList.remove('playing'); });
+        buzzerTestLock = false;
+      }, 2500);
+    })
+    .catch(function(e) {
+      logDebug('❌ Error: ' + e.message, 'error');
+      buzzerTestLock = false;
+    });
 }
 
-// ==================== PENGATURAN ====================
+function tesAlarmTone() {
+  var nada = parseInt(document.getElementById('alarmTone').value);
+  tesBuzzerNada(nada);
+}
+
+// ============================================================
+// PENGATURAN
+// ============================================================
 function toggleAutoSave() {
-  const toggle = document.getElementById('autoSaveToggle');
-  const isActive = toggle.classList.contains('active');
-  toggle.classList.toggle('active', !isActive);
-  database.ref('/settings/autoSave').set(!isActive);
-  logDebug('Auto save: ' + (!isActive ? 'ON' : 'OFF'), 'info');
+  var t = document.getElementById('autoSaveToggle');
+  var on = !t.classList.contains('active');
+  t.classList.toggle('active', on);
+  database.ref('/settings/autoSave').set(on);
+  logDebug('Auto save: ' + (on ? 'ON' : 'OFF'), 'info');
 }
 
 function simpanPengaturan() {
-  Promise.all([
-    database.ref('/settings/autoSave').set(document.getElementById('autoSaveToggle').classList.contains('active'))
-  ]).then(() => {
-    logDebug('Pengaturan disimpan', 'success');
-    alert('✅ Pengaturan berhasil disimpan!');
-  }).catch((error) => {
-    logDebug('Error: ' + error.message, 'error');
-    alert('❌ Gagal: ' + error.message);
-  });
+  var on = document.getElementById('autoSaveToggle').classList.contains('active');
+  database.ref('/settings/autoSave').set(on)
+    .then(function() { logDebug('Pengaturan disimpan', 'success'); alert('✅ Tersimpan!'); })
+    .catch(function(e) { alert('❌ Gagal: ' + e.message); });
 }
 
-function restartESP() {
-  if (confirm('Restart ESP?')) {
-    database.ref('/control/restart').set(true)
-      .then(() => {
-        logDebug('Restart terkirim', 'success');
-        alert('✅ Restart terkirim!');
-      })
-      .catch((error) => logDebug('Error: ' + error.message, 'error'));
+// ============================================================
+// CLOCK — jalan dari browser, tidak butuh ESP
+// ============================================================
+setInterval(function() {
+  var now = new Date();
+  var h  = String(now.getHours()).padStart(2,'0');
+  var m  = String(now.getMinutes()).padStart(2,'0');
+  var s  = String(now.getSeconds()).padStart(2,'0');
+  var d  = String(now.getDate()).padStart(2,'0');
+  var mo = String(now.getMonth() + 1).padStart(2,'0');
+  var yr = now.getFullYear();
+
+  document.getElementById('clockTime').textContent = h + ':' + m + ':' + s;
+  document.getElementById('clockDate').textContent = d + '/' + mo + '/' + yr;
+
+  // Update status hanya jika belum dapat sinyal ESP
+  var cs = document.getElementById('clockStatus');
+  if (cs && cs.textContent === '⏳ Memuat...') {
+    cs.textContent = '🕐 Jam browser (menunggu ESP...)';
+    cs.style.color = '#f59e0b';
   }
-}
-
-// Satu interval: clock + countdown + schedule execution (setiap detik)
-setInterval(() => {
-  const now = new Date();
-  const h = String(now.getHours()).padStart(2,'0');
-  const m = String(now.getMinutes()).padStart(2,'0');
-  const s = String(now.getSeconds()).padStart(2,'0');
-  document.getElementById('clockTime').textContent = `${h}:${m}:${s}`;
 
   updateCountdowns();
   checkScheduleExecution();
-
-  // Update next-alarm countdown di header jika ada jadwal dalam 15 detik
-  const sec = parseInt(s);
-  if (sec === 0) {
-    // Reset alarm fired keys setiap awal menit baru (jam berbeda)
-    const minuteKey = `${h}${m}`;
-    alarmFiredKeys.forEach(k => {
-      if (!k.includes(`-${h.padStart(2,'0')}-${m.padStart(2,'0')}`)) {
-        // key dari menit lain - biarkan, dibersihkan nanti
-      }
-    });
-  }
 }, 1000);
 
-// Init pada load
+// ============================================================
+// INIT — load cache jadwal sebelum Firebase reply
+// ============================================================
 updateSliderGradient(0);
-const alarmEl = document.getElementById('alarmStatus');
-if (alarmEl) { alarmEl.textContent = 'Standby'; alarmEl.style.color = '#10b981'; }
-logDebug('✅ Sistem siap! Jadwal & alarm engine aktif (ESP32 + Browser backup).', 'success');
+
+try {
+  var cached = localStorage.getItem('smartlamp_jadwal_cache');
+  if (cached) {
+    var parsed = JSON.parse(cached);
+    if (Array.isArray(parsed) && parsed.length > 0 && jadwalList.length === 0) {
+      jadwalList = parsed;
+      var ce = document.getElementById('scheduleCount');
+      if (ce) { ce.textContent = parsed.length + ' aktif (cache)'; ce.style.color = '#f59e0b'; }
+      renderTabelJadwal();
+      updateCountdowns();
+      logDebug(parsed.length + ' jadwal dari cache', 'info');
+    }
+  }
+} catch(e) {}
+
+logDebug('✅ Sistem siap — jam & jadwal jalan mandiri', 'success');
 </script>
 </body>
 </html>
