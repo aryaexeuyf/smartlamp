@@ -2,1125 +2,2407 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartLamp PJU - Panel Kontrol</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#020813">
+<title>AP-PJU Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+/* ═══════════════════════════════════════════════════
+   CSS CUSTOM PROPERTIES
+═══════════════════════════════════════════════════ */
+:root{
+  /* Core palette */
+  --ink:       #020813;
+  --ink2:      #050e20;
+  --ink3:      #08152e;
+  --ink4:      #0d1e3e;
+  --blue:      #1e40af;
+  --blue2:     #2563eb;
+  --teal:      #0ea5e9;
+  --gold:      #d97706;
+  --gold2:     #f59e0b;
+  --gold3:     #fbbf24;
+  --gold4:     #fef3c7;
+  --emerald:   #059669;
+  --em2:       #10b981;
+  --em3:       #34d399;
+  --ruby:      #dc2626;
+  --ruby2:     #ef4444;
+  --ruby3:     #f87171;
+  --violet:    #6d28d9;
+  --vio2:      #7c3aed;
+  --white:     #f0f6ff;
+  --muted:     rgba(160,192,255,0.5);
+  --muted2:    rgba(160,192,255,0.25);
+  /* Glass surfaces */
+  --g1: rgba(255,255,255,0.028);
+  --g2: rgba(255,255,255,0.055);
+  --g3: rgba(255,255,255,0.08);
+  /* Borders */
+  --b0: rgba(255,255,255,0.06);
+  --b1: rgba(255,255,255,0.09);
+  --bg: rgba(245,158,11,0.22);
+  --bb: rgba(37,99,235,0.28);
+  /* Glows */
+  --glow-g: 0 0 20px rgba(245,158,11,0.3);
+  --glow-b: 0 0 20px rgba(37,99,235,0.35);
+  --glow-e: 0 0 20px rgba(16,185,129,0.35);
+  --glow-r: 0 0 20px rgba(239,68,68,0.3);
+  /* Radii */
+  --r4: 4px; --r8: 8px; --r12: 12px;
+  --r16: 16px; --r20: 20px; --r24: 24px;
+  /* Transitions */
+  --tr: 0.22s ease;
+}
+
+/* ═══════════════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  overscroll-behavior: none;
+}
+body{
+  font-family:'Rajdhani',sans-serif;
+  background: var(--ink);
+  color: var(--white);
+  min-height: 100dvh;
   min-height: 100vh;
-  background-size: 400% 400%;
-  animation: gradientShift 20s ease infinite;
-  padding: 20px;
-  color: #fff;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
 }
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50%       { background-position: 100% 50%; }
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,select{font-family:inherit;color:var(--white);background:none}
+select option{background: var(--ink3); color: var(--white)}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+
+/* ═══════════════════════════════════════════════════
+   FIXED BACKGROUND
+═══════════════════════════════════════════════════ */
+.bg-fixed{
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(30,64,175,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 50% at 0% 100%, rgba(109,40,217,0.12) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 40% at 100% 50%, rgba(14,165,233,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 30% at 50% 100%, rgba(245,158,11,0.06) 0%, transparent 50%),
+    linear-gradient(180deg, #020813 0%, #040c1c 100%);
 }
-.container { max-width: 1200px; margin: 0 auto; }
-.header { text-align: center; margin-bottom: 30px; animation: fadeInDown 0.8s ease; }
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-30px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* hex grid pattern */
+.bg-hex{
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  opacity: 0.18;
+  background-image:
+    linear-gradient(rgba(37,99,235,0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,235,0.15) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 80%);
 }
-.header h1 {
-  font-size: 3em; text-shadow: 0 4px 10px rgba(0,0,0,0.3); margin-bottom: 10px;
-  background: linear-gradient(90deg, #fff, #a5f3fc);
+canvas#bgc{
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════
+   SPLASH SCREEN — CINEMATIC
+═══════════════════════════════════════════════════ */
+#splash{
+  position: fixed; inset: 0; z-index: 9000;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: #020813;
+  overflow: hidden;
+}
+#splash.exit{
+  animation: splashExit 0.9s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+@keyframes splashExit{
+  0%{opacity:1;transform:scale(1)}
+  100%{opacity:0;transform:scale(1.04);visibility:hidden}
+}
+
+/* Ambient background glow */
+.sp-glow-1{
+  position: absolute;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(30,64,175,0.25) 0%, transparent 70%);
+  top: -100px; left: -100px;
+  animation: spGlow1 8s ease-in-out infinite alternate;
+}
+.sp-glow-2{
+  position: absolute;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(109,40,217,0.2) 0%, transparent 70%);
+  bottom: -80px; right: -80px;
+  animation: spGlow2 10s ease-in-out infinite alternate;
+}
+.sp-glow-3{
+  position: absolute;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,158,11,0.1) 0%, transparent 70%);
+  bottom: 20%; left: 20%;
+  animation: spGlow1 6s ease-in-out infinite alternate-reverse;
+}
+@keyframes spGlow1{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.1)}}
+@keyframes spGlow2{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-20px,-30px) scale(1.15)}}
+
+/* Scan lines */
+.sp-scanlines{
+  position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.15) 2px,rgba(0,0,0,0.15) 4px);
+  animation: scanMove 8s linear infinite;
+}
+@keyframes scanMove{0%{background-position:0 0}100%{background-position:0 -100px}}
+
+/* Vignette */
+.sp-vig{
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.75) 100%);
+}
+
+/* Logo assembly */
+.sp-body{
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0;
+}
+
+/* Rotating ring system */
+.sp-rings{
+  position: relative;
+  width: min(280px, 72vw);
+  height: min(280px, 72vw);
+  margin-bottom: min(32px, 6vw);
+}
+
+.sp-ring{
+  position: absolute;
+  border-radius: 50%;
+  border-style: solid;
+  border-color: transparent;
+}
+.sp-ring-a{
+  inset: 0;
+  border-width: 1.5px;
+  border-top-color: rgba(245,158,11,0.9);
+  border-right-color: rgba(245,158,11,0.35);
+  animation: ringSpin 4s linear infinite;
+  filter: drop-shadow(0 0 5px rgba(245,158,11,0.6));
+}
+.sp-ring-b{
+  inset: min(22px,5.5vw);
+  border-width: 1px;
+  border-bottom-color: rgba(37,99,235,0.9);
+  border-left-color: rgba(37,99,235,0.35);
+  animation: ringSpin 2.8s linear infinite reverse;
+  filter: drop-shadow(0 0 4px rgba(37,99,235,0.6));
+}
+.sp-ring-c{
+  inset: min(44px,11vw);
+  border-width: 1px;
+  border-top-color: rgba(14,165,233,0.7);
+  border-right-color: rgba(14,165,233,0.25);
+  animation: ringSpin 5.5s linear infinite;
+}
+.sp-ring-d{
+  inset: min(62px,15.5vw);
+  border-width: 1px;
+  border-bottom-color: rgba(245,158,11,0.4);
+  border-left-color: rgba(245,158,11,0.15);
+  animation: ringSpin 3.2s linear infinite reverse;
+}
+@keyframes ringSpin{to{transform:rotate(360deg)}}
+
+/* Orbiting dots */
+.sp-orb{
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold3);
+  box-shadow: 0 0 10px rgba(245,158,11,0.9), 0 0 20px rgba(245,158,11,0.4);
+}
+.sp-orb-1{
+  top: min(10px, 2.5vw); left: 50%; transform: translateX(-50%);
+  animation: orbOrbit 4s linear infinite;
+  transform-origin: calc(50% - min(10px,2.5vw)) min(130px,32.5vw);
+}
+.sp-orb-2{
+  top: min(10px, 2.5vw); left: 50%; transform: translateX(-50%);
+  background: var(--teal);
+  box-shadow: 0 0 10px rgba(14,165,233,0.9);
+  animation: orbOrbit 4s linear infinite 2s;
+  transform-origin: calc(50% - min(10px,2.5vw)) min(130px,32.5vw);
+}
+@keyframes orbOrbit{to{transform:translateX(-50%) rotate(360deg)}}
+
+/* Center disk */
+.sp-center{
+  position: absolute;
+  inset: min(78px, 19.5vw);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(30,64,175,0.35), rgba(2,8,19,0.92));
+  border: 1px solid rgba(245,158,11,0.2);
+  box-shadow:
+    0 0 40px rgba(30,64,175,0.4),
+    0 0 80px rgba(30,64,175,0.15),
+    inset 0 0 30px rgba(30,64,175,0.15);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 2px;
+  overflow: hidden;
+}
+.sp-center::before{
+  content: '';
+  position: absolute;
+  width: 150%; height: 4px;
+  background: linear-gradient(90deg, transparent, rgba(245,158,11,0.4), transparent);
+  animation: spScan 3s linear infinite;
+  top: -2px;
+}
+@keyframes spScan{0%{transform:translateY(0)}100%{transform:translateY(200px)}}
+
+.sp-logo-text{
+  font-family: 'Orbitron', monospace;
+  font-size: min(2em, 6vw);
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 40%, #f59e0b 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  opacity: 0;
+  animation: spFadeUp 0.7s ease 0.8s forwards;
 }
-.header .subtitle { font-size: 1.2em; opacity: 0.9; }
+.sp-logo-sub{
+  font-size: min(0.55em, 1.8vw);
+  letter-spacing: 0.25em;
+  color: rgba(160,192,255,0.55);
+  opacity: 0;
+  animation: spFadeUp 0.7s ease 1.1s forwards;
+  font-family: 'Share Tech Mono', monospace;
+}
+@keyframes spFadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* Clock */
-.clock-panel {
-  background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-  border-radius: 20px; padding: 20px; margin-bottom: 20px;
-  text-align: center; border: 1px solid rgba(255,255,255,0.2);
+/* Titles below ring */
+.sp-title{
+  font-family: 'Orbitron', monospace;
+  font-size: min(1.05em, 3.5vw);
+  font-weight: 600;
+  letter-spacing: min(0.14em, 1.5vw);
+  color: var(--white);
+  text-align: center;
+  opacity: 0;
+  animation: spFadeUp 0.7s ease 1.4s forwards;
 }
-.clock-time { font-size: 3em; font-weight: bold; font-family: 'Courier New', monospace; text-shadow: 0 0 20px rgba(16,185,129,0.5); }
-.clock-date { font-size: 1.2em; opacity: 0.8; margin-top: 5px; }
-.clock-status { font-size: 0.9em; opacity: 0.7; margin-top: 5px; }
+.sp-credit{
+  font-size: min(0.8em, 2.8vw);
+  letter-spacing: min(0.22em, 2vw);
+  color: rgba(160,192,255,0.45);
+  text-align: center;
+  margin-top: 8px;
+  opacity: 0;
+  animation: spFadeUp 0.7s ease 1.7s forwards;
+  font-family: 'Share Tech Mono', monospace;
+}
 
-/* Debug */
-.debug-info {
-  background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;
-  margin-bottom: 20px; font-family: 'Courier New', monospace;
-  font-size: 0.9em; max-height: 150px; overflow-y: auto;
+/* Loading bar */
+.sp-progress{
+  width: min(280px, 75vw);
+  margin-top: min(40px, 9vw);
+  opacity: 0;
+  animation: spFadeUp 0.5s ease 2s forwards;
 }
-.debug-info .log { margin: 3px 0; }
-.debug-info .log.success { color: #10b981; }
-.debug-info .log.error   { color: #ef4444; }
-.debug-info .log.info    { color: #3b82f6; }
+.sp-prog-track{
+  height: 2px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+.sp-prog-bar{
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--blue2), var(--gold2), var(--teal));
+  border-radius: 2px;
+  animation: spBarLoad 1.9s cubic-bezier(0.22,1,0.36,1) 2.2s forwards;
+  box-shadow: 0 0 12px rgba(245,158,11,0.5);
+}
+@keyframes spBarLoad{to{width:100%}}
+.sp-prog-info{
+  display: flex; justify-content: space-between;
+  margin-top: 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65em;
+  color: rgba(160,192,255,0.35);
+  letter-spacing: 0.06em;
+}
+.sp-pct{color: var(--gold3);}
 
-/* Status Grid */
-.status-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px; margin-bottom: 30px;
-}
-.status-card {
-  background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-  border-radius: 20px; padding: 25px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255,255,255,0.2); animation: fadeInUp 0.8s ease;
-}
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.status-card h3 { font-size: 1.1em; margin-bottom: 15px; opacity: 0.8; }
-.status-indicator { display: flex; align-items: center; gap: 15px; font-size: 1.5em; font-weight: bold; }
-.led { width: 20px; height: 20px; border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50%       { transform: scale(1.1); opacity: 0.8; }
-}
-.led.online  { background: #10b981; box-shadow: 0 0 20px #10b981; }
-.led.offline { background: #ef4444; box-shadow: 0 0 20px #ef4444; animation: blink 1s ease-in-out infinite; }
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
-}
-.wifi-indicator { display: flex; align-items: flex-end; gap: 3px; height: 30px; }
-.wifi-bar { width: 6px; background: #10b981; border-radius: 2px; transition: all 0.3s; }
-.wifi-bar:nth-child(1) { height: 30%; }
-.wifi-bar:nth-child(2) { height: 50%; }
-.wifi-bar:nth-child(3) { height: 70%; }
-.wifi-bar:nth-child(4) { height: 100%; }
+/* Corner ornaments */
+.sp-corner{position:absolute;pointer-events:none;}
+.sp-tl{top:16px;left:16px}
+.sp-tr{top:16px;right:16px}
+.sp-bl{bottom:16px;left:16px}
+.sp-br{bottom:16px;right:16px}
 
-/* Control Panel */
-.control-panel {
-  background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-  border-radius: 20px; padding: 30px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255,255,255,0.2); margin-bottom: 30px;
+/* Sound toggle on splash */
+.sp-sound{
+  position: absolute; bottom: 32px; right: 24px;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(245,158,11,0.25);
+  background: rgba(245,158,11,0.06);
+  color: rgba(245,158,11,0.7);
+  font-size: 1.1em;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  animation: spFadeUp 0.5s ease 2.6s forwards;
+  transition: var(--tr);
 }
-.button-group { display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
-.btn {
-  flex: 1; min-width: 150px; padding: 18px 30px; border: none;
-  border-radius: 15px; font-size: 1.1em; font-weight: bold;
-  cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  text-transform: uppercase; letter-spacing: 1px;
+.sp-sound:hover,.sp-sound:active{background:rgba(245,158,11,0.15);border-color:var(--gold2)}
+
+/* ═══════════════════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════════════════ */
+#app{
+  position: relative; z-index: 1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 0 100px;
+  opacity: 0;
+  transition: opacity 0.8s ease;
 }
-.btn:hover  { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
-.btn:active { transform: translateY(0); }
-.btn-on    { background: linear-gradient(135deg, #10b981, #059669); color: white; }
-.btn-off   { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
-.btn-admin { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
-.btn-reset { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+#app.visible{opacity: 1}
+
+/* ═══════════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════════ */
+.hdr{
+  position: sticky; top: 0; z-index: 200;
+  padding: 14px 20px 12px;
+  background: rgba(2,8,19,0.92);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--b0);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.hdr-brand{display:flex;align-items:center;gap:12px}
+.hdr-icon{
+  width: 42px; height: 42px; border-radius: 12px;
+  background: linear-gradient(135deg, rgba(13,27,62,0.9), rgba(90,40,180,0.5));
+  border: 1px solid var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--glow-b), 0 0 0 1px rgba(245,158,11,0.1), inset 0 1px 0 rgba(255,255,255,0.1);
+  position: relative; overflow: hidden;
+}
+.hdr-icon::after{
+  content:'';
+  position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);
+  animation:shimmer 4s ease-in-out infinite;
+}
+@keyframes shimmer{0%,100%{left:-100%}50%{left:150%}}
+.hdr-name{
+  font-family:'Orbitron',monospace;
+  font-size:1.08em; font-weight:700;
+  letter-spacing:0.07em;
+  background: linear-gradient(90deg, #fef3c7 0%, #fbbf24 50%, #ede9fe 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.15;
+}
+.hdr-sub{
+  font-size: 0.6em; color: var(--muted);
+  letter-spacing: 0.16em; text-transform: uppercase;
+  font-family:'Share Tech Mono',monospace;
+}
+.hdr-right{display:flex;align-items:center;gap:8px}
+
+.status-dot{
+  display: flex; align-items: center; gap: 5px;
+  font-family:'Share Tech Mono',monospace;
+  font-size: 0.65em; letter-spacing: 0.04em;
+  padding: 5px 10px; border-radius: 20px;
+  border: 1px solid;
+}
+.sd-online{
+  background:rgba(16,185,129,0.1);
+  border-color:rgba(16,185,129,0.3);
+  color: var(--em3);
+}
+.sd-admin{
+  background:rgba(245,158,11,0.08);
+  border-color:rgba(245,158,11,0.25);
+  color:var(--gold3);
+  display:none;
+}
+.sd-admin.on{display:flex}
+.pulse-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--em3);
+  box-shadow:0 0 6px var(--em3);
+  animation:pdot 2s ease-in-out infinite;
+}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}
+
+.snd-btn{
+  width:36px;height:36px;border-radius:8px;
+  border:1px solid var(--b1);
+  background:var(--g1);
+  color:var(--muted);
+  font-size:0.95em;
+  display:flex;align-items:center;justify-content:center;
+  transition:var(--tr);
+}
+.snd-btn.on{border-color:var(--bg);color:var(--gold3);background:rgba(245,158,11,0.08)}
+
+/* ═══════════════════════════════════════════════════
+   PAGE CONTENT
+═══════════════════════════════════════════════════ */
+.page{padding:16px 16px 0}
+
+/* Section divider */
+.sec-gap{height:14px}
+
+/* ═══════════════════════════════════════════════════
+   CLOCK CARD — HERO
+═══════════════════════════════════════════════════ */
+.clock-card{
+  background:var(--g2);
+  border:1px solid var(--b1);
+  border-radius: var(--r20);
+  padding: 24px 22px 20px;
+  position:relative;overflow:hidden;
+  backdrop-filter:blur(12px);
+}
+.clock-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg, transparent 5%, var(--gold2) 30%, var(--teal) 70%, transparent 95%);
+  box-shadow:0 0 14px rgba(245,158,11,0.5), 0 0 28px rgba(245,158,11,0.15);
+}
+.clock-card::after{
+  content:'';
+  position:absolute;
+  width:220px;height:220px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(30,64,175,0.1), transparent 70%);
+  top:-80px;right:-60px;
+  pointer-events:none;
+  border:1px solid rgba(37,99,235,0.08);
+}
+.clock-time{
+  font-family:'Orbitron',monospace;
+  font-size: 3.6em;
+  font-weight:700;
+  letter-spacing:0.02em;
+  line-height:1;
+  background:linear-gradient(135deg, #ffffff 0%, #bfdbfe 50%, #a5f3fc 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  text-shadow:none;
+}
+.clock-date{
+  font-size:0.88em;
+  color:var(--muted);
+  letter-spacing:0.06em;
+  margin-top:6px;
+}
+.clock-meta{
+  margin-top:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.cm-badge{
+  display:flex;align-items:center;gap:6px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.68em;letter-spacing:0.04em;
+  padding:5px 11px;border-radius:20px;
+  border:1px solid;
+}
+.cmb-sched{
+  background:rgba(37,99,235,0.1);
+  border-color:rgba(37,99,235,0.3);
+  color:rgba(147,197,253,0.9);
+}
+.cmb-alarm{
+  background:rgba(245,158,11,0.08);
+  border-color:rgba(245,158,11,0.2);
+  color:rgba(251,191,36,0.9);
+}
+.cm-sync{
+  font-size:0.65em;color:var(--muted);
+  letter-spacing:0.04em;width:100%;
+  font-family:'Share Tech Mono',monospace;
+}
+
+/* ═══════════════════════════════════════════════════
+   STATUS ROW
+═══════════════════════════════════════════════════ */
+.stat-row{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.stat-chip{
+  background:var(--g1);
+  border:1px solid var(--b0);
+  border-radius:var(--r16);
+  padding:14px 12px;
+  position:relative;overflow:hidden;
+  transition:border-color var(--tr), box-shadow var(--tr);
+}
+.stat-chip::before{
+  content:'';
+  position:absolute;top:0;left:20%;right:20%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(245,158,11,0.25),transparent);
+}
+.stat-chip:active{transform:scale(0.98);box-shadow:0 0 16px rgba(245,158,11,0.1)}
+.sc-label{
+  font-size:0.6em;text-transform:uppercase;
+  letter-spacing:0.16em;color:var(--muted);
+  margin-bottom:9px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.sc-val{
+  display:flex;align-items:center;gap:7px;
+  font-family:'Orbitron',monospace;
+  font-size:0.82em;font-weight:600;
+  min-height:22px;
+}
+.sc-sub{
+  margin-top:6px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.6em;color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* LED */
+.led{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+}
+.led-on{background:var(--em2);box-shadow:0 0 6px var(--em2),0 0 12px rgba(16,185,129,0.4);animation:ledp 2s ease-in-out infinite}
+.led-off{background:var(--ruby2);box-shadow:0 0 6px var(--ruby2);animation:ledb 1s ease-in-out infinite}
+.led-amber{background:var(--gold2);box-shadow:0 0 6px var(--gold2),0 0 12px rgba(245,158,11,0.4);animation:ledp 1.5s ease-in-out infinite}
+@keyframes ledp{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes ledb{0%,100%{opacity:1}50%{opacity:0.15}}
+
+/* WiFi bars */
+.wifi-bars{display:flex;align-items:flex-end;gap:2px;height:18px}
+.wb{width:4px;border-radius:1.5px;background:rgba(255,255,255,0.1);transition:all 0.4s}
+.wb.lit{background:var(--teal);box-shadow:0 0 4px rgba(14,165,233,0.6)}
+.wb:nth-child(1){height:25%}
+.wb:nth-child(2){height:50%}
+.wb:nth-child(3){height:75%}
+.wb:nth-child(4){height:100%}
+
+/* ═══════════════════════════════════════════════════
+   LAMP HERO CARD
+═══════════════════════════════════════════════════ */
+.lamp-card{
+  background:var(--g2);
+  border:1px solid var(--b1);
+  border-radius:var(--r20);
+  padding:28px 22px 22px;
+  position:relative;overflow:hidden;
+  text-align:center;
+}
+.lamp-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 10%,rgba(245,211,50,0.45) 50%,transparent 90%);
+  box-shadow:0 0 10px rgba(245,211,50,0.2);
+}
+/* Decorative dashed circle behind lamp */
+.lamp-card::after{
+  content:'';
+  position:absolute;
+  width:180px;height:180px;border-radius:50%;
+  border:1px dashed rgba(245,158,11,0.1);
+  top:50%;left:50%;transform:translate(-50%,-60%);
+  pointer-events:none;
+  animation:spinSlow 30s linear infinite;
+}
+@keyframes spinSlow{to{transform:translate(-50%,-60%) rotate(360deg)}}
+.lamp-aura{
+  position:absolute;
+  width:200px;height:200px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(245,211,50,0.08),transparent 70%);
+  top:50%;left:50%;
+  transform:translate(-50%,-55%);
+  pointer-events:none;
+  transition:opacity 1s ease,transform 1s ease;
+  opacity:0;
+}
+.lamp-aura.on{opacity:1;transform:translate(-50%,-55%) scale(1.3)}
+
+.lamp-circle{
+  width:100px;height:100px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,0.08);
+  background:radial-gradient(circle at 40% 35%, rgba(255,255,255,0.04), rgba(0,0,0,0.3));
+  margin:0 auto 12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.8em;
+  position:relative;
+  transition:box-shadow 1s ease,border-color 1s ease;
+}
+.lamp-circle.on{
+  border-color:rgba(245,211,50,0.4);
+  box-shadow:0 0 30px rgba(245,211,50,0.3),0 0 60px rgba(245,180,0,0.15),inset 0 0 20px rgba(245,211,50,0.08);
+  animation:lampPulse 3s ease-in-out infinite;
+}
+@keyframes lampPulse{
+  0%,100%{box-shadow:0 0 30px rgba(245,211,50,0.3),0 0 60px rgba(245,180,0,0.15)}
+  50%{box-shadow:0 0 45px rgba(245,211,50,0.5),0 0 90px rgba(245,180,0,0.25)}
+}
+.lamp-beam{
+  position:absolute;bottom:-20px;left:50%;
+  transform:translateX(-50%);
+  width:80px;height:60px;
+  background:linear-gradient(180deg,rgba(245,211,50,0.15),transparent);
+  clip-path:polygon(25% 0%,75% 0%,100% 100%,0% 100%);
+  pointer-events:none;opacity:0;
+  transition:opacity 1s ease;
+}
+.lamp-beam.on{opacity:1}
+
+.lamp-name{
+  font-family:'Orbitron',monospace;
+  font-size:0.78em;font-weight:600;
+  letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--muted);
+  transition:color 0.8s ease;
+}
+.lamp-name.on{color:var(--gold3)}
+.lamp-bright-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.72em;letter-spacing:0.05em;
+  padding:4px 12px;border-radius:20px;
+  background:rgba(0,0,0,0.3);
+  border:1px solid var(--b0);
+  color:var(--muted);
+  margin-top:8px;
+}
+
+/* ═══════════════════════════════════════════════════
+   CONTROL BUTTONS
+═══════════════════════════════════════════════════ */
+.ctrl-section{
+  background:var(--g1);
+  border:1px solid var(--b0);
+  border-radius:var(--r20);
+  padding:20px 16px;
+  position:relative;overflow:hidden;
+}
+.ctrl-section::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 5%,rgba(245,158,11,0.35) 35%,rgba(14,165,233,0.35) 65%,transparent 95%);
+}
+.ctrl-section::after{
+  content:'';
+  position:absolute;bottom:0;left:20%;right:20%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(245,158,11,0.1),transparent);
+}
+.sec-title{
+  font-family:'Orbitron',monospace;
+  font-size:0.68em;font-weight:600;
+  letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--gold2);
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:16px;
+}
+.sec-title svg{flex-shrink:0}
+
+.ctrl-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:18px;
+}
+.ctrl-btn{
+  padding:18px 12px 14px;
+  border:1px solid;
+  border-radius:var(--r16);
+  display:flex;flex-direction:column;
+  align-items:center;gap:7px;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.85em;font-weight:700;
+  letter-spacing:0.09em;text-transform:uppercase;
+  position:relative;overflow:hidden;
+  transition:all 0.18s ease;
+  -webkit-user-select:none;user-select:none;
+}
+.ctrl-btn::before{
+  content:'';
+  position:absolute;inset:0;
+  background:rgba(255,255,255,0);
+  transition:background 0.18s;
+}
+.ctrl-btn:active{transform:scale(0.95)}
+.ctrl-btn:active::before{background:rgba(255,255,255,0.06)}
+
+.btn-icon{font-size:1.8em;line-height:1;display:block}
+
+.cbtn-on{
+  background:rgba(16,185,129,0.07);
+  border-color:rgba(16,185,129,0.28);color:var(--em3);
+}
+.cbtn-on:hover,.cbtn-on:active{background:rgba(16,185,129,0.15);border-color:var(--em2);box-shadow:var(--glow-e)}
+
+.cbtn-off{
+  background:rgba(239,68,68,0.07);
+  border-color:rgba(239,68,68,0.28);color:var(--ruby3);
+}
+.cbtn-off:hover,.cbtn-off:active{background:rgba(239,68,68,0.15);border-color:var(--ruby2);box-shadow:var(--glow-r)}
+
+.cbtn-admin{
+  background:rgba(109,40,217,0.07);
+  border-color:rgba(109,40,217,0.28);color:rgba(196,181,253,0.9);
+}
+.cbtn-admin:hover,.cbtn-admin:active{background:rgba(109,40,217,0.16);border-color:var(--vio2);box-shadow:0 0 20px rgba(109,40,217,0.3)}
+
+.cbtn-reset{
+  background:rgba(245,158,11,0.05);
+  border-color:rgba(245,158,11,0.22);color:var(--gold3);
+}
+.cbtn-reset:hover,.cbtn-reset:active{background:rgba(245,158,11,0.14);border-color:var(--gold2);box-shadow:var(--glow-g)}
+
+/* Brightness */
+.bright-row{
+  display:flex;justify-content:space-between;
+  align-items:center;margin-bottom:10px;
+  font-size:0.82em;color:var(--muted);
+}
+.bright-val{
+  font-family:'Orbitron',monospace;
+  font-size:0.95em;font-weight:600;
+  color:var(--gold3);
+}
+
+.range-wrap{
+  position:relative;
+  height:28px;
+  display:flex;align-items:center;
+  margin-bottom:16px;
+}
+.range-track{
+  position:absolute;left:0;right:0;
+  height:5px;background:rgba(255,255,255,0.07);
+  border-radius:3px;
+}
+.range-fill{
+  position:absolute;left:0;
+  height:5px;border-radius:3px;
+  background:linear-gradient(90deg, var(--blue2), var(--gold2));
+  box-shadow:0 0 8px rgba(245,158,11,0.3);
+  transition:width 0.05s;
+  pointer-events:none;
+}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:5px;
+  background:transparent;outline:none;
+  cursor:pointer;position:relative;z-index:1;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:24px;height:24px;border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, #fef3c7, #f59e0b);
+  border:2px solid rgba(255,255,255,0.25);
+  box-shadow:0 0 12px rgba(245,158,11,0.8),0 2px 6px rgba(0,0,0,0.5);
+  margin-top:-10px;
+  transition:box-shadow 0.2s;
+}
+input[type=range]::-webkit-slider-runnable-track{height:5px;background:transparent}
+input[type=range]::-moz-range-thumb{
+  width:24px;height:24px;border-radius:50%;
+  background:radial-gradient(circle,#fef3c7,#f59e0b);
+  border:2px solid rgba(255,255,255,0.25);
+  box-shadow:0 0 12px rgba(245,158,11,0.8);
+}
 
 /* Countdown */
-.countdown { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
-.countdown-item { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; text-align: center; }
-.countdown-item h4 { opacity: 0.7; margin-bottom: 10px; }
-.countdown-time { font-size: 2em; font-weight: bold; font-family: 'Courier New', monospace; }
+.cdown-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cdown-box{
+  background:rgba(0,0,0,0.25);
+  border:1px solid var(--b0);
+  border-radius:var(--r12);
+  padding:14px 14px;
+}
+.cdown-label{
+  font-size:0.62em;text-transform:uppercase;
+  letter-spacing:0.14em;color:var(--muted);margin-bottom:7px;
+}
+.cdown-val{
+  font-family:'Share Tech Mono',monospace;
+  font-size:1.35em;letter-spacing:0.04em;
+}
+.cv-on{color:var(--em3)}
+.cv-off{color:var(--ruby3)}
 
-/* Watermark */
-.watermark {
-  position: fixed; bottom: 20px; right: 20px;
-  background: rgba(0,0,0,0.5); padding: 10px 20px;
-  border-radius: 10px; font-size: 0.9em; opacity: 0.8;
+/* ═══════════════════════════════════════════════════
+   ADMIN PANEL — FULL SCREEN SHEET
+═══════════════════════════════════════════════════ */
+.admin-sheet{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(2,8,19,0.6);
+  backdrop-filter:blur(4px);
+  display:none;
+  align-items:flex-end;
 }
+.admin-sheet.open{
+  display:flex;
+  animation:sheetBg 0.35s ease;
+}
+@keyframes sheetBg{from{opacity:0}to{opacity:1}}
 
-/* Admin Panel */
-.admin-panel {
-  display: none; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-  border-radius: 20px; padding: 30px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255,255,255,0.2); margin-bottom: 30px;
+.admin-inner{
+  width:100%;
+  max-height:90dvh;
+  max-height:90vh;
+  background:linear-gradient(180deg, #0a1628 0%, #070d1e 100%);
+  border-radius:28px 28px 0 0;
+  border-top:1px solid var(--bg);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  animation:sheetSlide 0.4s cubic-bezier(0.22,1,0.36,1);
 }
-.admin-panel.active { display: block; animation: fadeInUp 0.5s ease; }
-.tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-.tab {
-  padding: 12px 25px; background: rgba(255,255,255,0.1);
-  border: none; border-radius: 10px; color: white;
-  cursor: pointer; transition: all 0.3s; font-weight: bold;
+@keyframes sheetSlide{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+.admin-handle{
+  width:40px;height:4px;
+  border-radius:2px;
+  background:rgba(255,255,255,0.2);
+  margin:12px auto 0;flex-shrink:0;
 }
-.tab:hover  { background: rgba(255,255,255,0.2); }
-.tab.active { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-.tab-content { display: none; }
-.tab-content.active { display: block; animation: fadeIn 0.5s ease; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.admin-hdr{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  padding:16px 20px 12px;
+  flex-shrink:0;
+  border-bottom:1px solid var(--b0);
+}
+.admin-title{
+  font-family:'Orbitron',monospace;
+  font-size:0.8em;font-weight:600;
+  letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--gold3);
+  display:flex;align-items:center;gap:8px;
+}
+.admin-logout{
+  padding:7px 14px;border-radius:8px;
+  border:1px solid rgba(239,68,68,0.28);
+  background:rgba(239,68,68,0.07);
+  color:var(--ruby3);
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.8em;font-weight:700;
+  letter-spacing:0.08em;text-transform:uppercase;
+  transition:var(--tr);
+}
+.admin-logout:active{background:rgba(239,68,68,0.18)}
+
+/* Admin tabs */
+.admin-tabs{
+  display:flex;
+  border-bottom:1px solid var(--b0);
+  flex-shrink:0;
+  padding:0 16px;
+}
+.atab{
+  flex:1;
+  padding:13px 8px;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.82em;font-weight:700;
+  letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--muted);
+  background:none;
+  border-bottom:2px solid transparent;
+  transition:var(--tr);
+  margin-bottom:-1px;
+  text-align:center;
+}
+.atab.active{color:var(--gold3);border-bottom-color:var(--gold2)}
+
+/* Tab content */
+.admin-body{
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  flex:1;
+  padding:18px 18px 24px;
+}
+.tab-pane{display:none}
+.tab-pane.active{display:block;animation:fadeIn 0.25s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* Table */
-table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
-th, td { padding: 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
-th { background: rgba(255,255,255,0.1); font-weight: bold; }
-.btn-small { padding: 8px 15px; font-size: 0.9em; border-radius: 8px; margin: 0 5px; }
-
-/* Modal */
-.modal {
-  display: none; position: fixed; top: 0; left: 0;
-  width: 100%; height: 100%; background: rgba(0,0,0,0.8);
-  z-index: 1000; justify-content: center; align-items: center; padding: 20px;
+.tbl-wrap{overflow-x:auto;border:1px solid var(--b0);border-radius:var(--r12)}
+.dtbl{width:100%;border-collapse:collapse;font-size:0.82em;min-width:420px}
+.dtbl th{
+  padding:10px 12px;text-align:left;
+  font-size:0.68em;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--muted);background:rgba(0,0,0,0.25);
+  border-bottom:1px solid var(--b0);font-weight:600;
 }
-.modal.active { display: flex; animation: fadeIn 0.3s ease; }
-.modal-content {
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
-  padding: 30px; border-radius: 20px; max-width: 500px;
-  width: 100%; max-height: 90vh; overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-}
-.form-group { margin-bottom: 20px; }
-.form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
-.form-group input, .form-group select {
-  width: 100%; padding: 12px; border: 2px solid rgba(255,255,255,0.3);
-  border-radius: 10px; background: rgba(255,255,255,0.1);
-  color: white; font-size: 1em;
-}
-.form-group input:focus, .form-group select:focus { outline: none; border-color: #8b5cf6; }
-.checkbox-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
-.checkbox-item { display: flex; align-items: center; gap: 8px; }
-.checkbox-item input[type="checkbox"] { width: auto; }
+.dtbl td{padding:11px 12px;border-bottom:1px solid var(--b0);vertical-align:middle}
+.dtbl tr:last-child td{border-bottom:none}
+.chip-on{display:inline-block;padding:2px 9px;border-radius:20px;font-size:0.78em;font-weight:700;letter-spacing:0.04em;background:rgba(16,185,129,0.12);color:var(--em3);border:1px solid rgba(16,185,129,0.28);font-family:'Share Tech Mono',monospace}
+.chip-off{display:inline-block;padding:2px 9px;border-radius:20px;font-size:0.78em;font-weight:700;letter-spacing:0.04em;background:rgba(239,68,68,0.12);color:var(--ruby3);border:1px solid rgba(239,68,68,0.28);font-family:'Share Tech Mono',monospace}
 
 /* Toggle */
-.toggle {
-  position: relative; width: 60px; height: 30px;
-  background: rgba(255,255,255,0.2); border-radius: 15px; cursor: pointer; transition: all 0.3s;
+.toggle{
+  width:46px;height:24px;border-radius:12px;
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.12);
+  position:relative;cursor:pointer;transition:all 0.3s;flex-shrink:0;
 }
-.toggle.active { background: #10b981; }
-.toggle::after {
-  content: ''; position: absolute; top: 3px; left: 3px;
-  width: 24px; height: 24px; background: white; border-radius: 50%; transition: all 0.3s;
+.toggle.active{background:rgba(16,185,129,0.2);border-color:rgba(16,185,129,0.5)}
+.toggle::after{
+  content:'';position:absolute;
+  top:3px;left:3px;
+  width:16px;height:16px;border-radius:50%;
+  background:rgba(255,255,255,0.45);transition:all 0.3s;
 }
-.toggle.active::after { left: 33px; }
+.toggle.active::after{
+  left:calc(100% - 19px);
+  background:var(--em2);
+  box-shadow:0 0 8px rgba(16,185,129,0.7);
+}
 
+/* Settings rows */
+.set-row{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  padding:14px 0;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.set-row:last-of-type{border-bottom:none}
+.set-info{flex:1;padding-right:14px}
+.set-label{font-size:0.9em;color:var(--white);font-weight:600}
+.set-desc{font-size:0.72em;color:var(--muted);margin-top:2px;line-height:1.4}
+
+/* Form */
+.fgroup{margin-bottom:16px}
+.flabel{
+  display:block;font-size:0.68em;letter-spacing:0.14em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:7px;font-weight:600;
+}
+.finput,.fselect{
+  width:100%;padding:11px 13px;
+  background:rgba(0,0,0,0.35);
+  border:1px solid var(--b1);
+  border-radius:10px;color:var(--white);
+  font-family:'Rajdhani',sans-serif;font-size:0.95em;
+  outline:none;transition:var(--tr);
+  -webkit-appearance:none;appearance:none;
+}
+.finput:focus,.fselect:focus{border-color:rgba(245,158,11,0.4);box-shadow:0 0 0 2px rgba(245,158,11,0.07)}
+.f2col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* Checkbox list for days */
+.cbgroup{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:5px;
+}
+.cbitem{
+  display:flex;flex-direction:column;
+  align-items:center;gap:5px;
+  font-size:0.7em;color:var(--muted);
+}
+.cbitem input[type=checkbox]{
+  width:20px;height:20px;
+  accent-color:var(--blue2);cursor:pointer;
+  border-radius:4px;
+}
+
+/* Buzzer grid */
+.buzz-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:7px;
+}
+.buzz-btn{
+  padding:11px 5px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--b0);
+  border-radius:10px;
+  color:var(--muted);
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.72em;font-weight:600;
+  text-align:center;cursor:pointer;
+  transition:all 0.18s;
+  line-height:1.3;
+}
+.buzz-btn:active,.buzz-btn.playing{
+  background:rgba(109,40,217,0.22);
+  border-color:var(--vio2);color:rgba(196,181,253,0.9);
+  box-shadow:0 0 12px rgba(109,40,217,0.35);
+}
+
+.divider{height:1px;background:var(--b0);margin:16px 0}
+
+/* ═══════════════════════════════════════════════════
+   ACTION BUTTONS
+═══════════════════════════════════════════════════ */
+.abtn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:10px 18px;border-radius:9px;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.82em;font-weight:700;
+  letter-spacing:0.08em;text-transform:uppercase;
+  border:1px solid;transition:var(--tr);cursor:pointer;
+}
+.abtn:active{transform:scale(0.97)}
+.abtn-primary{background:rgba(37,99,235,0.1);border-color:rgba(37,99,235,0.32);color:rgba(147,197,253,0.9)}
+.abtn-primary:active{background:rgba(37,99,235,0.2)}
+.abtn-danger{background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.28);color:var(--ruby3)}
+.abtn-danger:active{background:rgba(239,68,68,0.18)}
+.abtn-gold{background:rgba(245,158,11,0.07);border-color:rgba(245,158,11,0.25);color:var(--gold3)}
+.abtn-gold:active{background:rgba(245,158,11,0.16)}
+.abtn-purple{background:rgba(109,40,217,0.08);border-color:rgba(109,40,217,0.28);color:rgba(196,181,253,0.9)}
+.abtn-purple:active{background:rgba(109,40,217,0.2)}
+.abtn-sm{padding:8px 13px;font-size:0.76em}
+
+/* ═══════════════════════════════════════════════════
+   MODALS
+═══════════════════════════════════════════════════ */
 /* PIN */
-.pin-input {
-  display: none; position: fixed; top: 0; left: 0;
-  width: 100%; height: 100%; background: rgba(0,0,0,0.9);
-  z-index: 2000; justify-content: center; align-items: center;
+#pinInput{
+  position:fixed;inset:0;z-index:9500;
+  background:rgba(0,0,0,0.9);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  display:none;
+  align-items:center;justify-content:center;
+  padding:24px;
 }
-.pin-input.active { display: flex; animation: fadeIn 0.3s ease; }
-.pin-box {
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
-  padding: 40px; border-radius: 20px; text-align: center;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+#pinInput.active{display:flex;animation:fadeIn 0.3s ease}
+.pin-box{
+  background:linear-gradient(160deg,#080f1e,#0e1b35);
+  border:1px solid var(--bg);
+  border-radius:24px;
+  padding:36px 28px;
+  width:100%;max-width:360px;
+  text-align:center;
+  position:relative;overflow:hidden;
+  box-shadow:0 24px 64px rgba(0,0,0,0.7),var(--glow-b);
 }
-.pin-box h2 { margin-bottom: 20px; }
-.pin-box input {
-  width: 250px; padding: 15px; border: 2px solid rgba(255,255,255,0.3);
-  border-radius: 10px; background: rgba(255,255,255,0.1);
-  color: white; font-size: 1.2em; text-align: center; letter-spacing: 5px;
+.pin-box::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--gold2),var(--blue2),var(--teal));
 }
+.pin-icon{
+  width:64px;height:64px;border-radius:50%;
+  background:radial-gradient(circle,rgba(109,40,217,0.3),rgba(2,8,19,0.8));
+  border:1px solid rgba(124,58,237,0.4);
+  margin:0 auto 18px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8em;
+  box-shadow:0 0 30px rgba(124,58,237,0.3);
+}
+.pin-title{
+  font-family:'Orbitron',monospace;
+  font-size:0.9em;font-weight:600;
+  letter-spacing:0.1em;margin-bottom:5px;
+}
+.pin-sub{font-size:0.8em;color:var(--muted);margin-bottom:22px;letter-spacing:0.04em}
 
-/* Brightness Slider */
-.brightness-control {
-  margin-top: 20px; padding: 20px;
-  background: rgba(255,255,255,0.05); border-radius: 15px;
+#pinField{
+  width:100%;padding:14px 18px;
+  background:rgba(0,0,0,0.45);
+  border:1px solid var(--b1);border-radius:12px;
+  color:var(--white);
+  font-family:'Share Tech Mono',monospace;
+  font-size:1.4em;text-align:center;
+  letter-spacing:0.5em;outline:none;
+  transition:var(--tr);margin-bottom:14px;
 }
-.brightness-slider {
-  width: 100%; height: 10px; border-radius: 5px;
-  outline: none; -webkit-appearance: none; appearance: none;
-  cursor: pointer;
-  background: linear-gradient(to right, #10b981 0%, rgba(255,255,255,0.2) 0%);
-  transition: none;
+#pinField:focus{border-color:rgba(245,158,11,0.45);box-shadow:0 0 0 3px rgba(245,158,11,0.08)}
+#pinField.err{border-color:rgba(239,68,68,0.5);animation:shake 0.4s ease}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#pinErr{font-size:0.76em;color:var(--ruby3);min-height:1em;margin-bottom:12px}
+.pin-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pin-btn{
+  padding:13px;border-radius:10px;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.88em;font-weight:700;
+  letter-spacing:0.08em;text-transform:uppercase;
+  border:1px solid;transition:var(--tr);cursor:pointer;
 }
-.brightness-slider::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 28px; height: 28px;
-  border-radius: 50%; background: #10b981; cursor: pointer;
-  box-shadow: 0 0 12px #10b981, 0 0 4px rgba(0,0,0,0.4); border: 2px solid white;
-}
-.brightness-slider::-moz-range-thumb {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: #10b981; cursor: pointer; border: 2px solid white;
-}
+.pin-btn:active{transform:scale(0.97)}
+.pin-btn-ok{background:rgba(109,40,217,0.12);border-color:rgba(109,40,217,0.4);color:rgba(196,181,253,0.9)}
+.pin-btn-ok:active{background:rgba(109,40,217,0.25)}
+.pin-btn-cancel{background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.25);color:var(--ruby3)}
+.pin-btn-cancel:active{background:rgba(239,68,68,0.18)}
 
-/* Buzzer test buttons */
-.btn-buzz-test {
-  padding: 10px 8px; font-size: 0.85em; font-weight: 600;
-  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-  color: white; border-radius: 10px; cursor: pointer; transition: all 0.2s; text-align: center;
+/* Reset PIN Modal */
+#resetPinModal{
+  position:fixed;inset:0;z-index:9500;
+  background:rgba(0,0,0,0.92);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  display:none;
+  align-items:center;justify-content:center;
+  padding:24px;
 }
-.btn-buzz-test:hover  { background: rgba(255,255,255,0.15); transform: scale(1.02); }
-.btn-buzz-test:active { transform: scale(0.96); background: rgba(16,185,129,0.3); border-color: #10b981; }
-.btn-buzz-test.playing { background: rgba(16,185,129,0.3); border-color: #10b981; color: #10b981; }
+#resetPinModal.active{display:flex;animation:fadeIn 0.3s ease}
 
-@media (max-width: 768px) {
-  .header h1 { font-size: 2em; }
-  .status-grid { grid-template-columns: 1fr; }
-  .countdown { grid-template-columns: 1fr; }
-  .button-group { flex-direction: column; }
-  .btn { min-width: 100%; }
+/* Schedule modal */
+#modalJadwal{
+  position:fixed;inset:0;z-index:8000;
+  background:rgba(0,0,0,0.88);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  display:none;
+  align-items:flex-end;
 }
+#modalJadwal.active{display:flex;animation:fadeIn 0.3s ease}
+.modal-inner{
+  width:100%;
+  max-height:92dvh;max-height:92vh;
+  background:linear-gradient(180deg,#0a1628,#070d1e);
+  border-radius:24px 24px 0 0;
+  border-top:1px solid var(--bg);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:20px 18px 36px;
+  animation:sheetSlide 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+.modal-inner::before{
+  content:'';
+  display:block;width:40px;height:4px;
+  border-radius:2px;background:rgba(255,255,255,0.2);
+  margin:0 auto 20px;
+}
+#judulModal{
+  font-family:'Orbitron',monospace;
+  font-size:0.85em;font-weight:600;
+  letter-spacing:0.1em;margin-bottom:20px;
+}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.mbtn{
+  padding:14px;border-radius:10px;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.9em;font-weight:700;
+  letter-spacing:0.08em;text-transform:uppercase;
+  border:1px solid;cursor:pointer;transition:var(--tr);
+}
+.mbtn:active{transform:scale(0.97)}
+.mbtn-ok{background:rgba(109,40,217,0.12);border-color:rgba(109,40,217,0.4);color:rgba(196,181,253,0.9)}
+.mbtn-cancel{background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.25);color:var(--ruby3)}
+
+/* ═══════════════════════════════════════════════════
+   BOTTOM FOOTER
+═══════════════════════════════════════════════════ */
+.footer{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:rgba(2,8,19,0.95);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--b0);
+  padding:10px 20px;
+  padding-bottom:calc(10px + env(safe-area-inset-bottom));
+  display:flex;align-items:center;justify-content:space-between;
+}
+.footer-l{
+  font-family:'Orbitron',monospace;
+  font-size:0.62em;font-weight:600;
+  letter-spacing:0.1em;color:var(--muted);
+}
+.footer-l span{color:var(--gold2)}
+.footer-r{
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.6em;color:var(--muted);letter-spacing:0.06em;
+}
+.footer-r span{color:var(--gold3)}
+
+/* ═══════════════════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════════════════ */
+.mt8{margin-top:8px}
+.mt12{margin-top:12px}
+.mt16{margin-top:16px}
+.flex-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.flex-between{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.w100{width:100%}
 </style>
 </head>
 <body>
-<div class="container">
 
-  <!-- Header -->
-  <div class="header">
-    <h1>💡 SmartLamp PJU</h1>
-    <div class="subtitle">Sistem Kontrol Lampu Profesional</div>
-  </div>
+<!-- Fixed BG Layers -->
+<div class="bg-fixed"></div>
+<div class="bg-hex"></div>
+<canvas id="bgc"></canvas>
 
-  <!-- Clock Panel -->
-  <div class="clock-panel">
-    <div class="clock-time" id="clockTime">--:--:--</div>
-    <div class="clock-date" id="clockDate">--/--/----</div>
-    <div class="clock-status" id="clockStatus">⏳ Memuat...</div>
-    <div id="scheduleStatus" style="margin-top:8px; font-size:0.85em; opacity:0.8;">
-      📅 Jadwal: <span id="scheduleCount" style="color:#10b981; font-weight:bold;">—</span> |
-      ⏰ Alarm: <span id="alarmStatus" style="color:#f59e0b; font-weight:bold;">Standby</span>
-    </div>
-  </div>
+<!-- ═══════ SPLASH ═══════ -->
+<div id="splash">
+  <div class="sp-glow-1"></div>
+  <div class="sp-glow-2"></div>
+  <div class="sp-glow-3"></div>
+  <div class="sp-scanlines"></div>
+  <div class="sp-vig"></div>
+  <!-- Corner ornaments -->
+  <svg class="sp-corner sp-tl" width="60" height="60" viewBox="0 0 60 60" fill="none">
+    <path d="M2 58 L2 2 L58 2" stroke="rgba(245,158,11,0.4)" stroke-width="1.5" fill="none"/>
+    <path d="M2 50 L2 10 L10 2" stroke="rgba(245,158,11,0.2)" stroke-width="0.5" fill="none"/>
+    <circle cx="2" cy="2" r="3" fill="rgba(245,158,11,0.6)"/>
+  </svg>
+  <svg class="sp-corner sp-tr" width="60" height="60" viewBox="0 0 60 60" fill="none">
+    <path d="M58 58 L58 2 L2 2" stroke="rgba(245,158,11,0.4)" stroke-width="1.5" fill="none"/>
+    <circle cx="58" cy="2" r="3" fill="rgba(245,158,11,0.6)"/>
+  </svg>
+  <svg class="sp-corner sp-bl" width="60" height="60" viewBox="0 0 60 60" fill="none">
+    <path d="M2 2 L2 58 L58 58" stroke="rgba(14,165,233,0.35)" stroke-width="1.5" fill="none"/>
+    <circle cx="2" cy="58" r="3" fill="rgba(14,165,233,0.5)"/>
+  </svg>
+  <svg class="sp-corner sp-br" width="60" height="60" viewBox="0 0 60 60" fill="none">
+    <path d="M58 2 L58 58 L2 58" stroke="rgba(14,165,233,0.35)" stroke-width="1.5" fill="none"/>
+    <circle cx="58" cy="58" r="3" fill="rgba(14,165,233,0.5)"/>
+  </svg>
 
-  <!-- Debug Info -->
-  <div class="debug-info" id="debugInfo">
-    <div class="log info">🔄 Menginisialisasi sistem...</div>
-  </div>
-
-  <!-- Status Grid -->
-  <div class="status-grid">
-    <div class="status-card">
-      <h3>Status ESP</h3>
-      <div class="status-indicator">
-        <div class="led offline" id="espLed"></div>
-        <span id="espStatus">Menghubungkan...</span>
-      </div>
-      <div style="margin-top:10px; font-size:0.8em; opacity:0.7;">IP: <span id="espIP">--</span></div>
-    </div>
-    <div class="status-card">
-      <h3>Sinyal WiFi</h3>
-      <div class="status-indicator">
-        <div class="wifi-indicator">
-          <div class="wifi-bar" id="wbar1"></div>
-          <div class="wifi-bar" id="wbar2"></div>
-          <div class="wifi-bar" id="wbar3"></div>
-          <div class="wifi-bar" id="wbar4"></div>
-        </div>
-        <span id="wifiStrength">--</span>
-      </div>
-      <div style="margin-top:10px; font-size:0.8em; opacity:0.7;">RSSI: <span id="wifiRSSI">--</span> dBm</div>
-    </div>
-    <div class="status-card">
-      <h3>Status Lampu</h3>
-      <div class="status-indicator">
-        <div class="led offline" id="lampLed"></div>
-        <span id="lampStatus">MATI</span>
-      </div>
-      <div style="margin-top:10px; font-size:0.8em; opacity:0.7;">Brightness: <span id="lampBrightness">0</span>%</div>
-    </div>
-  </div>
-
-  <!-- Control Panel -->
-  <div class="control-panel">
-    <h2>💡 Kontrol Manual</h2>
-    <div class="button-group">
-      <button class="btn btn-on"    onclick="kontrolLampu(true)">🔆 NYALAKAN</button>
-      <button class="btn btn-off"   onclick="kontrolLampu(false)">🌙 MATIKAN</button>
-      <button class="btn btn-admin" onclick="tampilkanPIN()">⚙️ ADMIN</button>
-      <button class="btn btn-reset" onclick="resetSettings()">🔄 RESET</button>
-    </div>
-    <!-- Brightness Slider -->
-    <div class="brightness-control">
-      <label style="display:flex; justify-content:space-between;">
-        <span>🔅 Kecerahan Lampu</span>
-        <span id="brightnessValue">0%</span>
-      </label>
-      <input type="range" min="0" max="100" value="0"
-             class="brightness-slider" id="brightnessSlider"
-             onmousedown="isDragging=true"
-             ontouchstart="isDragging=true"
-             oninput="updateBrightnessLabel(this.value); updateSliderGradient(this.value)"
-             onmouseup="isDragging=false; setBrightness(this.value)"
-             ontouchend="isDragging=false; setBrightness(this.value)">
-    </div>
-    <!-- Countdown -->
-    <div class="countdown">
-      <div class="countdown-item">
-        <h4>⏱ Nyala Berikutnya</h4>
-        <div class="countdown-time" id="nextON">--:--:--</div>
-      </div>
-      <div class="countdown-item">
-        <h4>⏱ Mati Berikutnya</h4>
-        <div class="countdown-time" id="nextOFF">--:--:--</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Admin Panel -->
-  <div class="admin-panel" id="adminPanel">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-      <h2>⚙️ Panel Admin</h2>
-      <button class="btn btn-off btn-small" onclick="logout()">🚪 Logout</button>
-    </div>
-    <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab active" onclick="switchTab('jadwal', this)">📅 Jadwal</button>
-      <button class="tab" onclick="switchTab('buzzer', this)">🔊 Buzzer</button>
-      <button class="tab" onclick="switchTab('pengaturan', this)">⚙️ Pengaturan</button>
-    </div>
-
-    <!-- Tab: Jadwal -->
-    <div class="tab-content active" id="tab-jadwal">
-      <div class="button-group" style="margin-bottom:20px;">
-        <button class="btn btn-on btn-small"  onclick="tambahJadwal(true)">➕ Tambah ON</button>
-        <button class="btn btn-off btn-small" onclick="tambahJadwal(false)">➕ Tambah OFF</button>
-      </div>
-      <div style="overflow-x:auto;">
-        <table>
-          <thead>
-            <tr>
-              <th>Mode</th><th>Hari</th><th>Tanggal</th><th>Bulan</th><th>Waktu</th><th>Aktif</th><th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="bodyJadwal">
-            <tr><td colspan="7" style="text-align:center;">Memuat jadwal...</td></tr>
-          </tbody>
-        </table>
+  <div class="sp-body">
+    <div class="sp-rings">
+      <div class="sp-ring sp-ring-a"></div>
+      <div class="sp-ring sp-ring-b"></div>
+      <div class="sp-ring sp-ring-c"></div>
+      <div class="sp-ring sp-ring-d"></div>
+      <!-- Tick marks on outer ring -->
+      <svg class="sp-ticks" viewBox="0 0 280 280" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.35">
+        <g transform="translate(140,140)">
+          <line x1="0" y1="-136" x2="0" y2="-128" stroke="#f59e0b" stroke-width="1.5" transform="rotate(0)"/>
+          <line x1="0" y1="-136" x2="0" y2="-128" stroke="#f59e0b" stroke-width="1.5" transform="rotate(30)"/>
+          <line x1="0" y1="-136" x2="0" y2="-128" stroke="#f59e0b" stroke-width="1.5" transform="rotate(60)"/>
+          <line x1="0" y1="-136" x2="0" y2="-128" stroke="#f59e0b" stroke-width="1.5" transform="rotate(90)"/>
+          <line x1="0" y1="-136" x2="0" y2="-128" stroke="#f59e0b" stroke-width="1.5" transform="rotate(120)"/>
+          <line x1="0" y1="-136" x2="0" y2="-128" stroke="#f59e0b" stroke-width="1.5" transform="rotate(150)"/>
+          <line x1="0" y1="-136" x2="0" y2="-128" stroke="#f59e0b" stroke-width="1.5" transform="rotate(180)"/>
+          <line x1="0" y1="-136" x2="0" y2="-128" stroke="#f59e0b" stroke-width="1.5" transform="rotate(210)"/>
+          <line x1="0" y1="-136" x2="0" y2="-128" stroke="#f59e0b" stroke-width="1.5" transform="rotate(240)"/>
+          <line x1="0" y1="-136" x2="0" y2="-128" stroke="#f59e0b" stroke-width="1.5" transform="rotate(270)"/>
+          <line x1="0" y1="-136" x2="0" y2="-128" stroke="#f59e0b" stroke-width="1.5" transform="rotate(300)"/>
+          <line x1="0" y1="-136" x2="0" y2="-128" stroke="#f59e0b" stroke-width="1.5" transform="rotate(330)"/>
+        </g>
+      </svg>
+      <div class="sp-orb sp-orb-1"></div>
+      <div class="sp-orb sp-orb-2"></div>
+      <div class="sp-center">
+        <!-- SVG Lamp icon inside center -->
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" style="margin-bottom:4px;opacity:0.9">
+          <ellipse cx="18" cy="15" rx="9" ry="10" fill="url(#lampFill)" stroke="rgba(245,211,50,0.5)" stroke-width="0.8"/>
+          <rect x="15.5" y="24.5" width="5" height="2" rx="1" fill="rgba(245,158,11,0.6)"/>
+          <rect x="16.5" y="26" width="3" height="2.5" rx="0.5" fill="rgba(245,158,11,0.4)"/>
+          <ellipse cx="18" cy="15" rx="4" ry="4.5" fill="rgba(255,240,150,0.35)"/>
+          <!-- rays -->
+          <line x1="18" y1="3" x2="18" y2="1" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="26.5" y1="6.5" x2="27.8" y2="5.2" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="9.5" y1="6.5" x2="8.2" y2="5.2" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="30" y1="15" x2="32" y2="15" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="6" y1="15" x2="4" y2="15" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/>
+          <defs>
+            <radialGradient id="lampFill" cx="45%" cy="35%">
+              <stop offset="0%" stop-color="#fef3c7"/>
+              <stop offset="50%" stop-color="#f59e0b"/>
+              <stop offset="100%" stop-color="#78350f"/>
+            </radialGradient>
+          </defs>
+        </svg>
+        <div class="sp-logo-text">AP-PJU</div>
+        <div class="sp-logo-sub">APTECH</div>
       </div>
     </div>
 
-    <!-- Tab: Buzzer -->
-    <div class="tab-content" id="tab-buzzer">
-      <div class="form-group">
-        <label style="display:flex; justify-content:space-between; align-items:center;">
-          <span>🔊 Master Buzzer</span>
-          <div class="toggle active" id="buzzerEnabledToggle" onclick="toggleBuzzerEnabled()"></div>
-        </label>
-      </div>
-      <div class="form-group">
-        <label>Nada Feedback Tombol (ON/OFF)</label>
-        <select id="buzzerMode" onchange="simpanModeBuzzer()">
-          <option value="0">Mati — Tanpa suara</option>
-          <option value="1">Aktif — Bunyi singkat tiap tombol</option>
-        </select>
-      </div>
-      <hr style="border-color:rgba(255,255,255,0.15); margin:20px 0;">
-      <div class="form-group">
-        <label style="display:flex; justify-content:space-between; align-items:center;">
-          <span>⏰ Alarm Jadwal <small style="opacity:.6">(10 dtk sebelum ON/OFF)</small></span>
-          <div class="toggle active" id="alarmEnabledToggle" onclick="toggleAlarmEnabled()"></div>
-        </label>
-      </div>
-      <div class="form-group">
-        <label>Nada Alarm Jadwal — pilih lalu tes:</label>
-        <div style="display:flex; gap:8px; align-items:center; margin-top:8px;">
-          <select id="alarmTone" onchange="simpanAlarmTone()" style="flex:1;">
-            <option value="1">🔔 Nada 1 — Alarm Panjang Klasik</option>
-            <option value="2">🚨 Nada 2 — Sirine Naik-Turun</option>
-            <option value="3">🔥 Nada 3 — Fire Alarm (burst)</option>
-            <option value="4">🎵 Nada 4 — Eskalasi Musikal</option>
-            <option value="5">📻 Nada 5 — Morse SOS</option>
-            <option value="6">🚑 Nada 6 — Ambulans</option>
-            <option value="7">😡 Nada 7 — Beep Marah Panjang</option>
-            <option value="8">🔔 Nada 8 — Lonceng Ding</option>
-            <option value="9">🚒 Nada 9 — Alarm Kebakaran</option>
-            <option value="10">🌌 Nada 10 — Imperial March</option>
-          </select>
-          <button class="btn btn-admin" style="min-width:auto; padding:10px 16px; flex-shrink:0;"
-            onclick="tesAlarmTone()">▶ Tes</button>
-        </div>
-      </div>
-      <hr style="border-color:rgba(255,255,255,0.15); margin:20px 0;">
-      <div class="form-group">
-        <label>🎛️ Tes Semua Nada Buzzer</label>
-        <p style="font-size:0.8em; opacity:0.6; margin-bottom:12px;">Tekan tiap tombol untuk preview bunyi langsung di ESP32</p>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-          <button class="btn-buzz-test" onclick="tesBuzzerNada(1)">🔔 Nada 1</button>
-          <button class="btn-buzz-test" onclick="tesBuzzerNada(2)">🚨 Nada 2</button>
-          <button class="btn-buzz-test" onclick="tesBuzzerNada(3)">🔥 Nada 3</button>
-          <button class="btn-buzz-test" onclick="tesBuzzerNada(4)">🎵 Nada 4</button>
-          <button class="btn-buzz-test" onclick="tesBuzzerNada(5)">📻 Nada 5</button>
-          <button class="btn-buzz-test" onclick="tesBuzzerNada(6)">🚑 Nada 6</button>
-          <button class="btn-buzz-test" onclick="tesBuzzerNada(7)">😡 Nada 7</button>
-          <button class="btn-buzz-test" onclick="tesBuzzerNada(8)">🔔 Nada 8</button>
-          <button class="btn-buzz-test" onclick="tesBuzzerNada(9)">🚒 Nada 9</button>
-          <button class="btn-buzz-test" onclick="tesBuzzerNada(10)">🌌 Nada 10</button>
-        </div>
-      </div>
+    <div class="sp-title">SISTEM KONTROL LAMPU JALAN</div>
+    <!-- Decorative diamond divider -->
+    <div style="display:flex;align-items:center;gap:10px;margin-top:10px;opacity:0;animation:spFadeUp 0.6s ease 1.7s forwards">
+      <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(245,158,11,0.4))"></div>
+      <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="5,0 10,5 5,10 0,5" fill="rgba(245,158,11,0.7)"/></svg>
+      <div style="flex:1;height:1px;background:linear-gradient(270deg,transparent,rgba(245,158,11,0.4))"></div>
     </div>
+    <div class="sp-credit">Project created by APTECH</div>
 
-    <!-- Tab: Pengaturan -->
-    <div class="tab-content" id="tab-pengaturan">
-      <div class="form-group">
-        <label style="display:flex; justify-content:space-between; align-items:center;">
-          <span>💾 Auto Save (EEPROM)</span>
-          <div class="toggle" id="autoSaveToggle" onclick="toggleAutoSave()"></div>
-        </label>
+    <div class="sp-progress">
+      <div class="sp-prog-track">
+        <div class="sp-prog-bar"></div>
       </div>
-      <button class="btn btn-admin" style="margin-top:10px;" onclick="simpanPengaturan()">💾 Simpan Pengaturan</button>
-      <hr style="border-color:rgba(255,255,255,0.15); margin:20px 0;">
-      <button class="btn btn-reset" style="margin-top:10px;" onclick="restartESP()">🔁 Restart ESP32</button>
-      <button class="btn btn-off"   style="margin-top:10px;" onclick="resetAllSettings()">⚠️ Reset Semua</button>
+      <div class="sp-prog-info">
+        <span>INITIALIZING SYSTEM...</span>
+        <span class="sp-pct" id="spPct">0%</span>
+      </div>
     </div>
   </div>
 
-  <!-- Watermark -->
-  <div class="watermark">SmartLamp PJU v8 • AryaProject</div>
+  <button class="sp-sound" id="spSndBtn" onclick="toggleSound()">🔇</button>
 </div>
 
-<!-- Modal Jadwal -->
-<div class="modal" id="modalJadwal">
-  <div class="modal-content">
-    <h2 id="judulModal" style="margin-bottom:20px;">Tambah Jadwal</h2>
-    <div class="form-group">
-      <label>Mode</label>
-      <select id="modeJadwal">
-        <option value="true">ON — Nyalakan Lampu</option>
-        <option value="false">OFF — Matikan Lampu</option>
+<!-- ═══════ APP ═══════ -->
+<div id="app">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-brand">
+      <div class="hdr-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L14.5 9H22L16 13.5L18.5 20.5L12 16L5.5 20.5L8 13.5L2 9H9.5L12 2Z" fill="url(#starGrad)" stroke="rgba(245,158,11,0.4)" stroke-width="0.5"/>
+          <circle cx="12" cy="12" r="3" fill="rgba(245,211,50,0.6)"/>
+          <defs>
+            <radialGradient id="starGrad" cx="50%" cy="30%">
+              <stop offset="0%" stop-color="#fef3c7"/>
+              <stop offset="60%" stop-color="#f59e0b"/>
+              <stop offset="100%" stop-color="#92400e"/>
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
+      <div>
+        <div class="hdr-name">AP&#8209;PJU</div>
+        <div class="hdr-sub">Smart Street Lighting</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div class="status-dot sd-online"><div class="pulse-dot"></div>ONLINE</div>
+      <div class="status-dot sd-admin" id="badgeAdmin">⚙ ADMIN</div>
+      <button class="snd-btn" id="sndBtn" onclick="toggleSound()">🔇</button>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- CLOCK CARD -->
+    <div class="clock-card">
+      <!-- Decorative top-right corner art -->
+      <svg style="position:absolute;top:14px;right:16px;opacity:0.18;pointer-events:none" width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="22" stroke="#f59e0b" stroke-width="1"/>
+        <circle cx="24" cy="24" r="16" stroke="#0ea5e9" stroke-width="0.6" stroke-dasharray="3 4"/>
+        <circle cx="24" cy="24" r="3" fill="#f59e0b"/>
+        <line x1="24" y1="2" x2="24" y2="8" stroke="#f59e0b" stroke-width="1.5"/>
+        <line x1="24" y1="40" x2="24" y2="46" stroke="#f59e0b" stroke-width="1.5"/>
+        <line x1="2" y1="24" x2="8" y2="24" stroke="#f59e0b" stroke-width="1.5"/>
+        <line x1="40" y1="24" x2="46" y2="24" stroke="#f59e0b" stroke-width="1.5"/>
+      </svg>
+      <div class="clock-time" id="clockTime">--:--:--</div>
+      <div class="clock-date" id="clockDate">— — —</div>
+      <div class="clock-meta">
+        <div class="cm-badge cmb-sched">
+          📅 <span id="scheduleCount">—</span>
+        </div>
+        <div class="cm-badge cmb-alarm">
+          ⏰ <span id="alarmStatus">Standby</span>
+        </div>
+        <div class="cm-sync" id="clockStatus">⏳ Menghubungkan perangkat...</div>
+      </div>
+    </div>
+
+    <div class="sec-gap"></div>
+
+    <!-- STATUS ROW -->
+    <div class="stat-row">
+      <div class="stat-chip">
+        <div class="sc-label">Perangkat</div>
+        <div class="sc-val">
+          <div class="led led-off" id="espLed"></div>
+          <span id="espStatus" style="font-size:0.72em">—</span>
+        </div>
+        <div class="sc-sub">IP: <span id="espIP">--</span></div>
+      </div>
+      <div class="stat-chip">
+        <div class="sc-label">Sinyal</div>
+        <div class="sc-val">
+          <div class="wifi-bars">
+            <div class="wb" id="wb1"></div>
+            <div class="wb" id="wb2"></div>
+            <div class="wb" id="wb3"></div>
+            <div class="wb" id="wb4"></div>
+          </div>
+        </div>
+        <div class="sc-sub"><span id="wifiStrength">--</span> | <span id="wifiRSSI">--</span>dBm</div>
+      </div>
+      <div class="stat-chip">
+        <div class="sc-label">Status</div>
+        <div class="sc-val">
+          <div class="led led-off" id="lampLed"></div>
+          <span id="lampStatus" style="font-size:0.72em">MATI</span>
+        </div>
+        <div class="sc-sub">Bright: <span id="lampBrightness">0</span>%</div>
+      </div>
+    </div>
+
+    <div class="sec-gap"></div>
+
+    <!-- Decorative separator -->
+    <div style="display:flex;align-items:center;gap:10px;padding:0 4px;margin-bottom:14px">
+      <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(245,158,11,0.2))"></div>
+      <svg width="16" height="8" viewBox="0 0 16 8"><polygon points="8,0 16,4 8,8 0,4" fill="rgba(245,158,11,0.3)"/></svg>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.58em;letter-spacing:0.2em;color:rgba(245,158,11,0.4)">PJU</div>
+      <svg width="16" height="8" viewBox="0 0 16 8"><polygon points="8,0 16,4 8,8 0,4" fill="rgba(245,158,11,0.3)"/></svg>
+      <div style="flex:1;height:1px;background:linear-gradient(270deg,transparent,rgba(245,158,11,0.2))"></div>
+    </div>
+
+    <!-- LAMP VISUAL -->
+    <div class="lamp-card">
+      <div class="lamp-aura" id="lampAura"></div>
+      <!-- decorative arc lines -->
+      <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.12" viewBox="0 0 360 160" preserveAspectRatio="none">
+        <path d="M0,160 Q180,-40 360,160" stroke="#f59e0b" stroke-width="1" fill="none"/>
+        <path d="M20,160 Q180,0 340,160" stroke="#0ea5e9" stroke-width="0.6" fill="none"/>
+      </svg>
+      <div class="lamp-circle" id="lampCircle">
+        <svg width="52" height="52" viewBox="0 0 52 52" fill="none" id="lampSvg">
+          <ellipse cx="26" cy="22" rx="13" ry="14" fill="url(#lf2)" stroke="rgba(245,211,50,0.3)" stroke-width="1"/>
+          <rect x="21" y="35" width="10" height="3" rx="1.5" fill="rgba(245,158,11,0.5)"/>
+          <rect x="22.5" y="37.5" width="7" height="3" rx="1" fill="rgba(245,158,11,0.3)"/>
+          <ellipse cx="26" cy="22" rx="6" ry="6.5" fill="rgba(255,245,150,0.4)"/>
+          <line x1="26" y1="5" x2="26" y2="2.5" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="37" y1="9" x2="38.8" y2="7.2" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="15" y1="9" x2="13.2" y2="7.2" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="42" y1="22" x2="44.5" y2="22" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="10" y1="22" x2="7.5" y2="22" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round"/>
+          <defs>
+            <radialGradient id="lf2" cx="40%" cy="30%">
+              <stop offset="0%" stop-color="#fef3c7"/>
+              <stop offset="50%" stop-color="#f59e0b"/>
+              <stop offset="100%" stop-color="#92400e"/>
+            </radialGradient>
+          </defs>
+        </svg>
+        <div class="lamp-beam" id="lampBeam"></div>
+      </div>
+      <div class="lamp-name" id="lampVisName">● MATI</div>
+      <div class="lamp-bright-badge">
+        🔅 Kecerahan: <strong id="lampBadgeBright" style="color:var(--gold3);font-family:'Share Tech Mono',monospace">0%</strong>
+      </div>
+    </div>
+
+    <div class="sec-gap"></div>
+
+    <!-- Decorative separator -->
+    <div style="display:flex;align-items:center;gap:8px;padding:0 4px;margin-bottom:14px">
+      <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(37,99,235,0.25))"></div>
+      <svg width="6" height="6" viewBox="0 0 6 6"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(14,165,233,0.5)"/></svg>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.58em;letter-spacing:0.2em;color:rgba(14,165,233,0.4)">CTRL</div>
+      <svg width="6" height="6" viewBox="0 0 6 6"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(14,165,233,0.5)"/></svg>
+      <div style="flex:1;height:1px;background:linear-gradient(270deg,transparent,rgba(37,99,235,0.25))"></div>
+    </div>
+
+    <!-- CONTROL -->
+    <div class="ctrl-section">
+      <div class="sec-title">
+        <svg width="14" height="14" viewBox="0 0 14 14"><polygon points="7,0 14,7 7,14 0,7" fill="rgba(245,158,11,0.7)"/><polygon points="7,3 11,7 7,11 3,7" fill="rgba(245,158,11,0.3)"/></svg>
+        Kontrol Manual
+      </div>
+
+      <div class="ctrl-grid">
+        <button class="ctrl-btn cbtn-on" onclick="kontrolLampu(true)">
+          <span class="btn-icon">🔆</span>NYALAKAN
+        </button>
+        <button class="ctrl-btn cbtn-off" onclick="kontrolLampu(false)">
+          <span class="btn-icon">🌙</span>MATIKAN
+        </button>
+        <button class="ctrl-btn cbtn-admin" onclick="tampilkanPIN()">
+          <span class="btn-icon">⚙️</span>ADMIN
+        </button>
+        <button class="ctrl-btn cbtn-reset" onclick="bukaResetModal()">
+          <span class="btn-icon">🔄</span>RESET
+        </button>
+      </div>
+
+      <!-- Brightness -->
+      <div class="bright-row">
+        <span>🔅 Kecerahan Lampu</span>
+        <span class="bright-val" id="brightnessValue">0%</span>
+      </div>
+      <div class="range-wrap">
+        <div class="range-track">
+          <div class="range-fill" id="rangeFill" style="width:0%"></div>
+        </div>
+        <input type="range" min="0" max="100" value="0" id="brightnessSlider"
+          onmousedown="isDragging=true" ontouchstart="isDragging=true"
+          oninput="updateBrightnessLabel(this.value);updateSliderGradient(this.value)"
+          onmouseup="isDragging=false;setBrightness(this.value)"
+          ontouchend="isDragging=false;setBrightness(this.value)">
+      </div>
+
+      <!-- Countdown -->
+      <div class="cdown-row">
+        <div class="cdown-box">
+          <div class="cdown-label">⏱ Nyala Berikutnya</div>
+          <div class="cdown-val cv-on" id="nextON">--:--:--</div>
+        </div>
+        <div class="cdown-box">
+          <div class="cdown-label">⏱ Mati Berikutnya</div>
+          <div class="cdown-val cv-off" id="nextOFF">--:--:--</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:16px"></div>
+
+  </div><!-- end .page -->
+</div><!-- end #app -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-l">
+    <svg width="8" height="8" viewBox="0 0 8 8" style="margin-right:5px;vertical-align:middle"><polygon points="4,0 8,4 4,8 0,4" fill="rgba(245,158,11,0.6)"/></svg>
+    AP-PJU <span>v8.0</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px">
+    <div style="width:1px;height:12px;background:rgba(255,255,255,0.12)"></div>
+    <div class="footer-r">by <span>APTECH</span></div>
+  </div>
+</div>
+
+<!-- ═══════ ADMIN SHEET ═══════ -->
+<div class="admin-sheet" id="adminSheet" onclick="closeAdminIfBg(event)">
+  <div class="admin-inner" id="adminInner">
+    <div class="admin-handle"></div>
+    <div class="admin-hdr">
+      <div class="admin-title">
+        <svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,0 12,6 6,12 0,6" fill="rgba(245,158,11,0.8)"/><polygon points="6,3 9,6 6,9 3,6" fill="rgba(245,211,50,0.4)"/></svg>
+        Panel Administrator
+      </div>
+      <button class="admin-logout" onclick="logout()">🚪 Logout</button>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="atab active" onclick="switchTab('jadwal',this)">📅 Jadwal</button>
+      <button class="atab" onclick="switchTab('buzzer',this)">🔊 Buzzer</button>
+      <button class="atab" onclick="switchTab('pengaturan',this)">⚙️ Setting</button>
+    </div>
+
+    <div class="admin-body">
+
+      <!-- TAB JADWAL -->
+      <div class="tab-pane active" id="tab-jadwal">
+        <div class="flex-row mt8" style="margin-bottom:14px">
+          <button class="abtn abtn-primary abtn-sm" onclick="tambahJadwal(true)">➕ Tambah ON</button>
+          <button class="abtn abtn-danger abtn-sm"  onclick="tambahJadwal(false)">➕ Tambah OFF</button>
+        </div>
+        <div class="tbl-wrap">
+          <table class="dtbl">
+            <thead>
+              <tr>
+                <th>Mode</th><th>Hari</th><th>Tgl</th>
+                <th>Bln</th><th>Waktu</th><th>Aktif</th><th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="bodyJadwal">
+              <tr><td colspan="7" style="text-align:center;padding:20px;opacity:0.5">Memuat jadwal...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB BUZZER -->
+      <div class="tab-pane" id="tab-buzzer">
+        <div class="set-row">
+          <div class="set-info">
+            <div class="set-label">🔊 Master Buzzer</div>
+            <div class="set-desc">Aktifkan / nonaktifkan semua suara buzzer</div>
+          </div>
+          <div class="toggle active" id="buzzerEnabledToggle" onclick="toggleBuzzerEnabled()"></div>
+        </div>
+        <div class="set-row">
+          <div class="set-info">
+            <div class="set-label">🎹 Feedback Tombol</div>
+            <div class="set-desc">Bunyi singkat saat tombol ON/OFF ditekan</div>
+          </div>
+          <select id="buzzerMode" class="fselect" style="width:auto;font-size:0.78em;padding:7px 10px" onchange="simpanModeBuzzer()">
+            <option value="0">Mati</option>
+            <option value="1">Aktif</option>
+          </select>
+        </div>
+        <div class="set-row">
+          <div class="set-info">
+            <div class="set-label">⏰ Alarm Jadwal</div>
+            <div class="set-desc">Bunyi 10 detik sebelum jadwal dieksekusi</div>
+          </div>
+          <div class="toggle active" id="alarmEnabledToggle" onclick="toggleAlarmEnabled()"></div>
+        </div>
+        <div class="divider"></div>
+        <div class="fgroup">
+          <label class="flabel">Nada Alarm Jadwal</label>
+          <div class="flex-row">
+            <select class="fselect" id="alarmTone" onchange="simpanAlarmTone()" style="flex:1">
+              <option value="1">🔔 Nada 1 — Alarm Klasik</option>
+              <option value="2">🚨 Nada 2 — Sirine Naik-Turun</option>
+              <option value="3">🔥 Nada 3 — Fire Alarm</option>
+              <option value="4">🎵 Nada 4 — Eskalasi Musikal</option>
+              <option value="5">📻 Nada 5 — Morse SOS</option>
+              <option value="6">🚑 Nada 6 — Ambulans</option>
+              <option value="7">😡 Nada 7 — Beep Panjang</option>
+              <option value="8">🔔 Nada 8 — Lonceng Ding</option>
+              <option value="9">🚒 Nada 9 — Alarm Kebakaran</option>
+              <option value="10">🌌 Nada 10 — Imperial March</option>
+            </select>
+            <button class="abtn abtn-purple abtn-sm" onclick="tesAlarmTone()">▶ Tes</button>
+          </div>
+        </div>
+        <div class="fgroup">
+          <label class="flabel">Tes Semua Nada</label>
+          <div class="buzz-grid">
+            <button class="buzz-btn" onclick="tesBuzzerNada(1)">🔔<br>Nada 1</button>
+            <button class="buzz-btn" onclick="tesBuzzerNada(2)">🚨<br>Nada 2</button>
+            <button class="buzz-btn" onclick="tesBuzzerNada(3)">🔥<br>Nada 3</button>
+            <button class="buzz-btn" onclick="tesBuzzerNada(4)">🎵<br>Nada 4</button>
+            <button class="buzz-btn" onclick="tesBuzzerNada(5)">📻<br>Nada 5</button>
+            <button class="buzz-btn" onclick="tesBuzzerNada(6)">🚑<br>Nada 6</button>
+            <button class="buzz-btn" onclick="tesBuzzerNada(7)">😡<br>Nada 7</button>
+            <button class="buzz-btn" onclick="tesBuzzerNada(8)">🔔<br>Nada 8</button>
+            <button class="buzz-btn" onclick="tesBuzzerNada(9)">🚒<br>Nada 9</button>
+            <button class="buzz-btn" onclick="tesBuzzerNada(10)">🌌<br>Nada 10</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB PENGATURAN -->
+      <div class="tab-pane" id="tab-pengaturan">
+        <div class="set-row">
+          <div class="set-info">
+            <div class="set-label">💾 Auto Save ke Memori</div>
+            <div class="set-desc">Simpan pengaturan otomatis ke EEPROM perangkat</div>
+          </div>
+          <div class="toggle" id="autoSaveToggle" onclick="toggleAutoSave()"></div>
+        </div>
+        <div class="mt16 flex-row">
+          <button class="abtn abtn-primary abtn-sm" onclick="simpanPengaturan()">💾 Simpan Sekarang</button>
+        </div>
+        <div class="divider"></div>
+        <div class="flex-row">
+          <button class="abtn abtn-gold abtn-sm"   onclick="restartESP()">🔁 Restart Perangkat</button>
+          <button class="abtn abtn-danger abtn-sm" onclick="resetAllSettings()">⚠️ Reset Semua</button>
+        </div>
+      </div>
+
+    </div><!-- admin-body -->
+  </div><!-- admin-inner -->
+</div><!-- admin-sheet -->
+
+<!-- ═══════ PIN MODAL ═══════ -->
+<div id="pinInput">
+  <div class="pin-box">
+    <div class="pin-icon">🔐</div>
+    <div class="pin-title">AKSES ADMINISTRATOR</div>
+    <div class="pin-sub">Masukkan PIN untuk mengakses panel kontrol</div>
+    <!-- Decorative divider -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;width:100%">
+      <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(245,158,11,0.3))"></div>
+      <svg width="8" height="8" viewBox="0 0 8 8"><polygon points="4,0 8,4 4,8 0,4" fill="rgba(245,158,11,0.5)"/></svg>
+      <div style="flex:1;height:1px;background:linear-gradient(270deg,transparent,rgba(245,158,11,0.3))"></div>
+    </div>
+    <input type="password" id="pinField" placeholder="Masukkan PIN" maxlength="20"
+      onkeydown="cekPINEnter(event)" autocomplete="current-password" inputmode="text">
+    <div id="pinErr" class="pin-err"></div>
+    <div class="pin-btns">
+      <button class="pin-btn pin-btn-ok" onclick="cekPIN()">✅ Masuk</button>
+      <button class="pin-btn pin-btn-cancel" onclick="tutupPIN()">✕ Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ SCHEDULE MODAL ═══════ -->
+<div id="modalJadwal">
+  <div class="modal-inner">
+    <div id="judulModal" style="font-family:'Orbitron',monospace;font-size:0.85em;font-weight:600;letter-spacing:0.1em;margin-bottom:20px">Tambah Jadwal</div>
+
+    <div class="fgroup">
+      <label class="flabel">Mode</label>
+      <select class="fselect" id="modeJadwal">
+        <option value="true">🔆 ON — Nyalakan Lampu</option>
+        <option value="false">🌙 OFF — Matikan Lampu</option>
       </select>
     </div>
-    <div class="form-group">
-      <label>Hari (Pilih Multiple)</label>
-      <div class="checkbox-group">
-        <div class="checkbox-item"><input type="checkbox" id="hari0" value="0"><label for="hari0">Min</label></div>
-        <div class="checkbox-item"><input type="checkbox" id="hari1" value="1"><label for="hari1">Sen</label></div>
-        <div class="checkbox-item"><input type="checkbox" id="hari2" value="2"><label for="hari2">Sel</label></div>
-        <div class="checkbox-item"><input type="checkbox" id="hari3" value="3"><label for="hari3">Rab</label></div>
-        <div class="checkbox-item"><input type="checkbox" id="hari4" value="4"><label for="hari4">Kam</label></div>
-        <div class="checkbox-item"><input type="checkbox" id="hari5" value="5"><label for="hari5">Jum</label></div>
-        <div class="checkbox-item"><input type="checkbox" id="hari6" value="6"><label for="hari6">Sab</label></div>
+
+    <div class="fgroup">
+      <label class="flabel">Hari (Pilih Multiple)</label>
+      <div class="cbgroup">
+        <div class="cbitem"><input type="checkbox" id="hari0" value="0"><label for="hari0">Min</label></div>
+        <div class="cbitem"><input type="checkbox" id="hari1" value="1"><label for="hari1">Sen</label></div>
+        <div class="cbitem"><input type="checkbox" id="hari2" value="2"><label for="hari2">Sel</label></div>
+        <div class="cbitem"><input type="checkbox" id="hari3" value="3"><label for="hari3">Rab</label></div>
+        <div class="cbitem"><input type="checkbox" id="hari4" value="4"><label for="hari4">Kam</label></div>
+        <div class="cbitem"><input type="checkbox" id="hari5" value="5"><label for="hari5">Jum</label></div>
+        <div class="cbitem"><input type="checkbox" id="hari6" value="6"><label for="hari6">Sab</label></div>
       </div>
     </div>
-    <div class="form-group">
-      <label>Tanggal (1–31, 0 = Setiap Tanggal)</label>
-      <input type="number" id="jadwalTanggal" min="0" max="31" value="0">
-    </div>
-    <div class="form-group">
-      <label>Bulan (1–12, 0 = Setiap Bulan)</label>
-      <input type="number" id="jadwalBulan" min="0" max="12" value="0">
-    </div>
-    <div class="form-group">
-      <label>Waktu (Jam : Menit)</label>
-      <div style="display:flex; gap:10px;">
-        <input type="number" id="jadwalJam"   min="0" max="23" value="18" placeholder="Jam"   style="width:50%;">
-        <input type="number" id="jadwalMenit" min="0" max="59" value="0"  placeholder="Menit" style="width:50%;">
+
+    <div class="f2col">
+      <div class="fgroup">
+        <label class="flabel">Tanggal (0=Setiap)</label>
+        <input type="number" class="finput" id="jadwalTanggal" min="0" max="31" value="0" inputmode="numeric">
+      </div>
+      <div class="fgroup">
+        <label class="flabel">Bulan (0=Setiap)</label>
+        <input type="number" class="finput" id="jadwalBulan" min="0" max="12" value="0" inputmode="numeric">
       </div>
     </div>
-    <div class="form-group">
-      <label style="display:flex; justify-content:space-between; align-items:center;">
-        <span>Aktifkan Jadwal</span>
-        <div class="toggle active" id="jadwalEnabledToggle" onclick="toggleJadwalEnabled()"></div>
-      </label>
+
+    <div class="fgroup">
+      <label class="flabel">Waktu (Jam : Menit)</label>
+      <div class="f2col">
+        <input type="number" class="finput" id="jadwalJam"   min="0" max="23" value="18" placeholder="Jam" inputmode="numeric">
+        <input type="number" class="finput" id="jadwalMenit" min="0" max="59" value="0"  placeholder="Menit" inputmode="numeric">
+      </div>
     </div>
-    <div style="display:flex; gap:10px; margin-top:20px;">
-      <button class="btn btn-admin" onclick="simpanJadwal()" style="flex:1;">💾 Simpan</button>
-      <button class="btn btn-off"   onclick="tutupModalJadwal()" style="flex:1;">✕ Batal</button>
+
+    <div class="set-row" style="margin-bottom:6px">
+      <div class="set-label">Aktifkan Jadwal Ini</div>
+      <div class="toggle active" id="jadwalEnabledToggle" onclick="toggleJadwalEnabled()"></div>
+    </div>
+
+    <div class="modal-btns">
+      <button class="mbtn mbtn-ok" onclick="simpanJadwal()">💾 Simpan</button>
+      <button class="mbtn mbtn-cancel" onclick="tutupModalJadwal()">✕ Batal</button>
     </div>
   </div>
 </div>
 
-<!-- PIN Input -->
-<div class="pin-input" id="pinInput">
+<!-- ═══════ RESET PIN MODAL ═══════ -->
+<div id="resetPinModal">
   <div class="pin-box">
-    <h2>🔐 Masukkan PIN Admin</h2>
-    <input type="password" id="pinField" placeholder="••••••••"
-           onkeydown="cekPINEnter(event)" style="margin-bottom:20px;">
-    <div style="display:flex; gap:10px; justify-content:center;">
-      <button class="btn btn-admin btn-small" onclick="cekPIN()">✅ Masuk</button>
-      <button class="btn btn-off btn-small"   onclick="tutupPIN()">✕ Batal</button>
+    <div class="pin-icon" style="background:radial-gradient(circle,rgba(245,158,11,0.3),rgba(2,8,19,0.8));border-color:rgba(245,158,11,0.4);box-shadow:0 0 30px rgba(245,158,11,0.3);">🔑</div>
+    <div class="pin-title">KONFIRMASI RESET</div>
+    <div class="pin-sub">Masukkan PIN Admin untuk mengonfirmasi reset perangkat</div>
+    <input type="password" id="resetPinField" placeholder="Masukkan PIN Admin" maxlength="20"
+      onkeydown="if(event.key==='Enter')konfirmasiReset()" autocomplete="current-password" inputmode="text"
+      style="border-color:rgba(245,158,11,0.3);">
+    <div id="resetPinErr" class="pin-err"></div>
+    <div class="pin-btns">
+      <button class="pin-btn" onclick="konfirmasiReset()" style="background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.4);color:var(--gold3);">🔄 Konfirmasi</button>
+      <button class="pin-btn pin-btn-cancel" onclick="tutupResetModal()">✕ Batal</button>
     </div>
   </div>
 </div>
 
-<!-- Firebase SDK -->
+<!-- ═══════ FIREBASE ═══════ -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
-// ============================================================
-// DEBUG LOG — didefinisikan PERTAMA sebelum apapun dipanggil
-// ============================================================
-function logDebug(message, type) {
-  type = type || 'info';
-  var debugDiv = document.getElementById('debugInfo');
-  if (!debugDiv) { console.log(message); return; }
-  var timestamp = new Date().toLocaleTimeString('id-ID');
-  var entry = document.createElement('div');
-  entry.className = 'log ' + (type === 'success' ? 'success' : type === 'error' ? 'error' : 'info');
-  entry.textContent = '[' + timestamp + '] ' + message;
-  debugDiv.appendChild(entry);
-  debugDiv.scrollTop = debugDiv.scrollHeight;
-  var logs = debugDiv.getElementsByClassName('log');
-  if (logs.length > 25) debugDiv.removeChild(logs[0]);
-  console.log('[' + timestamp + '] ' + message);
+/* ════════════════════════════════════════════
+   CANVAS PARTICLE BG
+════════════════════════════════════════════ */
+(function(){
+  var c=document.getElementById('bgc'),ctx=c.getContext('2d'),W,H,pts=[];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
+  window.addEventListener('resize',resize);resize();
+  function Pt(){this.x=Math.random()*W;this.y=Math.random()*H;this.r=Math.random()*1+0.3;this.vx=(Math.random()-.5)*.2;this.vy=(Math.random()-.5)*.2;this.a=Math.random()*.4+.07}
+  Pt.prototype.tick=function(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W)this.x=Math.random()*W;if(this.y<0||this.y>H)this.y=Math.random()*H};
+  for(var i=0;i<60;i++)pts.push(new Pt());
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='rgba(37,99,235,0.035)';ctx.lineWidth=1;
+    var sz=80;
+    for(var x=0;x<W;x+=sz){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+    for(var y=0;y<H;y+=sz){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+    for(var i=0;i<pts.length;i++){
+      pts[i].tick();
+      ctx.beginPath();ctx.arc(pts[i].x,pts[i].y,pts[i].r,0,Math.PI*2);
+      ctx.fillStyle='rgba(147,197,253,'+pts[i].a+')';ctx.fill();
+      for(var j=i+1;j<pts.length;j++){
+        var dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<100){ctx.beginPath();ctx.strokeStyle='rgba(147,197,253,'+(0.05*(1-d/100))+')';ctx.lineWidth=.4;ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke()}
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+/* ════════════════════════════════════════════
+   SPLASH SEQUENCE
+════════════════════════════════════════════ */
+(function(){
+  var pct=0,el=document.getElementById('spPct');
+  var iv=setInterval(function(){
+    pct=Math.min(100,pct+Math.floor(Math.random()*4+1));
+    if(el)el.textContent=pct+'%';
+    if(pct>=100)clearInterval(iv);
+  },35);
+  setTimeout(function(){
+    document.getElementById('splash').classList.add('exit');
+    setTimeout(function(){
+      document.getElementById('splash').style.display='none';
+    },900);
+    document.getElementById('app').classList.add('visible');
+    initAudio();
+  },4000);
+})();
+
+/* ════════════════════════════════════════════
+   WEB AUDIO AMBIENT
+════════════════════════════════════════════ */
+var audioCtx=null,gainNodes=[],soundOn=false;
+function initAudio(){
+  if(audioCtx)return;
+  try{
+    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    var layers=[
+      {type:'sine',freq:40,gain:0.04},
+      {type:'sine',freq:80,gain:0.025},
+      {type:'triangle',freq:320,gain:0.012,lfo:true},
+    ];
+    gainNodes=[];
+    layers.forEach(function(l){
+      var osc=audioCtx.createOscillator(),g=audioCtx.createGain();
+      osc.type=l.type;osc.frequency.value=l.freq;
+      g.gain.value=soundOn?l.gain:0;
+      if(l.lfo){
+        var lfo=audioCtx.createOscillator(),lg=audioCtx.createGain();
+        lfo.type='sine';lfo.frequency.value=0.12;lg.gain.value=8;
+        lfo.connect(lg);lg.connect(osc.frequency);lfo.start();
+      }
+      osc.connect(g);g.connect(audioCtx.destination);
+      osc.start();gainNodes.push({g:g,v:l.gain});
+    });
+    /* noise layer */
+    var buf=audioCtx.createBuffer(1,audioCtx.sampleRate*2,audioCtx.sampleRate);
+    var d=buf.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+    var ns=audioCtx.createBufferSource();ns.buffer=buf;ns.loop=true;
+    var bf=audioCtx.createBiquadFilter();bf.type='bandpass';bf.frequency.value=200;bf.Q.value=0.5;
+    var ng=audioCtx.createGain();ng.gain.value=soundOn?0.005:0;
+    ns.connect(bf);bf.connect(ng);ng.connect(audioCtx.destination);ns.start();
+    gainNodes.push({g:ng,v:0.005});
+  }catch(e){}
+}
+function setAmbientVol(on){
+  gainNodes.forEach(function(n){
+    try{n.g.gain.setTargetAtTime(on?n.v:0,audioCtx.currentTime,1.0)}catch(e){}
+  });
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  var ic=soundOn?'🔊':'🔇';
+  var sb=document.getElementById('sndBtn');if(sb){sb.textContent=ic;sb.classList.toggle('on',soundOn)}
+  var sp=document.getElementById('spSndBtn');if(sp)sp.textContent=ic;
+  if(!audioCtx){initAudio()}else{
+    if(audioCtx.state==='suspended')audioCtx.resume();
+    setAmbientVol(soundOn);
+  }
 }
 
-// ============================================================
-// FIREBASE INIT
-// ============================================================
-var firebaseConfig = {
-  apiKey: "AIzaSyCfRXQKtfSQemzyESufRa-8MGNd_Pi2EeE",
-  authDomain: "lampu-pju-njati.firebaseapp.com",
-  databaseURL: "https://lampu-pju-njati-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "lampu-pju-njati",
-  storageBucket: "lampu-pju-njati.firebasestorage.app",
-  messagingSenderId: "1095543830018",
-  appId: "1:1095543830018:web:f6506f68944145869c591b"
+/* ════════════════════════════════════════════
+   DEBUG (console only — no visible div)
+════════════════════════════════════════════ */
+function logDebug(msg,type){
+  type=type||'info';
+  console.log('['+new Date().toLocaleTimeString('id-ID')+']['+type.toUpperCase()+'] '+msg);
+}
+
+/* ════════════════════════════════════════════
+   FIREBASE INIT
+════════════════════════════════════════════ */
+var firebaseConfig={
+  apiKey:"AIzaSyCfRXQKtfSQemzyESufRa-8MGNd_Pi2EeE",
+  authDomain:"lampu-pju-njati.firebaseapp.com",
+  databaseURL:"https://lampu-pju-njati-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"lampu-pju-njati",
+  storageBucket:"lampu-pju-njati.firebasestorage.app",
+  messagingSenderId:"1095543830018",
+  appId:"1:1095543830018:web:f6506f68944145869c591b"
 };
 firebase.initializeApp(firebaseConfig);
-var database = firebase.database();
-logDebug('Firebase diinisialisasi', 'success');
+var database=firebase.database();
+logDebug('Firebase init','success');
 
-// ============================================================
-// VARIABEL GLOBAL
-// ============================================================
-var isAdmin         = localStorage.getItem('smartlamp_admin') === 'true';
-var jadwalList      = [];
-var currentEditIdx  = -1;
-var jadwalEnabled   = true;
-var espOnline       = false;
-var statusLampu     = false;
-var brightnessLevel = 0;
-var buzzerEnabled   = true;
-var alarmEnabled    = true;
-var isDragging      = false;
-var buzzerTestLock  = false;
+/* ════════════════════════════════════════════
+   GLOBALS
+════════════════════════════════════════════ */
+var isAdmin=localStorage.getItem('smartlamp_admin')==='true';
+var jadwalList=[],currentEditIdx=-1,jadwalEnabled=true;
+var espOnline=false,statusLampu=false,brightnessLevel=0;
+var buzzerEnabled=true,alarmEnabled=true,isDragging=false,buzzerTestLock=false;
 
-// Aktifkan admin panel jika sudah login sebelumnya
-if (isAdmin) {
-  document.getElementById('adminPanel').classList.add('active');
-  logDebug('Auto-login Admin', 'success');
+if(isAdmin){
+  document.getElementById('badgeAdmin').classList.add('on');
+  logDebug('Auto-login Admin','success');
 }
 
-// ============================================================
-// FIREBASE LISTENERS
-// ============================================================
-database.ref('/status').on('value', function(snap) {
-  var data = snap.val();
-  if (!data) { logDebug('Belum ada data status', 'error'); return; }
+/* ════════════════════════════════════════════
+   FIREBASE LISTENERS
+════════════════════════════════════════════ */
+database.ref('/status').on('value',function(snap){
+  var data=snap.val();if(!data){logDebug('No status data','error');return}
   updateStatus(data);
-}, function(err) {
-  logDebug('Error status: ' + err.message, 'error');
+},function(err){logDebug('Error status: '+err.message,'error')});
+
+database.ref('/schedules').on('value',function(snap){
+  var data=snap.val();jadwalList=[];
+  if(data){Object.keys(data).forEach(function(k){jadwalList.push(Object.assign({id:k},data[k]))})}
+  try{localStorage.setItem('smartlamp_jadwal_cache',JSON.stringify(jadwalList))}catch(e){}
+  var el=document.getElementById('scheduleCount');
+  if(el)el.textContent=jadwalList.length>0?(jadwalList.length+' aktif'):'Kosong';
+  logDebug(jadwalList.length+' jadwal dimuat','success');
+  renderTabelJadwal();updateCountdowns();
+},function(err){logDebug('Error jadwal: '+err.message,'error')});
+
+database.ref('/settings').on('value',function(snap){
+  var data=snap.val();if(!data)return;
+  if(data.buzzerMode!==undefined)document.getElementById('buzzerMode').value=data.buzzerMode;
+  if(data.buzzerEnabled!==undefined){buzzerEnabled=data.buzzerEnabled;document.getElementById('buzzerEnabledToggle').classList.toggle('active',buzzerEnabled)}
+  if(data.autoSave!==undefined)document.getElementById('autoSaveToggle').classList.toggle('active',data.autoSave);
+  if(data.alarmEnabled!==undefined){alarmEnabled=data.alarmEnabled;document.getElementById('alarmEnabledToggle').classList.toggle('active',alarmEnabled)}
+  if(data.alarmTone!==undefined)document.getElementById('alarmTone').value=data.alarmTone;
 });
 
-database.ref('/schedules').on('value', function(snap) {
-  var data = snap.val();
-  jadwalList = [];
-  if (data) {
-    Object.keys(data).forEach(function(key) {
-      jadwalList.push(Object.assign({ id: key }, data[key]));
-    });
-    try { localStorage.setItem('smartlamp_jadwal_cache', JSON.stringify(jadwalList)); } catch(e) {}
-  }
-  var el = document.getElementById('scheduleCount');
-  if (el) { el.textContent = jadwalList.length > 0 ? (jadwalList.length + ' aktif') : 'Kosong'; el.style.color = jadwalList.length > 0 ? '#10b981' : '#ef4444'; }
-  logDebug(jadwalList.length + ' jadwal dimuat', 'success');
-  renderTabelJadwal();
-  updateCountdowns();
-}, function(err) {
-  logDebug('Error jadwal: ' + err.message, 'error');
-});
+/* ════════════════════════════════════════════
+   UPDATE STATUS
+════════════════════════════════════════════ */
+function updateStatus(data){
+  var nowSec=Math.floor(Date.now()/1000),lastSeen=data.lastSeen||data.lastUpdate||0,ageSec=nowSec-lastSeen;
+  espOnline=(lastSeen>0&&ageSec<45);
 
-database.ref('/settings').on('value', function(snap) {
-  var data = snap.val();
-  if (!data) return;
-  if (data.buzzerMode   !== undefined) document.getElementById('buzzerMode').value = data.buzzerMode;
-  if (data.buzzerEnabled !== undefined) { buzzerEnabled = data.buzzerEnabled; document.getElementById('buzzerEnabledToggle').classList.toggle('active', buzzerEnabled); }
-  if (data.autoSave     !== undefined) document.getElementById('autoSaveToggle').classList.toggle('active', data.autoSave);
-  if (data.alarmEnabled  !== undefined) { alarmEnabled = data.alarmEnabled; document.getElementById('alarmEnabledToggle').classList.toggle('active', alarmEnabled); }
-  if (data.alarmTone    !== undefined) document.getElementById('alarmTone').value = data.alarmTone;
-});
-
-// ============================================================
-// UPDATE STATUS — satu if/else yang benar, tidak ada duplikat
-// ============================================================
-function updateStatus(data) {
-  var nowSec  = Math.floor(Date.now() / 1000);
-  var lastSeen = data.lastSeen || data.lastUpdate || 0;
-  var ageSec   = nowSec - lastSeen;
-
-  espOnline = (lastSeen > 0 && ageSec < 45);
-
-  // ESP status
-  var espLed    = document.getElementById('espLed');
-  var espStatus = document.getElementById('espStatus');
-  var espIP     = document.getElementById('espIP');
-  if (espOnline) {
-    espLed.className      = 'led online';
-    espStatus.textContent = 'Online';
-    espIP.textContent     = data.ip || '--';
-    // Update clock status badge saat ESP reply
-    var cs = document.getElementById('clockStatus');
-    if (cs) { cs.textContent = '✅ Tersinkronisasi ESP32 (NTP)'; cs.style.color = '#10b981'; }
-  } else {
-    espLed.className      = 'led offline';
-    espStatus.textContent = lastSeen > 0 ? ('Offline (' + ageSec + 's)') : 'Offline';
-    espIP.textContent     = '--';
+  var espLed=document.getElementById('espLed'),espStatus=document.getElementById('espStatus'),espIP=document.getElementById('espIP');
+  if(espOnline){
+    espLed.className='led led-on';espStatus.textContent='Online';
+    if(espIP)espIP.textContent=data.ip||'--';
+    var cs=document.getElementById('clockStatus');
+    if(cs){cs.textContent='✅ Tersinkronisasi Perangkat (NTP)';cs.style.color='rgba(52,211,153,0.65)'}
+  }else{
+    espLed.className='led led-off';espStatus.textContent=lastSeen>0?('Offline ('+ageSec+'s)'):'Offline';
+    if(espIP)espIP.textContent='--';
   }
 
-  // WiFi bars
-  if (data.rssi !== undefined) {
-    var rssi    = data.rssi;
-    var percent = Math.min(100, Math.max(0, 2 * (rssi + 100)));
-    document.getElementById('wifiStrength').textContent = percent.toFixed(0) + '%';
-    document.getElementById('wifiRSSI').textContent     = rssi;
-    var bars = document.querySelectorAll('.wifi-bar');
-    bars.forEach(function(bar, i) { bar.style.opacity = percent > (i * 25) ? '1' : '0.2'; });
+  if(data.rssi!==undefined){
+    var rssi=data.rssi,pct=Math.min(100,Math.max(0,2*(rssi+100)));
+    document.getElementById('wifiStrength').textContent=pct.toFixed(0)+'%';
+    document.getElementById('wifiRSSI').textContent=rssi;
+    var bars=document.querySelectorAll('.wb');
+    bars.forEach(function(b,i){b.classList.toggle('lit',pct>(i*25))});
   }
 
-  // Lamp status
-  statusLampu     = data.relay === true;
-  brightnessLevel = (data.brightness !== undefined && data.brightness !== null) ? data.brightness : 0;
+  statusLampu=data.relay===true;
+  brightnessLevel=(data.brightness!==undefined&&data.brightness!==null)?data.brightness:0;
 
-  var lampLed    = document.getElementById('lampLed');
-  var lampStatus = document.getElementById('lampStatus');
-  if (statusLampu && brightnessLevel > 0) {
-    lampLed.className     = 'led online';
-    lampStatus.textContent = 'NYALA';
-  } else {
-    lampLed.className     = 'led offline';
-    lampStatus.textContent = 'MATI';
+  var lampLed=document.getElementById('lampLed'),lampStatus=document.getElementById('lampStatus');
+  var lampCircle=document.getElementById('lampCircle'),lampBeam=document.getElementById('lampBeam');
+  var lampAura=document.getElementById('lampAura'),lampVisName=document.getElementById('lampVisName');
+  var lampBadge=document.getElementById('lampBadgeBright');
+
+  if(statusLampu&&brightnessLevel>0){
+    lampLed.className='led led-amber';lampStatus.textContent='MENYALA';
+    if(lampCircle)lampCircle.classList.add('on');
+    if(lampBeam)lampBeam.classList.add('on');
+    if(lampAura)lampAura.classList.add('on');
+    if(lampVisName){lampVisName.textContent='● MENYALA';lampVisName.classList.add('on')}
+  }else{
+    lampLed.className='led led-off';lampStatus.textContent='MATI';
+    if(lampCircle)lampCircle.classList.remove('on');
+    if(lampBeam)lampBeam.classList.remove('on');
+    if(lampAura)lampAura.classList.remove('on');
+    if(lampVisName){lampVisName.textContent='● MATI';lampVisName.classList.remove('on')}
   }
-  document.getElementById('lampBrightness').textContent = brightnessLevel;
+  document.getElementById('lampBrightness').textContent=brightnessLevel;
+  if(lampBadge)lampBadge.textContent=brightnessLevel+'%';
 
-  // Slider — hanya update kalau user tidak sedang geser
-  if (!isDragging) {
-    var sl = document.getElementById('brightnessSlider');
-    sl.value = brightnessLevel;
-    updateBrightnessLabel(brightnessLevel);
-    updateSliderGradient(brightnessLevel);
+  if(!isDragging){
+    var sl=document.getElementById('brightnessSlider');
+    sl.value=brightnessLevel;updateBrightnessLabel(brightnessLevel);updateSliderGradient(brightnessLevel);
   }
 }
 
-// ============================================================
-// KONTROL LAMPU
-// ============================================================
-function kontrolLampu(state) {
-  logDebug('Kirim relay: ' + (state ? 'ON' : 'OFF'), 'info');
+/* ════════════════════════════════════════════
+   LAMP CONTROL
+════════════════════════════════════════════ */
+function kontrolLampu(state){
+  logDebug('Kirim relay: '+(state?'ON':'OFF'),'info');
   database.ref('/control/relay').set(state)
-    .then(function() { logDebug('Relay terkirim', 'success'); })
-    .catch(function(e) { logDebug('Error: ' + e.message, 'error'); alert('Gagal: ' + e.message); });
+    .then(function(){logDebug('Relay terkirim','success')})
+    .catch(function(e){logDebug('Error: '+e.message,'error');alert('Gagal: '+e.message)});
 }
-
-function setBrightness(value) {
-  value = parseInt(value);
-  if (isNaN(value)) return;
-  logDebug('Kirim brightness: ' + value + '%', 'info');
+function setBrightness(value){
+  value=parseInt(value);if(isNaN(value))return;
+  logDebug('Kirim brightness: '+value+'%','info');
   database.ref('/control/brightness').set(value)
-    .then(function() { logDebug('Brightness terkirim: ' + value + '%', 'success'); })
-    .catch(function(e) { logDebug('Error brightness: ' + e.message, 'error'); });
+    .then(function(){logDebug('Brightness terkirim: '+value+'%','success')})
+    .catch(function(e){logDebug('Error brightness: '+e.message,'error')});
+}
+function updateBrightnessLabel(v){
+  document.getElementById('brightnessValue').textContent=v+'%';
+  var lb=document.getElementById('lampBadgeBright');if(lb)lb.textContent=v+'%';
+}
+function updateSliderGradient(v){
+  var f=document.getElementById('rangeFill');if(f)f.style.width=v+'%';
 }
 
-function updateBrightnessLabel(value) {
-  document.getElementById('brightnessValue').textContent = value + '%';
+/* ════════════════════════════════════════════
+   RESET / RESTART
+════════════════════════════════════════════ */
+function bukaResetModal(){
+  document.getElementById('resetPinModal').classList.add('active');
+  document.getElementById('resetPinField').value='';
+  document.getElementById('resetPinErr').textContent='';
+  document.getElementById('resetPinField').classList.remove('err');
+  setTimeout(function(){document.getElementById('resetPinField').focus()},150);
 }
-
-function updateSliderGradient(value) {
-  var sl = document.getElementById('brightnessSlider');
-  sl.style.background = 'linear-gradient(to right, #10b981 ' + value + '%, rgba(255,255,255,0.2) ' + value + '%)';
+function tutupResetModal(){
+  document.getElementById('resetPinModal').classList.remove('active');
 }
-
-// ============================================================
-// RESET / RESTART
-// ============================================================
-function resetSettings() {
-  if (!confirm('Reset pengaturan ke default?')) return;
-  database.ref('/control/resetSettings').set(true)
-    .then(function() { logDebug('Reset terkirim', 'success'); alert('✅ Reset diproses...'); })
-    .catch(function(e) { alert('❌ Gagal: ' + e.message); });
-}
-
-function resetAllSettings() {
-  if (!confirm('RESET SEMUA PENGATURAN?')) return;
-  database.ref('/settings').remove()
-    .then(function() { logDebug('All reset', 'success'); alert('✅ Semua direset!'); })
-    .catch(function(e) { alert('❌ Gagal: ' + e.message); });
-}
-
-function restartESP() {
-  if (!confirm('Restart ESP32?')) return;
-  database.ref('/control/restart').set(true)
-    .then(function() { logDebug('Restart terkirim', 'success'); alert('✅ Restart terkirim!'); })
-    .catch(function(e) { logDebug('Error: ' + e.message, 'error'); });
-}
-
-// ============================================================
-// PIN / AUTH
-// ============================================================
-function tampilkanPIN() {
-  if (isAdmin) { document.getElementById('adminPanel').classList.add('active'); return; }
-  document.getElementById('pinInput').classList.add('active');
-  document.getElementById('pinField').value = '';
-  setTimeout(function() { document.getElementById('pinField').focus(); }, 100);
-}
-
-function tutupPIN() {
-  document.getElementById('pinInput').classList.remove('active');
-}
-
-function cekPINEnter(event) {
-  if (event.key === 'Enter') cekPIN();
-}
-
-function cekPIN() {
-  var pin = document.getElementById('pinField').value;
-  if (pin === 'RCLED123') {
-    isAdmin = true;
-    localStorage.setItem('smartlamp_admin', 'true');
-    document.getElementById('adminPanel').classList.add('active');
-    tutupPIN();
-    logDebug('Login Berhasil!', 'success');
-    alert('✅ Selamat Datang Admin!');
-  } else {
-    logDebug('PIN Salah!', 'error');
-    alert('❌ PIN Salah!');
+function konfirmasiReset(){
+  var pin=document.getElementById('resetPinField').value;
+  if(pin==='RCLED123'){
+    tutupResetModal();
+    resetSettings();
+  }else{
+    var f=document.getElementById('resetPinField');
+    f.classList.add('err');
+    document.getElementById('resetPinErr').textContent='PIN salah. Akses ditolak.';
+    f.value='';
+    setTimeout(function(){f.classList.remove('err')},500);
+    logDebug('Reset ditolak — PIN salah','error');
   }
 }
+function resetSettings(){
+  if(!confirm('Reset pengaturan ke default?'))return;
+  database.ref('/control/resetSettings').set(true)
+    .then(function(){logDebug('Reset terkirim','success');alert('✅ Reset diproses...')})
+    .catch(function(e){alert('❌ Gagal: '+e.message)});
+}
+function resetAllSettings(){
+  if(!confirm('RESET SEMUA PENGATURAN? Tidak bisa dibatalkan!'))return;
+  database.ref('/settings').remove()
+    .then(function(){logDebug('All reset','success');alert('✅ Semua direset!')})
+    .catch(function(e){alert('❌ Gagal: '+e.message)});
+}
+function restartESP(){
+  if(!confirm('Restart perangkat PJU?'))return;
+  database.ref('/control/restart').set(true)
+    .then(function(){logDebug('Restart terkirim','success');alert('✅ Restart terkirim!')})
+    .catch(function(e){logDebug('Error: '+e.message,'error')});
+}
 
-function logout() {
-  if (!confirm('Keluar dari admin?')) return;
-  isAdmin = false;
+/* ════════════════════════════════════════════
+   ADMIN SHEET
+════════════════════════════════════════════ */
+function openAdmin(){
+  document.getElementById('adminSheet').classList.add('open');
+}
+function closeAdmin(){
+  document.getElementById('adminSheet').classList.remove('open');
+}
+function closeAdminIfBg(e){
+  if(e.target===document.getElementById('adminSheet'))closeAdmin();
+}
+
+/* ════════════════════════════════════════════
+   PIN / AUTH
+════════════════════════════════════════════ */
+function tampilkanPIN(){
+  if(isAdmin){openAdmin();return}
+  document.getElementById('pinInput').classList.add('active');
+  document.getElementById('pinField').value='';
+  document.getElementById('pinErr').textContent='';
+  document.getElementById('pinField').classList.remove('err');
+  setTimeout(function(){document.getElementById('pinField').focus()},150);
+}
+function tutupPIN(){document.getElementById('pinInput').classList.remove('active')}
+function cekPINEnter(event){if(event.key==='Enter')cekPIN()}
+function cekPIN(){
+  var pin=document.getElementById('pinField').value;
+  if(pin==='RCLED123'){
+    isAdmin=true;
+    localStorage.setItem('smartlamp_admin','true');
+    tutupPIN();
+    document.getElementById('badgeAdmin').classList.add('on');
+    openAdmin();
+    logDebug('Login Admin Berhasil!','success');
+  }else{
+    logDebug('PIN Salah!','error');
+    var f=document.getElementById('pinField');
+    f.classList.add('err');
+    document.getElementById('pinErr').textContent='PIN salah. Coba lagi.';
+    f.value='';
+    setTimeout(function(){f.classList.remove('err')},500);
+  }
+}
+function logout(){
+  if(!confirm('Keluar dari mode administrator?'))return;
+  isAdmin=false;
   localStorage.removeItem('smartlamp_admin');
-  document.getElementById('adminPanel').classList.remove('active');
-  logDebug('Logout', 'info');
+  closeAdmin();
+  document.getElementById('badgeAdmin').classList.remove('on');
+  logDebug('Logout','info');
 }
 
-// ============================================================
-// TAB SWITCHING
-// ============================================================
-function switchTab(tabName, el) {
-  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-  document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
-  if (el) el.classList.add('active');
-  var tc = document.getElementById('tab-' + tabName);
-  if (tc) tc.classList.add('active');
+/* ════════════════════════════════════════════
+   TAB SWITCHING
+════════════════════════════════════════════ */
+function switchTab(name,el){
+  document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active')});
+  if(el)el.classList.add('active');
+  var tc=document.getElementById('tab-'+name);if(tc)tc.classList.add('active');
 }
 
-// ============================================================
-// JADWAL FUNCTIONS
-// ============================================================
-function tambahJadwal(isON) {
-  currentEditIdx = -1;
-  document.getElementById('judulModal').textContent = 'Tambah Jadwal ' + (isON ? 'ON' : 'OFF');
-  document.getElementById('modeJadwal').value = isON.toString();
-  for (var i = 0; i <= 6; i++) { var cb = document.getElementById('hari' + i); if (cb) cb.checked = false; }
-  document.getElementById('jadwalTanggal').value = 0;
-  document.getElementById('jadwalBulan').value   = 0;
-  document.getElementById('jadwalJam').value     = 18;
-  document.getElementById('jadwalMenit').value   = 0;
-  jadwalEnabled = true;
+/* ════════════════════════════════════════════
+   JADWAL FUNCTIONS
+════════════════════════════════════════════ */
+function tambahJadwal(isON){
+  currentEditIdx=-1;
+  document.getElementById('judulModal').textContent='Tambah Jadwal '+(isON?'ON':'OFF');
+  document.getElementById('modeJadwal').value=isON.toString();
+  for(var i=0;i<=6;i++){var cb=document.getElementById('hari'+i);if(cb)cb.checked=false}
+  document.getElementById('jadwalTanggal').value=0;
+  document.getElementById('jadwalBulan').value=0;
+  document.getElementById('jadwalJam').value=18;
+  document.getElementById('jadwalMenit').value=0;
+  jadwalEnabled=true;
   document.getElementById('jadwalEnabledToggle').classList.add('active');
   document.getElementById('modalJadwal').classList.add('active');
 }
-
-function editJadwal(index) {
-  currentEditIdx = index;
-  var j = jadwalList[index];
-  document.getElementById('judulModal').textContent = 'Edit Jadwal';
-  document.getElementById('modeJadwal').value = j.isON.toString();
-  for (var i = 0; i <= 6; i++) { var cb = document.getElementById('hari' + i); if (cb) cb.checked = (j.days & (1 << i)) !== 0; }
-  document.getElementById('jadwalTanggal').value = j.date   || 0;
-  document.getElementById('jadwalBulan').value   = j.month  || 0;
-  document.getElementById('jadwalJam').value     = j.hour;
-  document.getElementById('jadwalMenit').value   = j.minute;
-  jadwalEnabled = j.enabled;
-  document.getElementById('jadwalEnabledToggle').classList.toggle('active', jadwalEnabled);
+function editJadwal(index){
+  currentEditIdx=index;var j=jadwalList[index];
+  document.getElementById('judulModal').textContent='Edit Jadwal';
+  document.getElementById('modeJadwal').value=j.isON.toString();
+  for(var i=0;i<=6;i++){var cb=document.getElementById('hari'+i);if(cb)cb.checked=(j.days&(1<<i))!==0}
+  document.getElementById('jadwalTanggal').value=j.date||0;
+  document.getElementById('jadwalBulan').value=j.month||0;
+  document.getElementById('jadwalJam').value=j.hour;
+  document.getElementById('jadwalMenit').value=j.minute;
+  jadwalEnabled=j.enabled;
+  document.getElementById('jadwalEnabledToggle').classList.toggle('active',jadwalEnabled);
   document.getElementById('modalJadwal').classList.add('active');
 }
-
-function tutupModalJadwal() {
-  document.getElementById('modalJadwal').classList.remove('active');
-}
-
-function toggleJadwalEnabled() {
-  jadwalEnabled = !jadwalEnabled;
-  document.getElementById('jadwalEnabledToggle').classList.toggle('active', jadwalEnabled);
-}
-
-function simpanJadwal() {
-  var days = 0;
-  for (var i = 0; i <= 6; i++) { var cb = document.getElementById('hari' + i); if (cb && cb.checked) days |= (1 << i); }
-  var data = {
-    enabled: jadwalEnabled,
-    isON:    document.getElementById('modeJadwal').value === 'true',
-    days:    days,
-    date:    parseInt(document.getElementById('jadwalTanggal').value) || 0,
-    month:   parseInt(document.getElementById('jadwalBulan').value)   || 0,
-    hour:    parseInt(document.getElementById('jadwalJam').value),
-    minute:  parseInt(document.getElementById('jadwalMenit').value)
+function tutupModalJadwal(){document.getElementById('modalJadwal').classList.remove('active')}
+function toggleJadwalEnabled(){jadwalEnabled=!jadwalEnabled;document.getElementById('jadwalEnabledToggle').classList.toggle('active',jadwalEnabled)}
+function simpanJadwal(){
+  var days=0;
+  for(var i=0;i<=6;i++){var cb=document.getElementById('hari'+i);if(cb&&cb.checked)days|=(1<<i)}
+  var data={
+    enabled:jadwalEnabled,
+    isON:document.getElementById('modeJadwal').value==='true',
+    days:days,
+    date:parseInt(document.getElementById('jadwalTanggal').value)||0,
+    month:parseInt(document.getElementById('jadwalBulan').value)||0,
+    hour:parseInt(document.getElementById('jadwalJam').value),
+    minute:parseInt(document.getElementById('jadwalMenit').value)
   };
-  var ref = currentEditIdx >= 0
-    ? database.ref('/schedules/' + jadwalList[currentEditIdx].id)
-    : database.ref('/schedules').push;
-  if (currentEditIdx >= 0) {
-    database.ref('/schedules/' + jadwalList[currentEditIdx].id).update(data)
-      .then(function() { logDebug('Jadwal diupdate', 'success'); tutupModalJadwal(); })
-      .catch(function(e) { alert('Gagal: ' + e.message); });
-  } else {
+  if(currentEditIdx>=0){
+    database.ref('/schedules/'+jadwalList[currentEditIdx].id).update(data)
+      .then(function(){logDebug('Jadwal diupdate','success');tutupModalJadwal()})
+      .catch(function(e){alert('Gagal: '+e.message)});
+  }else{
     database.ref('/schedules').push(data)
-      .then(function() { logDebug('Jadwal ditambah', 'success'); tutupModalJadwal(); })
-      .catch(function(e) { alert('Gagal: ' + e.message); });
+      .then(function(){logDebug('Jadwal ditambah','success');tutupModalJadwal()})
+      .catch(function(e){alert('Gagal: '+e.message)});
   }
 }
-
-function hapusJadwal(index) {
-  if (!confirm('Hapus jadwal?')) return;
-  database.ref('/schedules/' + jadwalList[index].id).remove()
-    .then(function() { logDebug('Jadwal dihapus', 'success'); })
-    .catch(function(e) { alert('Gagal: ' + e.message); });
+function hapusJadwal(index){
+  if(!confirm('Hapus jadwal ini?'))return;
+  database.ref('/schedules/'+jadwalList[index].id).remove()
+    .then(function(){logDebug('Jadwal dihapus','success')})
+    .catch(function(e){alert('Gagal: '+e.message)});
 }
-
-function toggleJadwal(index) {
-  var j = jadwalList[index];
-  database.ref('/schedules/' + j.id).update({ enabled: !j.enabled })
-    .then(function() { logDebug('Status jadwal diubah', 'success'); })
-    .catch(function(e) { logDebug('Error: ' + e.message, 'error'); });
+function toggleJadwal(index){
+  var j=jadwalList[index];
+  database.ref('/schedules/'+j.id).update({enabled:!j.enabled})
+    .then(function(){logDebug('Status jadwal diubah','success')})
+    .catch(function(e){logDebug('Error: '+e.message,'error')});
 }
-
-function renderTabelJadwal() {
-  var tbody = document.getElementById('bodyJadwal');
-  if (!tbody) return;
-  if (jadwalList.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; opacity:0.6;">Belum ada jadwal</td></tr>';
-    return;
-  }
-  var namaHari = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
-  tbody.innerHTML = jadwalList.map(function(j, idx) {
-    var teksHari = j.days === 0 ? 'Setiap Hari' : namaHari.filter(function(_, i) { return j.days & (1 << i); }).join(', ');
-    var waktu    = String(j.hour).padStart(2,'0') + ':' + String(j.minute).padStart(2,'0');
+function renderTabelJadwal(){
+  var tbody=document.getElementById('bodyJadwal');if(!tbody)return;
+  if(jadwalList.length===0){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;opacity:0.5">Belum ada jadwal</td></tr>';return}
+  var nh=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+  tbody.innerHTML=jadwalList.map(function(j,idx){
+    var th=j.days===0?'Setiap':nh.filter(function(_,i){return j.days&(1<<i)}).join(',');
+    var wk=String(j.hour).padStart(2,'0')+':'+String(j.minute).padStart(2,'0');
     return '<tr>'
-      + '<td style="color:' + (j.isON ? '#10b981' : '#ef4444') + '; font-weight:bold;">' + (j.isON ? '🔆 ON' : '🌙 OFF') + '</td>'
-      + '<td>' + teksHari + '</td>'
-      + '<td>' + (j.date  === 0 ? 'Setiap' : j.date)  + '</td>'
-      + '<td>' + (j.month === 0 ? 'Setiap' : j.month) + '</td>'
-      + '<td>' + waktu + '</td>'
-      + '<td><div class="toggle ' + (j.enabled ? 'active' : '') + '" onclick="toggleJadwal(' + idx + ')"></div></td>'
-      + '<td>'
-        + '<button class="btn btn-admin btn-small" onclick="editJadwal(' + idx + ')">✏️</button>'
-        + '<button class="btn btn-off btn-small"   onclick="hapusJadwal(' + idx + ')">🗑️</button>'
-      + '</td>'
-      + '</tr>';
+      +'<td><span class="'+(j.isON?'chip-on':'chip-off')+'">'+(j.isON?'ON':'OFF')+'</span></td>'
+      +'<td style="font-size:0.82em">'+th+'</td>'
+      +'<td>'+(j.date===0?'—':j.date)+'</td>'
+      +'<td>'+(j.month===0?'—':j.month)+'</td>'
+      +'<td style="font-family:\'Share Tech Mono\',monospace">'+wk+'</td>'
+      +'<td><div class="toggle '+(j.enabled?'active':'')+'" onclick="toggleJadwal('+idx+')"></div></td>'
+      +'<td style="white-space:nowrap">'
+        +'<button class="abtn abtn-gold abtn-sm" onclick="editJadwal('+idx+')" style="margin-right:5px">✏️</button>'
+        +'<button class="abtn abtn-danger abtn-sm" onclick="hapusJadwal('+idx+')">🗑</button>'
+      +'</td></tr>';
   }).join('');
 }
 
-// ============================================================
-// COUNTDOWN — next ON / OFF
-// ============================================================
-function updateCountdowns() {
-  var now        = new Date();
-  var currentDay = now.getDay();
-  var nextON     = null;
-  var nextOFF    = null;
-
-  jadwalList.forEach(function(j) {
-    if (!j.enabled) return;
-    for (var d = 0; d < 8; d++) {
-      var checkDay  = (currentDay + d) % 7;
-      var dayMatch  = (j.days === 0) || ((j.days & (1 << checkDay)) !== 0);
-      if (!dayMatch) continue;
-      var candidate = new Date(now);
-      candidate.setDate(now.getDate() + d);
-      candidate.setHours(j.hour, j.minute, 0, 0);
-      if (candidate <= now) continue;
-      var isON = (j.isON === true || j.isON === 'true');
-      if (isON)  { if (!nextON  || candidate < nextON)  nextON  = candidate; }
-      else       { if (!nextOFF || candidate < nextOFF) nextOFF = candidate; }
+/* ════════════════════════════════════════════
+   COUNTDOWN
+════════════════════════════════════════════ */
+function updateCountdowns(){
+  var now=new Date(),cd=now.getDay(),nextON=null,nextOFF=null;
+  jadwalList.forEach(function(j){
+    if(!j.enabled)return;
+    for(var d=0;d<8;d++){
+      var ck=(cd+d)%7,dm=(j.days===0)||((j.days&(1<<ck))!==0);
+      if(!dm)continue;
+      var cand=new Date(now);cand.setDate(now.getDate()+d);cand.setHours(j.hour,j.minute,0,0);
+      if(cand<=now)continue;
+      var isON=(j.isON===true||j.isON==='true');
+      if(isON){if(!nextON||cand<nextON)nextON=cand}else{if(!nextOFF||cand<nextOFF)nextOFF=cand}
       break;
     }
   });
-
-  function fmt(target) {
-    var diff = target - now;
-    if (diff <= 0) return '00:00:00';
-    var h = Math.floor(diff / 3600000);
-    var m = Math.floor((diff % 3600000) / 60000);
-    var s = Math.floor((diff % 60000) / 1000);
-    return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  function fmt(t){
+    var diff=t-now;if(diff<=0)return'00:00:00';
+    var h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+    return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
   }
-
-  var elON  = document.getElementById('nextON');
-  var elOFF = document.getElementById('nextOFF');
-  if (elON)  elON.textContent  = nextON  ? fmt(nextON)  : 'Tidak Ada';
-  if (elOFF) elOFF.textContent = nextOFF ? fmt(nextOFF) : 'Tidak Ada';
+  var eON=document.getElementById('nextON'),eOFF=document.getElementById('nextOFF');
+  if(eON)eON.textContent=nextON?fmt(nextON):'Tidak Ada';
+  if(eOFF)eOFF.textContent=nextOFF?fmt(nextOFF):'Tidak Ada';
 }
 
-// ============================================================
-// SCHEDULE EXECUTION ENGINE — backup eksekusi dari browser
-// ============================================================
-var executedScheduleKeys = {};  // object sebagai set — lebih reliable dari Set di Firefox lama
-var alarmFiredKeys       = {};
-var lastCleanupMinute    = -1;
-
-function checkScheduleExecution() {
-  if (jadwalList.length === 0) return;
-  var now         = new Date();
-  var currentH    = now.getHours();
-  var currentM    = now.getMinutes();
-  var currentS    = now.getSeconds();
-  var currentDay  = now.getDay();
-  var currentDate = now.getDate();
-  var currentMon  = now.getMonth() + 1;
-  var currentYear = now.getFullYear();
-
-  // Bersihkan executed keys saat menit berganti
-  if (currentM !== lastCleanupMinute) {
-    lastCleanupMinute = currentM;
-    Object.keys(executedScheduleKeys).forEach(function(k) {
-      if (k.indexOf('-' + String(currentH).padStart(2,'0') + '-' + String(currentM).padStart(2,'0')) < 0) {
-        delete executedScheduleKeys[k];
-      }
+/* ════════════════════════════════════════════
+   SCHEDULE EXECUTION ENGINE
+════════════════════════════════════════════ */
+var executedScheduleKeys={},alarmFiredKeys={},lastCleanupMinute=-1;
+function checkScheduleExecution(){
+  if(jadwalList.length===0)return;
+  var now=new Date(),cH=now.getHours(),cM=now.getMinutes(),cS=now.getSeconds();
+  var cDay=now.getDay(),cDate=now.getDate(),cMon=now.getMonth()+1,cYear=now.getFullYear();
+  if(cM!==lastCleanupMinute){
+    lastCleanupMinute=cM;
+    Object.keys(executedScheduleKeys).forEach(function(k){
+      if(k.indexOf('-'+String(cH).padStart(2,'0')+'-'+String(cM).padStart(2,'0'))<0)delete executedScheduleKeys[k];
     });
   }
-
-  jadwalList.forEach(function(j) {
-    if (!j.enabled) return;
-    var jH = parseInt(j.hour);
-    var jM = parseInt(j.minute);
-
-    var dayMatch  = (j.days === 0) || ((j.days & (1 << currentDay)) !== 0);
-    var dateMatch = (!j.date  || j.date  === 0 || j.date  === currentDate);
-    var monMatch  = (!j.month || j.month === 0 || j.month === currentMon);
-    var yearMatch = (!j.year  || j.year  === 0 || j.year  === currentYear);
-    if (!dayMatch || !dateMatch || !monMatch || !yearMatch) return;
-
-    // PRE-ALARM: 8–12 detik sebelum jadwal
-    var nowTotalSec   = currentH * 3600 + currentM * 60 + currentS;
-    var schedTotalSec = jH * 3600 + jM * 60;
-    var secsUntil = schedTotalSec - nowTotalSec;
-    if (secsUntil < -60)   secsUntil += 86400;
-    if (secsUntil > 86400) secsUntil -= 86400;
-
-    var alarmKey = 'alarm-' + j.id + '-' + currentYear + '-' + currentMon + '-' + currentDate + '-' + String(jH).padStart(2,'0') + '-' + String(jM).padStart(2,'0');
-    if (secsUntil >= 8 && secsUntil <= 12 && !alarmFiredKeys[alarmKey]) {
-      alarmFiredKeys[alarmKey] = true;
-      var cmd = (j.isON === true || j.isON === 'true');
-      logDebug('🔔 ALARM: ' + (cmd ? '🔆 NYALA' : '🌙 MATI') + ' dalam ' + secsUntil + ' detik', 'info');
-      var alarmEl = document.getElementById('alarmStatus');
-      if (alarmEl) { alarmEl.textContent = 'Aktif (' + secsUntil + 's)'; alarmEl.style.color = '#ef4444'; }
-      setTimeout(function() {
-        var el = document.getElementById('alarmStatus');
-        if (el) { el.textContent = 'Standby'; el.style.color = '#10b981'; }
-      }, 15000);
+  jadwalList.forEach(function(j){
+    if(!j.enabled)return;
+    var jH=parseInt(j.hour),jM=parseInt(j.minute);
+    var dm=(j.days===0)||((j.days&(1<<cDay))!==0);
+    var dt=(!j.date||j.date===0||j.date===cDate);
+    var mn=(!j.month||j.month===0||j.month===cMon);
+    var yr=(!j.year||j.year===0||j.year===cYear);
+    if(!dm||!dt||!mn||!yr)return;
+    var nts=cH*3600+cM*60+cS,sts=jH*3600+jM*60,su=sts-nts;
+    if(su<-60)su+=86400;if(su>86400)su-=86400;
+    var akey='alarm-'+j.id+'-'+cYear+'-'+cMon+'-'+cDate+'-'+String(jH).padStart(2,'0')+'-'+String(jM).padStart(2,'0');
+    if(su>=8&&su<=12&&!alarmFiredKeys[akey]){
+      alarmFiredKeys[akey]=true;
+      var cmd=(j.isON===true||j.isON==='true');
+      logDebug('🔔 ALARM: '+(cmd?'🔆 NYALA':'🌙 MATI')+' dalam '+su+'s','info');
+      var ae=document.getElementById('alarmStatus');
+      if(ae)ae.textContent='Aktif ('+su+'s)';
+      setTimeout(function(){var el=document.getElementById('alarmStatus');if(el)el.textContent='Standby'},15000);
     }
-
-    // EKSEKUSI tepat waktu (detik 0–4)
-    if (jH !== currentH || jM !== currentM || currentS > 4) return;
-    var execKey = j.id + '-' + currentYear + '-' + currentMon + '-' + currentDate + '-' + String(jH).padStart(2,'0') + '-' + String(jM).padStart(2,'0');
-    if (executedScheduleKeys[execKey]) return;
-    executedScheduleKeys[execKey] = true;
-
-    var cmdOn = (j.isON === true || j.isON === 'true');
-    logDebug('⏰ JADWAL: ' + (cmdOn ? '🔆 ON' : '🌙 OFF') + ' @ ' + String(jH).padStart(2,'0') + ':' + String(jM).padStart(2,'0'), 'success');
-    database.ref('/control/relay').set(cmdOn)
-      .then(function() { logDebug('✅ Jadwal terkirim ke Firebase', 'success'); })
-      .catch(function(e) { logDebug('❌ Gagal: ' + e.message, 'error'); });
+    if(jH!==cH||jM!==cM||cS>4)return;
+    var ekey=j.id+'-'+cYear+'-'+cMon+'-'+cDate+'-'+String(jH).padStart(2,'0')+'-'+String(jM).padStart(2,'0');
+    if(executedScheduleKeys[ekey])return;
+    executedScheduleKeys[ekey]=true;
+    var on=(j.isON===true||j.isON==='true');
+    logDebug('⏰ JADWAL: '+(on?'🔆 ON':'🌙 OFF')+' @ '+String(jH).padStart(2,'0')+':'+String(jM).padStart(2,'0'),'success');
+    database.ref('/control/relay').set(on)
+      .then(function(){logDebug('✅ Jadwal terkirim','success')})
+      .catch(function(e){logDebug('❌ Gagal: '+e.message,'error')});
   });
 }
 
-// ============================================================
-// BUZZER FUNCTIONS
-// ============================================================
-function toggleBuzzerEnabled() {
-  buzzerEnabled = !buzzerEnabled;
-  document.getElementById('buzzerEnabledToggle').classList.toggle('active', buzzerEnabled);
+/* ════════════════════════════════════════════
+   BUZZER FUNCTIONS
+════════════════════════════════════════════ */
+function toggleBuzzerEnabled(){
+  buzzerEnabled=!buzzerEnabled;
+  document.getElementById('buzzerEnabledToggle').classList.toggle('active',buzzerEnabled);
   database.ref('/settings/buzzerEnabled').set(buzzerEnabled)
-    .then(function() { logDebug('Buzzer: ' + (buzzerEnabled ? 'ON' : 'OFF'), 'success'); })
-    .catch(function(e) { logDebug('Error: ' + e.message, 'error'); });
+    .then(function(){logDebug('Buzzer: '+(buzzerEnabled?'ON':'OFF'),'success')})
+    .catch(function(e){logDebug('Error: '+e.message,'error')});
 }
-
-function toggleAlarmEnabled() {
-  alarmEnabled = !alarmEnabled;
-  document.getElementById('alarmEnabledToggle').classList.toggle('active', alarmEnabled);
+function toggleAlarmEnabled(){
+  alarmEnabled=!alarmEnabled;
+  document.getElementById('alarmEnabledToggle').classList.toggle('active',alarmEnabled);
   database.ref('/settings/alarmEnabled').set(alarmEnabled)
-    .then(function() { logDebug('Alarm jadwal: ' + (alarmEnabled ? 'ON' : 'OFF'), 'success'); })
-    .catch(function(e) { logDebug('Error: ' + e.message, 'error'); });
+    .then(function(){logDebug('Alarm: '+(alarmEnabled?'ON':'OFF'),'success')})
+    .catch(function(e){logDebug('Error: '+e.message,'error')});
 }
-
-function simpanAlarmTone() {
-  var tone = parseInt(document.getElementById('alarmTone').value);
-  database.ref('/settings/alarmTone').set(tone)
-    .then(function() { logDebug('Nada alarm: ' + tone, 'success'); })
-    .catch(function(e) { logDebug('Error: ' + e.message, 'error'); });
+function simpanAlarmTone(){
+  var t=parseInt(document.getElementById('alarmTone').value);
+  database.ref('/settings/alarmTone').set(t)
+    .then(function(){logDebug('Nada alarm: '+t,'success')})
+    .catch(function(e){logDebug('Error: '+e.message,'error')});
 }
-
-function simpanModeBuzzer() {
-  var mode = parseInt(document.getElementById('buzzerMode').value);
-  database.ref('/settings/buzzerMode').set(mode)
-    .then(function() { logDebug('Mode buzzer: ' + mode, 'success'); })
-    .catch(function(e) { logDebug('Error: ' + e.message, 'error'); });
+function simpanModeBuzzer(){
+  var m=parseInt(document.getElementById('buzzerMode').value);
+  database.ref('/settings/buzzerMode').set(m)
+    .then(function(){logDebug('Mode buzzer: '+m,'success')})
+    .catch(function(e){logDebug('Error: '+e.message,'error')});
 }
-
-function tesBuzzerNada(nada) {
-  if (buzzerTestLock) { logDebug('⏳ Tunggu sebentar...', 'info'); return; }
-  buzzerTestLock = true;
-  document.querySelectorAll('.btn-buzz-test').forEach(function(b) { b.classList.remove('playing'); });
-  var btns = document.querySelectorAll('.btn-buzz-test');
-  if (btns[nada - 1]) btns[nada - 1].classList.add('playing');
-  logDebug('🔊 Tes Nada ' + nada + '...', 'info');
+function tesBuzzerNada(nada){
+  if(buzzerTestLock){logDebug('⏳ Tunggu sebentar...','info');return}
+  buzzerTestLock=true;
+  document.querySelectorAll('.buzz-btn').forEach(function(b){b.classList.remove('playing')});
+  var btns=document.querySelectorAll('.buzz-btn');
+  if(btns[nada-1])btns[nada-1].classList.add('playing');
+  logDebug('🔊 Tes Nada '+nada+'...','info');
   database.ref('/control/testBuzzer').set(nada)
-    .then(function() {
-      logDebug('✅ Nada ' + nada + ' diputar di ESP32', 'success');
-      setTimeout(function() {
+    .then(function(){
+      logDebug('✅ Nada '+nada+' diputar','success');
+      setTimeout(function(){
         database.ref('/control/testBuzzer').set(0);
-        document.querySelectorAll('.btn-buzz-test').forEach(function(b) { b.classList.remove('playing'); });
-        buzzerTestLock = false;
-      }, 2500);
+        document.querySelectorAll('.buzz-btn').forEach(function(b){b.classList.remove('playing')});
+        buzzerTestLock=false;
+      },2500);
     })
-    .catch(function(e) {
-      logDebug('❌ Error: ' + e.message, 'error');
-      buzzerTestLock = false;
-    });
+    .catch(function(e){logDebug('❌ Error: '+e.message,'error');buzzerTestLock=false});
 }
+function tesAlarmTone(){tesBuzzerNada(parseInt(document.getElementById('alarmTone').value))}
 
-function tesAlarmTone() {
-  var nada = parseInt(document.getElementById('alarmTone').value);
-  tesBuzzerNada(nada);
-}
-
-// ============================================================
-// PENGATURAN
-// ============================================================
-function toggleAutoSave() {
-  var t = document.getElementById('autoSaveToggle');
-  var on = !t.classList.contains('active');
-  t.classList.toggle('active', on);
+/* ════════════════════════════════════════════
+   SETTINGS
+════════════════════════════════════════════ */
+function toggleAutoSave(){
+  var t=document.getElementById('autoSaveToggle'),on=!t.classList.contains('active');
+  t.classList.toggle('active',on);
   database.ref('/settings/autoSave').set(on);
-  logDebug('Auto save: ' + (on ? 'ON' : 'OFF'), 'info');
+  logDebug('Auto save: '+(on?'ON':'OFF'),'info');
 }
-
-function simpanPengaturan() {
-  var on = document.getElementById('autoSaveToggle').classList.contains('active');
+function simpanPengaturan(){
+  var on=document.getElementById('autoSaveToggle').classList.contains('active');
   database.ref('/settings/autoSave').set(on)
-    .then(function() { logDebug('Pengaturan disimpan', 'success'); alert('✅ Tersimpan!'); })
-    .catch(function(e) { alert('❌ Gagal: ' + e.message); });
+    .then(function(){logDebug('Pengaturan disimpan','success');alert('✅ Tersimpan!')})
+    .catch(function(e){alert('❌ Gagal: '+e.message)});
 }
 
-// ============================================================
-// CLOCK — jalan dari browser, tidak butuh ESP
-// ============================================================
-setInterval(function() {
-  var now = new Date();
-  var h  = String(now.getHours()).padStart(2,'0');
-  var m  = String(now.getMinutes()).padStart(2,'0');
-  var s  = String(now.getSeconds()).padStart(2,'0');
-  var d  = String(now.getDate()).padStart(2,'0');
-  var mo = String(now.getMonth() + 1).padStart(2,'0');
-  var yr = now.getFullYear();
+/* ════════════════════════════════════════════
+   CLOCK — BROWSER-SIDE
+════════════════════════════════════════════ */
+var HARI=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+var BULAN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+setInterval(function(){
+  var now=new Date();
+  var h=String(now.getHours()).padStart(2,'0'),m=String(now.getMinutes()).padStart(2,'0'),s=String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('clockTime').textContent=h+':'+m+':'+s;
+  document.getElementById('clockDate').textContent=HARI[now.getDay()]+', '+String(now.getDate()).padStart(2,'0')+' '+BULAN[now.getMonth()]+' '+now.getFullYear();
+  var cs=document.getElementById('clockStatus');
+  if(cs&&cs.textContent==='⏳ Menghubungkan perangkat...'){cs.textContent='🕐 Waktu browser (menunggu perangkat...)';cs.style.color='rgba(245,158,11,0.55)'}
+  updateCountdowns();checkScheduleExecution();
+},1000);
 
-  document.getElementById('clockTime').textContent = h + ':' + m + ':' + s;
-  document.getElementById('clockDate').textContent = d + '/' + mo + '/' + yr;
-
-  // Update status hanya jika belum dapat sinyal ESP
-  var cs = document.getElementById('clockStatus');
-  if (cs && cs.textContent === '⏳ Memuat...') {
-    cs.textContent = '🕐 Jam browser (menunggu ESP...)';
-    cs.style.color = '#f59e0b';
-  }
-
-  updateCountdowns();
-  checkScheduleExecution();
-}, 1000);
-
-// ============================================================
-// INIT — load cache jadwal sebelum Firebase reply
-// ============================================================
+/* ════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════ */
 updateSliderGradient(0);
-
-try {
-  var cached = localStorage.getItem('smartlamp_jadwal_cache');
-  if (cached) {
-    var parsed = JSON.parse(cached);
-    if (Array.isArray(parsed) && parsed.length > 0 && jadwalList.length === 0) {
-      jadwalList = parsed;
-      var ce = document.getElementById('scheduleCount');
-      if (ce) { ce.textContent = parsed.length + ' aktif (cache)'; ce.style.color = '#f59e0b'; }
-      renderTabelJadwal();
-      updateCountdowns();
-      logDebug(parsed.length + ' jadwal dari cache', 'info');
+try{
+  var cached=localStorage.getItem('smartlamp_jadwal_cache');
+  if(cached){
+    var parsed=JSON.parse(cached);
+    if(Array.isArray(parsed)&&parsed.length>0&&jadwalList.length===0){
+      jadwalList=parsed;
+      var ce=document.getElementById('scheduleCount');if(ce)ce.textContent=parsed.length+' aktif (cache)';
+      renderTabelJadwal();updateCountdowns();
+      logDebug(parsed.length+' jadwal dari cache','info');
     }
   }
-} catch(e) {}
-
-logDebug('✅ Sistem siap — jam & jadwal jalan mandiri', 'success');
+}catch(e){}
+logDebug('✅ Sistem AP-PJU siap','success');
 </script>
 </body>
 </html>
